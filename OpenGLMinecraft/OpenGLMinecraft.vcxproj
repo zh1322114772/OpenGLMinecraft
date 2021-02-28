@@ -145,7 +145,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="glad.c" />
+    <ClCompile Include="GLWrapper.cpp" />
+    <ClCompile Include="GLWrapperExceptions.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GLWrapper.hpp" />
+    <ClInclude Include="ShaderProgram.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

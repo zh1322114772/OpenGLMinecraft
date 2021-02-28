@@ -19,10 +19,36 @@
     <Filter Include="Header Files\OpenGL">
       <UniqueIdentifier>{1b55d650-7e9e-4ab3-be32-25249cf21789}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\OpenGL\GLWrapper">
+      <UniqueIdentifier>{ef5c258d-515f-4529-80eb-280b892b2bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenGL\GLWrapper">
+      <UniqueIdentifier>{4316f4d2-8b91-4af5-b4bf-f868e76efe2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GLWrapper.cpp">
+      <Filter>Source Files\OpenGL\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="GLWrapperExceptions.cpp">
+      <Filter>Source Files\OpenGL\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files\OpenGL\GLWrapper</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GLWrapper.hpp">
+      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.hpp">
+      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
