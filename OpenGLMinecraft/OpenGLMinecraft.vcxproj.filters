@@ -42,6 +42,12 @@
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Source Files\OpenGL\GLWrapper</Filter>
     </ClCompile>
+    <ClCompile Include="WrapperTypes.hpp">
+      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="Easy3D.cpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWrapper.hpp">
@@ -49,6 +55,12 @@
     </ClInclude>
     <ClInclude Include="ShaderProgram.hpp">
       <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="Easy3D.hpp">
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.hpp">
+      <Filter>Header Files\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

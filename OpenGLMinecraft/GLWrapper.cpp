@@ -32,7 +32,7 @@ namespace wrapperGL
 		}
 
 		glViewport(0, 0, width, height);
-
+		stbi_set_flip_vertically_on_load(true);
 	}
 
 	void GLWrapper::setCursorCenter(GLFWwindow*& handle, bool b) 
@@ -47,9 +47,9 @@ namespace wrapperGL
 		}
 	}
 
-	VAOObject GLWrapper::loadVAOS(VAOList& v)
+	VAOID GLWrapper::loadVAOS(VAOList& v)
 	{
-		VAOObject ret;
+		VAOID ret;
 		
 		glGenVertexArrays(1, &(ret.vao_id));
 
@@ -80,64 +80,64 @@ namespace wrapperGL
 		return ret;
 	}
 
-	void GLWrapper::unloadVAOS(VAOObject& v)
+	void GLWrapper::unloadVAOS(VAOID& v)
 	{
 		glDeleteVertexArrays(1, &(v.vao_id));
 		glDeleteBuffers(1, &(v.ebo_id));
 		glDeleteBuffers(1, &(v.vbo_id));
 	}
 
-	TextureObject GLWrapper::loadTexture(const char* path) 
+	ImageObject GLWrapper::loadImage(const char* path) 
 	{
-		TextureObject ret;
-		int format;
+		ImageObject ret;
+		ret.img_arr = stbi_load(path, &(ret.width), &(ret.height), &(ret.format), 0);
 
-		//load image to bitmap
-		unsigned char* data = stbi_load(path, &(ret.width), &(ret.height), &format, 0);
+		if (!ret.img_arr) throw GlWrapperException(("Unable to load image file: " + std::string(path)).c_str());
 
-		if (data) 
+		return ret;
+	}
+
+	void GLWrapper::freeImage(ImageObject& obj) 
+	{
+		stbi_image_free(obj.img_arr);
+	}
+
+	TextureID GLWrapper::loadTexture(ImageObject& obj)
+	{
+		TextureID ret;
+
+		if (obj.format == 3)
 		{
-			if (format == 3)
-			{
-				//rgb color format
-				ret.format = GL_RGB;
-			}
-			else if (format == 4)
-			{
-				//rgba color format
-				ret.format = GL_RGBA;
-			}
-			else 
-			{
-				//unsupported format
-				throw GlWrapperException("Unsupported color format");
-			}
-
-			//gen texture id
-			glGenTextures(1, &(ret.id));
-			//bind textures
-			glBindTexture(GL_TEXTURE_2D, ret.id);
-			glTexImage2D(GL_TEXTURE_2D, 0, ret.format, ret.width, ret.height, 0, ret.format, GL_UNSIGNED_BYTE, data);
-
-			//set arguments
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			//free memory
-			stbi_image_free(data);
-
-			return ret;
+			//rgb color format
+			ret.format = GL_RGB;
+		}
+		else if (obj.format == 4)
+		{
+			//rgba color format
+			ret.format = GL_RGBA;
 		}
 		else 
 		{
-			throw GlWrapperException(("Unable to load image file: " + std::string(path)).c_str());
+			//unsupported format
+			throw GlWrapperException("Unsupported color format");
 		}
 
+		//gen texture id
+		glGenTextures(1, &(ret.id));
+		//bind textures
+		glBindTexture(GL_TEXTURE_2D, ret.id);
+		glTexImage2D(GL_TEXTURE_2D, 0, ret.format, ret.width, ret.height, 0, ret.format, GL_UNSIGNED_BYTE, obj.img_arr);
+
+		//set arguments
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		return ret;
 	}
 
-	void GLWrapper::UnloadTexture(TextureObject& t) 
+	void GLWrapper::UnloadTexture(TextureID& t) 
 	{
 		glDeleteTextures(1, &(t.id));
 	}

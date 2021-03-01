@@ -4,67 +4,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
-
+#include "WrapperTypes.hpp"
 
 namespace wrapperGL
 {
-	/**
-	* VBO object
-	*/
-	struct VBO
-	{
-		//position
-		glm::vec3 pos;
-
-		//normal vecor
-		glm::vec3 norm;
-
-		//texture coordinates
-		glm::vec2 tex;
-	};
-
-	/**
-	* contains list of EBO, VBO 
-	*/
-	struct VAOList
-	{
-		std::vector<VBO> vbos;
-		std::vector<unsigned int>ebos;
-	};
-
-	/**
-	* VAO object
-	*/
-	struct VAOObject
-	{
-		//opengl vao id
-		unsigned int vao_id;
-
-		//opengl buffer id
-		unsigned int vbo_id;
-
-		//opengl buffer id
-		unsigned int ebo_id;
-	};
-
-	/**
-	* texture object
-	*/
-	struct TextureObject
-	{
-		//texture id
-		unsigned int id;
-
-		//texture format either GL_RGB or GL_RGBA
-		GLenum format;
-
-		//image width
-		int width;
-	
-		//image height
-		int height;
-	};
-
 	/**
 	* wrap some opengl functions
 	*/
@@ -93,26 +36,39 @@ namespace wrapperGL
 		/// </summary>
 		/// <param name="v">vao list object</param>
 		/// <returns>vao object</returns>
-		static VAOObject loadVAOS(VAOList& v);
+		static VAOID loadVAOS(VAOList& v);
 
 		/// <summary>
 		/// unload VAO from vram
 		/// </summary>
 		/// <param name="id">VAO object</param>
-		static void unloadVAOS(VAOObject& id);
+		static void unloadVAOS(VAOID& id);
+
+		/// <summary>
+		/// load image from disk
+		/// </summary>
+		/// <param name="path">image path</param>
+		/// <returns></returns>
+		static ImageObject loadImage(const char* path);
+
+		/// <summary>
+		/// free image object from memory
+		/// </summary>
+		/// <param name="obj">TextureObject</param>
+		static void freeImage(ImageObject& obj);
 
 		/// <summary>
 		/// load image from disk to vram
 		/// </summary>
 		/// <param name="path">img directory</param>
 		/// <returns>texture object</returns>
-		static TextureObject loadTexture(const char* path);
+		static TextureID loadTexture(ImageObject& obj);
 
 		/// <summary>
 		/// unload texture from vram
 		/// </summary>
 		/// <param name="t">texture object</param>
-		static void UnloadTexture(TextureObject& t);
+		static void UnloadTexture(TextureID& t);
 
 
 

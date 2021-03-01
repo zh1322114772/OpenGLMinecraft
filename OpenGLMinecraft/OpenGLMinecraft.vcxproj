@@ -145,15 +145,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Easy3D.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLWrapper.cpp" />
     <ClCompile Include="GLWrapperExceptions.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="WrapperTypes.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Easy3D.hpp" />
     <ClInclude Include="GLWrapper.hpp" />
     <ClInclude Include="ShaderProgram.hpp" />
+    <ClInclude Include="Types.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
