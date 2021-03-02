@@ -36,7 +36,8 @@ namespace wrapperGL
 		/// </summary>
 		/// <param name="v">vao list object</param>
 		/// <returns>vao object</returns>
-		static VAOID loadVAOS(VAOList& v);
+		template<int vboSize, int eboSize>
+		static VAOID loadVAOS(VAOList<eboSize, eboSize>& v);
 
 		/// <summary>
 		/// unload VAO from vram

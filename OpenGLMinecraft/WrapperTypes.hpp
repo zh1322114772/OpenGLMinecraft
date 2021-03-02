@@ -1,9 +1,8 @@
 #pragma once
-#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
-
+#include <initializer_list>
 namespace wrapperGL
 {
 	/**
@@ -19,15 +18,37 @@ namespace wrapperGL
 
 		//texture coordinates
 		glm::vec2 tex;
+		
 	};
 
 	/**
 	* contains list of EBO, VBO
 	*/
+
+	template<int vboSize, int eboSize>
 	struct VAOList
 	{
-		std::vector<VBO> vbos;
-		std::vector<unsigned int>ebos;
+		VBO vbos[vboSize];
+		unsigned int ebos[eboSize];
+
+		const int vboLength = vboSize;
+		const int eboLength = eboSize;
+
+		void setVbos(std::initializer_list<float> l)
+		{
+			if ((l.size() / 8) == vboLength) 
+			{
+				memcpy(&vbos, l.begin(), l.size()*sizeof(float));
+			}
+		}
+
+		void setEbos(std::initializer_list<unsigned int> l) 
+		{
+			if (l.size() == eboLength) 
+			{
+				memcpy(&ebos, l.begin(), l.size() * sizeof(unsigned int));
+			}
+		}
 	};
 
 	struct ImageObject 

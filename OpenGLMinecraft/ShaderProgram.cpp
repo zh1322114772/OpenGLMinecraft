@@ -1,5 +1,5 @@
 #include "ShaderProgram.hpp"
-#include "GLWrapperExceptions.cpp"
+#include "GLWrapperExceptions.hpp"
 
 #define paraLoc glGetUniformLocation(ID, parameter.c_str())
 

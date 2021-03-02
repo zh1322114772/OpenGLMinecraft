@@ -25,15 +25,27 @@
     <Filter Include="Header Files\OpenGL\GLWrapper">
       <UniqueIdentifier>{4316f4d2-8b91-4af5-b4bf-f868e76efe2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\OpenGL\Controllers">
+      <UniqueIdentifier>{e1d4936a-e003-4ac1-b243-49a315cd33c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OpenGL\Controllers">
+      <UniqueIdentifier>{ccca15fd-aecb-4573-92a8-6ffe75289f4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{9ae57214-26f8-47f8-903e-054ed16cfafb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{a6623313-369f-4564-a878-f3bc1f14f9e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\World">
+      <UniqueIdentifier>{3643e50e-4253-4467-aea1-657789a3f015}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GLWrapper.cpp">
-      <Filter>Source Files\OpenGL\GLWrapper</Filter>
-    </ClCompile>
-    <ClCompile Include="GLWrapperExceptions.cpp">
       <Filter>Source Files\OpenGL\GLWrapper</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
@@ -48,6 +60,12 @@
     <ClCompile Include="Easy3D.cpp">
       <Filter>Source Files\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="GLWrapperExceptions.hpp">
+      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertices.cpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWrapper.hpp">
@@ -60,6 +78,12 @@
       <Filter>Header Files\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Types.hpp">
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGameController.hpp">
+      <Filter>Header Files\OpenGL\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertices.hpp">
       <Filter>Header Files\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>

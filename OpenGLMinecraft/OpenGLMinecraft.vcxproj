@@ -148,14 +148,17 @@
     <ClCompile Include="Easy3D.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLWrapper.cpp" />
-    <ClCompile Include="GLWrapperExceptions.cpp" />
+    <ClCompile Include="GLWrapperExceptions.hpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Vertices.cpp" />
     <ClCompile Include="WrapperTypes.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Vertices.hpp" />
     <ClInclude Include="Easy3D.hpp" />
     <ClInclude Include="GLWrapper.hpp" />
+    <ClInclude Include="MainGameController.hpp" />
     <ClInclude Include="ShaderProgram.hpp" />
     <ClInclude Include="Types.hpp" />
   </ItemGroup>

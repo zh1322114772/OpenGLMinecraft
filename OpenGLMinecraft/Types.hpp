@@ -1,19 +1,51 @@
 namespace renderer
 {
 	/// <summary>
-	/// define the Scene class
+	/// mouse event send from easy3D
 	/// </summary>
-	class Scene 
+	struct MouseEvent
+	{
+		bool buttonPressed[GLFW_MOUSE_BUTTON_LAST] = { false };
+		glm::vec2 mousePosition;
+		glm::vec2 mouseScroll;
+	};
+
+	/// <summary>
+	/// keyboard event send from easy3D
+	/// </summary>
+	struct KeyboardEvent
+	{
+		bool keyPressed[GLFW_KEY_LAST] = { false };
+		std::vector<unsigned int> charInputBuffer;
+		int modKey = 0;
+	};
+
+
+
+	/// <summary>
+	/// This class receives all callbacks from easy3D
+	/// </summary>
+	class Controller
 	{
 	public:
+		
+		/// <summary>
+		/// this function will be called after Easy3D::start() is invoked
+		/// </summary>
+		virtual void onStart() = 0;
 
 		/// <summary>
-		/// this function will be called after loaded to Easy3D
+		/// this function will be called before Easy3D exits
+		/// </summary>
+		virtual void onExit() = 0;
+
+		/// <summary>
+		/// this function will be called after the controller is enabled
 		/// </summary>
 		virtual void onEnable() = 0;
 
 		/// <summary>
-		/// this function will be called before the Scene is closed
+		/// this function will be called before the controller is disabled
 		/// </summary>
 		virtual void onDisable() = 0;
 
@@ -31,19 +63,12 @@ namespace renderer
 		virtual void renderAreaChangedCallback(const int& newWidth, const int& newHeight) = 0;
 
 		/// <summary>
-		/// this function will be called when cursor position is changed
+		/// this function will be called before onDraw() is called to handle inputs
 		/// </summary>
-		virtual void mousePositionChangedCallback() = 0;
+		/// <param name="keyboardEvent"></param>
+		/// <param name="mouseEvent"></param>
+		virtual void inputProcess(const KeyboardEvent& keyboardEvent, const MouseEvent& mouseEvent) = 0;
 
-		/// <summary>
-		/// this function will be called when the state of the mouse button is changed
-		/// </summary>
-		virtual void mouseButtonStatusChangedCallback() = 0;
-
-		/// <summary>
-		/// this function will be called when the state of key is changed
-		/// </summary>
-		virtual void keyboardStatusChangedCallback() = 0;
 	};
 
 

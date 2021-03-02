@@ -1,6 +1,6 @@
 #pragma once
 #include "GLWrapper.hpp"
-#include "GLWrapperExceptions.cpp"
+#include "GLWrapperExceptions.hpp"
 #include "stb_image.h"
 
 namespace wrapperGL
@@ -46,8 +46,8 @@ namespace wrapperGL
 			glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 	}
-
-	VAOID GLWrapper::loadVAOS(VAOList& v)
+	template<int vboSize, int eboSize>
+	VAOID GLWrapper::loadVAOS(VAOList<eboSize, eboSize>& v)
 	{
 		VAOID ret;
 		
@@ -59,11 +59,11 @@ namespace wrapperGL
 
 		//bind VBO
 		glBindBuffer(GL_ARRAY_BUFFER, ret.vbo_id);
-		glBufferData(GL_ARRAY_BUFFER, v.vbos.size() * sizeof(VBO), &(v.vbos[0]), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, v.vbosLength * sizeof(VBO), &(v.vbos), GL_STATIC_DRAW);
 
 		//bind EBO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ret.ebo_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, v.ebos.size() * sizeof(unsigned int), &(v.ebos[0]), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, v.eboLength * sizeof(unsigned int), &(v.ebos), GL_STATIC_DRAW);
 
 		//bind attributes
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)0); //vertex location

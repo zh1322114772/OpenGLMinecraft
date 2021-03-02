@@ -6,35 +6,81 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <unordered_map>
 #include "Types.hpp"
+#include <stdexcept>
 
 namespace renderer 
 {
+	//exception for easy3D
+	class Easy3DException : public std::runtime_error
+	{
+	public:
 
+		explicit Easy3DException(std::string& msg) :runtime_error(msg)
+		{
+
+		}
+
+		explicit Easy3DException(const char* msg) :runtime_error(msg)
+		{
+
+		}
+
+		const char* what() const override
+		{
+			return "Easy3D exception";
+		}
+
+	};
 
 
 	class Easy3D 
 	{
 	private:
+
+		static char programStatus;
+
+		// glfw window handle
 		static GLFWwindow* windowHandle;
+
+		//current window height
 		static int windowHeight;
+
+		//current window width
 		static int windowWidth;
-		static Scene* currentScene;
+
+		//current controller that's in use
+		static Controller* currentController;
+
+		//total controller list
+		static std::vector<Controller*> controllers;
+
+		//window title
 		static const char* title;
+
+		//print fps flag
 		static bool printFPS;
+
+		//keyboard event
+		static  KeyboardEvent keyboardEvent;
+
+		//mouse event
+		static MouseEvent mouseEvent;
+		static glm::vec2 mousePosition;
+		static glm::vec2 mousePositionOld;
+		static glm::vec2 mouseOffsets;
+
+		//mouse mode
+		static bool mouseCenterMode;
 
 		/**
 		* glfw callback functions, for details see glfw3.h
 		*/
 		static void mousePosChangedCallback(GLFWwindow* window, double xpos, double ypos);
-		static void mouseEnterCallback(GLFWwindow* window, int message);
 		static void mouseStatusChangedCallback(GLFWwindow* window, int buttonID, int action, int mods);
 		static void frameBufferSizeChangedCallback(GLFWwindow* window, int width, int height);
 		static void charInputCallback(GLFWwindow* window, unsigned int unicode);
 		static void keyInputCallback(GLFWwindow* window, int keyCode, int scanCode, int action, int mods);
 		static void mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
-
-
-
 
 	public:
 
@@ -44,13 +90,19 @@ namespace renderer
 		/// <param name="windowTitle">game title</param>
 		/// <param name="width">window width</param>
 		/// <param name="height">window height</param>
-		static void setGameWidnow(const char* windowTitle, const int& width, const int& height);
+		static void setGameWidnow(const char* windowTitle, const int width, const int height);
 		
 		/// <summary>
-		/// set new Scene to easy3D
+		/// set contorller
 		/// </summary>
-		/// <param name="s"></param>
-		static void setScene(Scene* s);
+		/// <param name="id">controller id </param>
+		static void setContorller(int id);
+
+		/// <summary>
+		/// add new contorller to easy3D
+		/// </summary>
+		/// <param name="c"></param>
+		static int addController(Controller* c);
 
 		/// <summary>
 		/// show current fps
@@ -63,9 +115,5 @@ namespace renderer
 		/// </summary>
 		static void start();
 	};
-
-
-
-
 
 }
