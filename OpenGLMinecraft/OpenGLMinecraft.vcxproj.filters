@@ -13,24 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\OpenGL">
-      <UniqueIdentifier>{21b1a9f9-3421-4a3f-a183-fdaeccfce2d7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\OpenGL">
-      <UniqueIdentifier>{1b55d650-7e9e-4ab3-be32-25249cf21789}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\OpenGL\GLWrapper">
-      <UniqueIdentifier>{ef5c258d-515f-4529-80eb-280b892b2bcb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\OpenGL\GLWrapper">
-      <UniqueIdentifier>{4316f4d2-8b91-4af5-b4bf-f868e76efe2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\OpenGL\Controllers">
-      <UniqueIdentifier>{e1d4936a-e003-4ac1-b243-49a315cd33c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\OpenGL\Controllers">
-      <UniqueIdentifier>{ccca15fd-aecb-4573-92a8-6ffe75289f4e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{9ae57214-26f8-47f8-903e-054ed16cfafb}</UniqueIdentifier>
     </Filter>
@@ -40,51 +22,78 @@
     <Filter Include="Header Files\Game\World">
       <UniqueIdentifier>{3643e50e-4253-4467-aea1-657789a3f015}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render">
+      <UniqueIdentifier>{1b55d650-7e9e-4ab3-be32-25249cf21789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\OpenGLWrapper">
+      <UniqueIdentifier>{4316f4d2-8b91-4af5-b4bf-f868e76efe2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\Controllers">
+      <UniqueIdentifier>{e1d4936a-e003-4ac1-b243-49a315cd33c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{21b1a9f9-3421-4a3f-a183-fdaeccfce2d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\OpenGLWrapper">
+      <UniqueIdentifier>{ef5c258d-515f-4529-80eb-280b892b2bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\Controllers">
+      <UniqueIdentifier>{ccca15fd-aecb-4573-92a8-6ffe75289f4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\GLSL">
+      <UniqueIdentifier>{45055450-213e-43b1-9d33-0bcf269c85f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLWrapper.cpp">
-      <Filter>Source Files\OpenGL\GLWrapper</Filter>
-    </ClCompile>
     <ClCompile Include="glad.c">
-      <Filter>Source Files\OpenGL</Filter>
+      <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source Files\OpenGL\GLWrapper</Filter>
+    <ClCompile Include="GLW_GLWrapper.cpp">
+      <Filter>Source Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
-    <ClCompile Include="WrapperTypes.hpp">
-      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    <ClCompile Include="GLW_Exceptions.hpp">
+      <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
-    <ClCompile Include="Easy3D.cpp">
-      <Filter>Source Files\OpenGL</Filter>
+    <ClCompile Include="GLW_GLShader.cpp">
+      <Filter>Source Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
-    <ClCompile Include="GLWrapperExceptions.hpp">
-      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    <ClCompile Include="GLW_Types.hpp">
+      <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
-    <ClCompile Include="Vertices.cpp">
-      <Filter>Source Files\OpenGL</Filter>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render_Vertices.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="World3D.cpp">
+      <Filter>Source Files\Render\Controllers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GLWrapper.hpp">
-      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    <ClInclude Include="GLW_GLWrapper.hpp">
+      <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderProgram.hpp">
-      <Filter>Header Files\OpenGL\GLWrapper</Filter>
+    <ClInclude Include="GLW_GLShader.hpp">
+      <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClInclude>
-    <ClInclude Include="Easy3D.hpp">
-      <Filter>Header Files\OpenGL</Filter>
+    <ClInclude Include="Renderer.hpp">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Types.hpp">
-      <Filter>Header Files\OpenGL</Filter>
+    <ClInclude Include="Render_Types.hpp">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="MainGameController.hpp">
-      <Filter>Header Files\OpenGL\Controllers</Filter>
+    <ClInclude Include="Render_Vertices.hpp">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Vertices.hpp">
-      <Filter>Header Files\OpenGL</Filter>
+    <ClInclude Include="GLSL_Code.hpp">
+      <Filter>Header Files\Render\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="World3D.hpp">
+      <Filter>Header Files\Render\Controllers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

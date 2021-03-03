@@ -145,22 +145,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Easy3D.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="GLWrapper.cpp" />
-    <ClCompile Include="GLWrapperExceptions.hpp" />
+    <ClCompile Include="GLW_GLWrapper.cpp" />
+    <ClCompile Include="GLW_Exceptions.hpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="Vertices.cpp" />
-    <ClCompile Include="WrapperTypes.hpp" />
+    <ClCompile Include="GLW_GLShader.cpp" />
+    <ClCompile Include="Render_Vertices.cpp" />
+    <ClCompile Include="GLW_Types.hpp" />
+    <ClCompile Include="World3D.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vertices.hpp" />
-    <ClInclude Include="Easy3D.hpp" />
-    <ClInclude Include="GLWrapper.hpp" />
-    <ClInclude Include="MainGameController.hpp" />
-    <ClInclude Include="ShaderProgram.hpp" />
-    <ClInclude Include="Types.hpp" />
+    <ClInclude Include="GLSL_Code.hpp" />
+    <ClInclude Include="Render_Vertices.hpp" />
+    <ClInclude Include="Renderer.hpp" />
+    <ClInclude Include="GLW_GLWrapper.hpp" />
+    <ClInclude Include="GLW_GLShader.hpp" />
+    <ClInclude Include="Render_Types.hpp" />
+    <ClInclude Include="World3D.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
