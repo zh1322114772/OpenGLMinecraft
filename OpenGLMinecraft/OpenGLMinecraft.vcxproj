@@ -145,24 +145,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CFG_ControllerIDs.cpp" />
+    <ClCompile Include="CFG_GlobalVars.cpp" />
+    <ClCompile Include="CFG_Resources.cpp" />
+    <ClCompile Include="CLR_Loading.cpp" />
+    <ClCompile Include="CLR_World3D_Types.cpp" />
+    <ClCompile Include="GLSL_Code.cpp" />
+    <ClCompile Include="GLW_Types.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLW_GLWrapper.cpp" />
-    <ClCompile Include="GLW_Exceptions.hpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="GLW_GLShader.cpp" />
     <ClCompile Include="Render_Vertices.cpp" />
     <ClCompile Include="GLW_Types.hpp" />
-    <ClCompile Include="World3D.cpp" />
+    <ClCompile Include="CLR_World3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CFG_ControllerIDs.hpp" />
+    <ClInclude Include="CFG_GlobalVars.hpp" />
+    <ClInclude Include="CFG_Resources.hpp" />
     <ClInclude Include="GLSL_Code.hpp" />
+    <ClInclude Include="GLW_GLHeaders.hpp" />
+    <ClInclude Include="CLR_Loading.hpp" />
     <ClInclude Include="Render_Vertices.hpp" />
     <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="GLW_GLWrapper.hpp" />
     <ClInclude Include="GLW_GLShader.hpp" />
     <ClInclude Include="Render_Types.hpp" />
-    <ClInclude Include="World3D.hpp" />
+    <ClInclude Include="CLR_World3D.hpp" />
+    <ClInclude Include="CLR_World3D_Types.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

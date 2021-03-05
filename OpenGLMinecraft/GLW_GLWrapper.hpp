@@ -1,6 +1,6 @@
 #pragma once
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "GLW_GLHeaders.hpp"
+#include "GLW_GLShader.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
@@ -37,8 +37,7 @@ namespace wrapperGL
 		/// </summary>
 		/// <param name="v">vao list object</param>
 		/// <returns>vao object</returns>
-		template<int vboSize, int eboSize>
-		static VAOID loadVAOS(VAOList<eboSize, eboSize>& v);
+		static VAOID loadVAOS(VAOList& v);
 
 		/// <summary>
 		/// unload VAO from vram
@@ -65,6 +64,15 @@ namespace wrapperGL
 		/// <param name="path">img directory</param>
 		/// <returns>texture object</returns>
 		static TextureID loadTexture(ImageObject& obj);
+
+		/// <summary>
+		/// to bind a texture to simpler2D
+		/// </summary>
+		/// <param name="shader">current shader program</param>
+		/// <param name="tid">TextureID object</param>
+		/// <param name="parameter">GLSL simpler2D name</param>
+		/// <param name="texture_id">bind to texture id</param>
+		static void activeTexture(ShaderProgram* shader ,TextureID& tid, const char* parameter, int texture_id);
 
 		/// <summary>
 		/// unload texture from vram

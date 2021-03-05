@@ -1,8 +1,9 @@
 #include "GLW_GLShader.hpp"
 
-#include <glad/glad.h>
+#include "GLW_GLHeaders.hpp"
 #include <glm/gtc/type_ptr.hpp>
-#include "GLW_Exceptions.hpp"
+#include <iostream>
+
 #define paraLoc glGetUniformLocation(ID, parameter.c_str())
 
 namespace wrapperGL
@@ -25,7 +26,7 @@ namespace wrapperGL
 		if (!success) 
 		{
 			glGetShaderInfoLog(vertexID, 512, NULL, infoLog);
-			throw GlWrapperException(infoLog);
+			throw std::runtime_error(infoLog);
 		}
 
 		//compile fragment program
@@ -38,7 +39,7 @@ namespace wrapperGL
 		if(!success)
 		{
 			glGetShaderInfoLog(fragmentID, 512, NULL, infoLog);
-			throw GlWrapperException(infoLog);
+			throw std::runtime_error(infoLog);
 		}
 
 		//link to program
@@ -52,7 +53,7 @@ namespace wrapperGL
 		if (!success) 
 		{
 			glGetProgramInfoLog(ID, 512, NULL, infoLog);
-			throw GlWrapperException(infoLog);
+			throw std::runtime_error(infoLog);
 		}
 
 		glDeleteShader(vertexID);

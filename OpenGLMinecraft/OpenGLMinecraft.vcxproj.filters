@@ -43,6 +43,15 @@
     <Filter Include="Header Files\Render\GLSL">
       <UniqueIdentifier>{45055450-213e-43b1-9d33-0bcf269c85f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game\Config">
+      <UniqueIdentifier>{aceb06a2-6fa2-45ba-931e-09161e9b0064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\GLSL">
+      <UniqueIdentifier>{8b7eb36c-e83b-4c05-ad5f-4c0b18e4466d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Config">
+      <UniqueIdentifier>{39a56a8b-8cc5-415f-9a09-8ca93c315a67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -53,9 +62,6 @@
     </ClCompile>
     <ClCompile Include="GLW_GLWrapper.cpp">
       <Filter>Source Files\Render\OpenGLWrapper</Filter>
-    </ClCompile>
-    <ClCompile Include="GLW_Exceptions.hpp">
-      <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
     <ClCompile Include="GLW_GLShader.cpp">
       <Filter>Source Files\Render\OpenGLWrapper</Filter>
@@ -69,8 +75,29 @@
     <ClCompile Include="Render_Vertices.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="World3D.cpp">
+    <ClCompile Include="CLR_World3D.cpp">
       <Filter>Source Files\Render\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="CLR_Loading.cpp">
+      <Filter>Source Files\Render\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Code.cpp">
+      <Filter>Source Files\Render\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="CFG_ControllerIDs.cpp">
+      <Filter>Source Files\Game\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="CFG_GlobalVars.cpp">
+      <Filter>Source Files\Game\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="CFG_Resources.cpp">
+      <Filter>Source Files\Game\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="CLR_World3D_Types.cpp">
+      <Filter>Source Files\Render\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="GLW_Types.cpp">
+      <Filter>Source Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,8 +119,26 @@
     <ClInclude Include="GLSL_Code.hpp">
       <Filter>Header Files\Render\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="World3D.hpp">
+    <ClInclude Include="GLW_GLHeaders.hpp">
+      <Filter>Header Files\Render\OpenGLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="CFG_GlobalVars.hpp">
+      <Filter>Header Files\Game\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="CLR_Loading.hpp">
       <Filter>Header Files\Render\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="CLR_World3D.hpp">
+      <Filter>Header Files\Render\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="CLR_World3D_Types.hpp">
+      <Filter>Header Files\Render\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="CFG_ControllerIDs.hpp">
+      <Filter>Header Files\Game\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="CFG_Resources.hpp">
+      <Filter>Header Files\Game\Config</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

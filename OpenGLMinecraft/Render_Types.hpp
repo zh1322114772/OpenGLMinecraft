@@ -1,10 +1,11 @@
 #pragma once
-#include <GLFW/glfw3.h>
+#include "GLW_GLHeaders.hpp"
 #include <glm/glm.hpp>
 #include <vector>
 
 namespace renderer
 {
+
 	/// <summary>
 	/// mouse event send from easy3D
 	/// </summary>
@@ -13,6 +14,7 @@ namespace renderer
 		bool buttonPressed[GLFW_MOUSE_BUTTON_LAST] = { false };
 		glm::vec2 mousePosition;
 		glm::vec2 mouseScroll;
+
 	};
 
 	/// <summary>
@@ -70,9 +72,10 @@ namespace renderer
 		/// <summary>
 		/// this function will be called before onDraw() is called to handle inputs
 		/// </summary>
-		/// <param name="keyboardEvent"></param>
-		/// <param name="mouseEvent"></param>
-		virtual void inputProcess(const KeyboardEvent& keyboardEvent, const MouseEvent& mouseEvent) = 0;
+		/// <param name="keyboardEvent">keyboard event sent from Easy3D</param>
+		/// <param name="mouseEvent">mouse event sent from Easy3D</param>
+		/// <param name="delta_t">interval between two frames </param>
+		virtual void inputProcess(const KeyboardEvent& keyboardEvent, const MouseEvent& mouseEvent, const double& delta_t) = 0;
 
 	};
 

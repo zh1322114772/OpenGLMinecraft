@@ -1,5 +1,5 @@
 #include "Renderer.hpp"
-#include "Render_Vertices.hpp"
+
 namespace renderer
 {
 
@@ -23,9 +23,18 @@ namespace renderer
 
 	void Easy3D::mousePosChangedCallback(GLFWwindow* window, double xpos, double ypos)
 	{
-		Easy3D::mousePositionOld = Easy3D::mousePosition;
-		Easy3D::mousePosition.x = xpos;
-		Easy3D::mousePosition.y = ypos;
+		static bool firstTimeActivate = true;
+
+		if (firstTimeActivate) 
+		{
+			//first time callback, initialize mouse position old
+			mousePositionOld.x = xpos;
+			mousePositionOld.y = ypos;
+			firstTimeActivate = false;
+		}
+
+		mousePosition.x = xpos;
+		mousePosition.y = ypos;
 	}
 
 	void Easy3D::mouseStatusChangedCallback(GLFWwindow* window, int buttonID, int action, int mods)
@@ -48,8 +57,14 @@ namespace renderer
 
 	void Easy3D::keyInputCallback(GLFWwindow* window, int keyCode, int scanCode, int action, int mods)
 	{
-		keyboardEvent.keyPressed[scanCode] = action;
+		keyboardEvent.keyPressed[keyCode] = action;
 		keyboardEvent.modKey = mods;
+
+		//if esc is pressed
+		if (keyboardEvent.keyPressed[GLFW_KEY_ESCAPE]) 
+		{
+			glfwSetWindowShouldClose(windowHandle, true);
+		}
 	}
 
 	void Easy3D::mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
@@ -84,7 +99,7 @@ namespace renderer
 			void onDisable() override {}
 			void onDraw(const double& delta_t) override {}
 			void renderAreaChangedCallback(const int& newWidth, const int& newHeight) override {}
-			void inputProcess(const KeyboardEvent& keyboardEvent, const MouseEvent& mouseEvent) override {}
+			void inputProcess(const KeyboardEvent& keyboardEvent, const MouseEvent& mouseEvent, const double& delta_t) override {}
 		};
 
 
@@ -108,7 +123,7 @@ namespace renderer
 		}
 		else
 		{
-			throw Easy3DException("this id doesn't exist");
+			throw std::runtime_error("this id doesn't exist");
 		}
 	}
 
@@ -117,7 +132,7 @@ namespace renderer
 		if (Easy3D::programStatus != 1)
 		{
 			//must be status 1
-			throw Easy3DException("please call this function before Start() and after setGameWindow()");
+			throw std::runtime_error("please call this function before Start() and after setGameWindow()");
 		}
 		currentController = c;
 		controllers.push_back(c);
@@ -134,7 +149,19 @@ namespace renderer
 	{
 		mouseCenterMode = b;
 		wrapperGL::GLWrapper::setCursorCenter(windowHandle, b);
+
 	}
+
+	int Easy3D::getRenderAreaHeight() 
+	{
+		return windowHeight;
+	}
+
+	int Easy3D::getRenderAreaWidth() 
+	{
+		return windowWidth;
+	}
+
 
 	void Easy3D::start()
 	{
@@ -142,7 +169,7 @@ namespace renderer
 		if (!Easy3D::programStatus)
 		{
 			//init before start
-			throw Easy3DException("please call setGameWindow() first");
+			throw std::runtime_error("please call setGameWindow() first");
 		}
 
 		//init all controllers
@@ -171,7 +198,6 @@ namespace renderer
 			delta_t = currentTime - currentTimeOld;
 			currentTimeOld = currentTime;
 
-
 			//input process
 			if (mouseCenterMode)
 			{
@@ -181,8 +207,10 @@ namespace renderer
 			{
 				mouseEvent.mousePosition = mousePosition;
 			}
+			mousePositionOld = mousePosition;
 
-			Easy3D::currentController->inputProcess(keyboardEvent, mouseEvent);
+			//controller input process
+			Easy3D::currentController->inputProcess(keyboardEvent, mouseEvent, delta_t);
 			keyboardEvent.charInputBuffer.clear();
 
 			//draw content
@@ -202,13 +230,14 @@ namespace renderer
 			}
 
 			//show content
-			glfwSwapBuffers(windowHandle);
 			glfwPollEvents();
+			glfwSwapBuffers(windowHandle);
 		}
 
 		//call onExits
 		for (auto c = controllers.begin(); c < controllers.end(); c++)
 		{
+			(*c)->onDisable();
 			(*c)->onExit();
 			delete (*c);
 		}

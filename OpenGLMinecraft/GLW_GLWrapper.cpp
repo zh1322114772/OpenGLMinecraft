@@ -1,7 +1,6 @@
 #include "GLW_GLWrapper.hpp"
-#include "GLW_Exceptions.hpp"
-#include "stb_image.h"
-
+#include <stb_image.h>
+#include <iostream>
 namespace wrapperGL
 {
 	void GLWrapper::init(GLFWwindow*& handle, const char* windowTitle, const int& height, const int& width)
@@ -19,7 +18,7 @@ namespace wrapperGL
 
 		if (handle == NULL)
 		{
-			throw GlWrapperException("Unable to initialize GLFW");
+			throw std::runtime_error("Unable to initialize GLFW");
 		}
 
 		glfwMakeContextCurrent(handle);
@@ -27,7 +26,7 @@ namespace wrapperGL
 		//init glad
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) 
 		{
-			throw GlWrapperException("Unable to initialize GLAD");
+			throw std::runtime_error("Unable to initialize GLAD");
 		}
 
 		glViewport(0, 0, width, height);
@@ -45,8 +44,8 @@ namespace wrapperGL
 			glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 	}
-	template<int vboSize, int eboSize>
-	VAOID GLWrapper::loadVAOS(VAOList<eboSize, eboSize>& v)
+
+	VAOID GLWrapper::loadVAOS(VAOList& v)
 	{
 		VAOID ret;
 		
@@ -56,13 +55,16 @@ namespace wrapperGL
 		glGenBuffers(1, &(ret.ebo_id));
 		glGenBuffers(1, &(ret.vbo_id));
 
+		//bind VAO
+		glBindVertexArray(ret.vao_id);
+
 		//bind VBO
 		glBindBuffer(GL_ARRAY_BUFFER, ret.vbo_id);
-		glBufferData(GL_ARRAY_BUFFER, v.vbosLength * sizeof(VBO), &(v.vbos), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, v.vboLength * sizeof(VBO), v.vbos, GL_STATIC_DRAW);
 
 		//bind EBO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ret.ebo_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, v.eboLength * sizeof(unsigned int), &(v.ebos), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, v.eboLength * sizeof(unsigned int), v.ebos, GL_STATIC_DRAW);
 
 		//bind attributes
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)0); //vertex location
@@ -91,7 +93,7 @@ namespace wrapperGL
 		ImageObject ret;
 		ret.img_arr = stbi_load(path, &(ret.width), &(ret.height), &(ret.format), 0);
 
-		if (!ret.img_arr) throw GlWrapperException(("Unable to load image file: " + std::string(path)).c_str());
+		if (!ret.img_arr) throw std::runtime_error(("Unable to load image file: " + std::string(path)).c_str());
 
 		return ret;
 	}
@@ -118,14 +120,16 @@ namespace wrapperGL
 		else 
 		{
 			//unsupported format
-			throw GlWrapperException("Unsupported color format");
+			throw std::runtime_error("Unsupported color format");
 		}
+
+		ret.height = obj.height;
+		ret.width = obj.width;
 
 		//gen texture id
 		glGenTextures(1, &(ret.id));
 		//bind textures
 		glBindTexture(GL_TEXTURE_2D, ret.id);
-		glTexImage2D(GL_TEXTURE_2D, 0, ret.format, ret.width, ret.height, 0, ret.format, GL_UNSIGNED_BYTE, obj.img_arr);
 
 		//set arguments
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -133,12 +137,23 @@ namespace wrapperGL
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+		glTexImage2D(GL_TEXTURE_2D, 0, ret.format, ret.width, ret.height, 0, ret.format, GL_UNSIGNED_BYTE, obj.img_arr);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
 		return ret;
 	}
 
 	void GLWrapper::UnloadTexture(TextureID& t) 
 	{
 		glDeleteTextures(1, &(t.id));
+	}
+	
+	void GLWrapper::activeTexture(ShaderProgram* shader, TextureID& tid, const char* parameter, int texture_id)
+	{
+		shader->setInt(parameter, texture_id - GL_TEXTURE0);
+		glActiveTexture(texture_id);
+		glBindTexture(GL_TEXTURE_2D, tid.id);
+	
 	}
 
 

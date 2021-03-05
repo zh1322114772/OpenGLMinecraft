@@ -8,31 +8,10 @@
 #include "Render_Types.hpp"
 #include <stdexcept>
 #include <iostream>
+#include "Render_Vertices.hpp"
 
 namespace renderer 
 {
-	//exception for easy3D
-	class Easy3DException : public std::runtime_error
-	{
-	public:
-
-		explicit Easy3DException(std::string& msg) :runtime_error(msg)
-		{
-
-		}
-
-		explicit Easy3DException(const char* msg) :runtime_error(msg)
-		{
-
-		}
-
-		const char* what() const override
-		{
-			return "Easy3D exception";
-		}
-
-	};
-
 
 	class Easy3D 
 	{
@@ -121,6 +100,18 @@ namespace renderer
 		/// run game loop
 		/// </summary>
 		static void start();
+
+		/// <summary>
+		/// return current render area height
+		/// </summary>
+		/// <returns></returns>
+		static int getRenderAreaHeight();
+
+		/// <summary>
+		/// return current render area width
+		/// </summary>
+		/// <returns></returns>
+		static int getRenderAreaWidth();
 	};
 
 }
