@@ -64,14 +64,19 @@ namespace renderer
 		"#version 330 core\n"
 
 		"uniform sampler2D fTexture;\n"
+		"uniform float progress;\n"
 		"in vec2 fTex;\n"
 
 		"out vec4 fragColor;\n"
 
 		"void main()\n"
 		"{\n"
-//		"	fragColor = vec4(texture(fTexture, fTex).xyz, 1.0);\n"
-		"   fragColor = vec4(0.5, 1.0, 0.0, 1.0);\n"
+		"	if(fTex.y > 0.95 && fTex.x < progress)\n"
+		"	{\n"
+		"		fragColor = vec4(0.0, 0.635, 0.909, 1.0);\n"
+		"	}else{\n"
+		"		fragColor = vec4(texture(fTexture, fTex).xyz, 1.0);\n"
+		"	}\n"
 		"}\n";
 
 }

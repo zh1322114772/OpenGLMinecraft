@@ -29,9 +29,6 @@ namespace renderer
 			blockV = Vertices::cubeGenerator(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 0.0, 0.0));
 			blockVID = wrapperGL::GLWrapper::loadVAOS(*blockV);
 
-			//enable depth test
-			glEnable(GL_DEPTH_TEST);
-			
 		}
 
 
@@ -57,12 +54,14 @@ namespace renderer
 
 		void World3D::onEnable()
 		{
-
+			//enable depth test
+			glEnable(GL_DEPTH_TEST);
 		}
 
 		void World3D::onDisable()
 		{
-
+			//enable depth test
+			glDisable(GL_DEPTH_TEST);
 		}
 
 		void World3D::onDraw(const double& delta_t)

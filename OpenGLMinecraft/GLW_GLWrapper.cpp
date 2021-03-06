@@ -30,7 +30,7 @@ namespace wrapperGL
 		}
 
 		glViewport(0, 0, width, height);
-		stbi_set_flip_vertically_on_load(true);
+
 	}
 
 	void GLWrapper::setCursorCenter(GLFWwindow*& handle, bool b) 

@@ -14,8 +14,9 @@ int main(void)
 		game::config::ControllerIDs::Loading = renderer::Easy3D::addController(new renderer::controllers::Loading());
 		game::config::ControllerIDs::World3D = renderer::Easy3D::addController(new renderer::controllers::World3D());
 
+
 		//set init controller
-		renderer::Easy3D::setContorller(game::config::ControllerIDs::Loading);
+		renderer::Easy3D::setContorller(game::config::ControllerIDs::World3D);
 
 		//start!! :)
 		renderer::Easy3D::showFPS(true);

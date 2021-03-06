@@ -2,7 +2,7 @@
 #include "Render_Types.hpp"
 #include "GLW_Types.hpp"
 #include "GLW_GLShader.hpp"
-
+#include <memory>
 /// <summary>
 /// this controller load resources from disk
 /// </summary>
@@ -37,7 +37,7 @@ namespace renderer
 			/// <summary>
 			/// shader for opengl
 			/// </summary>
-			wrapperGL::ShaderProgram shader;
+			std::shared_ptr<wrapperGL::ShaderProgram> shader;
 
 		public:
 

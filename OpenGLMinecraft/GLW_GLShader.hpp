@@ -12,12 +12,6 @@ namespace wrapperGL
 	public:
 
 		/// <summary>
-		/// default constructor
-		/// </summary>
-		/// <returns></returns>
-		ShaderProgram();
-
-		/// <summary>
 		/// load GLSL code 
 		/// </summary>
 		/// <param name="vertexProgram">vertex shader code</param>

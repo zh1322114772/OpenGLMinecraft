@@ -2,17 +2,12 @@
 
 #include "GLW_GLHeaders.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#include <stdexcept>
 #include <iostream>
-
 #define paraLoc glGetUniformLocation(ID, parameter.c_str())
 
 namespace wrapperGL
 {
-	
-	ShaderProgram::ShaderProgram() 
-	{
-		ID = -1;
-	}
 
 	ShaderProgram::ShaderProgram(const char* vertexCode, const char* fragmentCode)
 	{
