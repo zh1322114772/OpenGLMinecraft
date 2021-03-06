@@ -1,6 +1,7 @@
 #pragma once
 #include "Render_Types.hpp"
 #include "GLW_Types.hpp"
+#include "GLW_GLShader.hpp"
 
 /// <summary>
 /// this controller load resources from disk
@@ -13,7 +14,30 @@ namespace renderer
 		class Loading : public Controller 
 		{
 		private:
-			wrapperGL::VAOList background;
+			/// <summary>
+			/// vao vertices in memory
+			/// </summary>
+			wrapperGL::VAOList* backgroundV;
+
+			/// <summary>
+			/// image arr in memory
+			/// </summary>
+			wrapperGL::ImageObject backgroundImg;
+
+			/// <summary>
+			/// vao vertices id 
+			/// </summary>
+			wrapperGL::VAOID backgroundVID;
+
+			/// <summary>
+			/// texture id
+			/// </summary>
+			wrapperGL::TextureID backgroundImgID;
+
+			/// <summary>
+			/// shader for opengl
+			/// </summary>
+			wrapperGL::ShaderProgram shader;
 
 		public:
 

@@ -10,13 +10,20 @@ namespace wrapperGL
 		unsigned int ID;
 
 	public:
+
+		/// <summary>
+		/// default constructor
+		/// </summary>
+		/// <returns></returns>
+		ShaderProgram();
+
 		/// <summary>
 		/// load GLSL code 
 		/// </summary>
 		/// <param name="vertexProgram">vertex shader code</param>
 		/// <param name="fragmentProgram">fragment shader code</param>
 		/// <returns></returns>
-		explicit ShaderProgram(const char* vertexCode, const char* fragmentCode);
+		ShaderProgram(const char* vertexCode, const char* fragmentCode);
 	
 		/// <summary>
 		/// use this shader program

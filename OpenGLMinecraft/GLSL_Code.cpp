@@ -48,7 +48,6 @@ namespace renderer
 
 	char GLSL::LoadingShaderCode[] =
 		"#version 330 core\n"
-
 		"layout(location = 0) in vec3 vPos;\n"
 		"layout(location = 1) in vec3 vNorm;\n"
 		"layout(location = 2) in vec2 vTex;\n"
@@ -57,8 +56,8 @@ namespace renderer
 
 		"void main()\n"
 		"{\n"
-		"gl_Position = vec4(vPos, 1.0);\n"
-		"fTex = vTex;\n"
+		"	gl_Position = vec4(vPos, 1.0);\n"
+		"	fTex = vTex;\n"
 		"}\n";
 
 	char GLSL::LoadingFragmentCode[] =
@@ -71,7 +70,8 @@ namespace renderer
 
 		"void main()\n"
 		"{\n"
-		"	fragColor = vec4(texture(fTexture, fTex).xyz, 1.0);\n"
+//		"	fragColor = vec4(texture(fTexture, fTex).xyz, 1.0);\n"
+		"   fragColor = vec4(0.5, 1.0, 0.0, 1.0);\n"
 		"}\n";
 
 }

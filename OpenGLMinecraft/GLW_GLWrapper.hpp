@@ -43,7 +43,7 @@ namespace wrapperGL
 		/// unload VAO from vram
 		/// </summary>
 		/// <param name="id">VAO object</param>
-		static void unloadVAOS(VAOID& id);
+		static void unloadVAOS(const VAOID& id);
 
 		/// <summary>
 		/// load image from disk
@@ -72,7 +72,13 @@ namespace wrapperGL
 		/// <param name="tid">TextureID object</param>
 		/// <param name="parameter">GLSL simpler2D name</param>
 		/// <param name="texture_id">bind to texture id</param>
-		static void activeTexture(ShaderProgram* shader ,TextureID& tid, const char* parameter, int texture_id);
+		static void activateTexture(ShaderProgram* shader ,const TextureID& tid, const char* parameter, int texture_id);
+
+		/// <summary>
+		/// wrapper for glDrawElement
+		/// </summary>
+		/// <param name="vid">VAOID</param>
+		static void draw(const VAOID& vid);
 
 		/// <summary>
 		/// unload texture from vram

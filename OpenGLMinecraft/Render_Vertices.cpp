@@ -1,12 +1,13 @@
 #include "Render_Vertices.hpp"
 #include <stdexcept>
+
 namespace renderer
 {
 
-	const float Vertices::rectanglePrototypeVBO[32] = { 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-													   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-														1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-														1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 };
+	const float Vertices::rectanglePrototypeVBO[32] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+													   0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+														0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+														0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 };
 
 	const unsigned int Vertices::rectanglePrototypeEBO[6] = { 0, 1, 2, 0, 2, 3 };
 
@@ -42,58 +43,43 @@ namespace renderer
 													16, 17, 18, 17, 18, 19,
 													20, 21, 22, 21, 22, 23 };
 
-	wrapperGL::VAOList Vertices::block(24, 36);
-
-	void Vertices::rectangleGenerator(wrapperGL::VAOList& ref, glm::vec2 topLeft, glm::vec2 bottomRight, glm::vec2 center) 
+	wrapperGL::VAOList* Vertices::objectGenerator(const float* protoVbo, const unsigned int* protoEbo, int vboSize, int eboSize, glm::vec3 topLeft, glm::vec3 bottomRight, glm::vec3 center) 
 	{
-		if (ref.eboLength != 6 || ref.vboLength != 4)
-		{
-			throw std::runtime_error("EBO and VBO size incorrect");
-		}
+		wrapperGL::VAOList* retData = new wrapperGL::VAOList(vboSize / sizeof(wrapperGL::VBO), eboSize);
 
-		memcpy(ref.vbos, rectanglePrototypeVBO, 32 * sizeof(float));
-		memcpy(ref.ebos, rectanglePrototypeEBO, 6 * sizeof(unsigned int));
-		glm::vec3 diff = glm::vec3(bottomRight - topLeft, 0.0);
-		glm::vec3 center_vec3 = glm::vec3(center, 0.0f);
-		for (int i = 0; i < 4; i++)
-		{
-			wrapperGL::VBO& vbo = ref.vbos[i];
-			//set size
-			vbo.pos *= diff;
-			//set center offset
-			vbo.pos -= center_vec3;
-		}
-	
-	}
+		//copy data from prototype
+		memcpy(retData->vbos, protoVbo, vboSize);
+		memcpy(retData->ebos, protoEbo, eboSize);
 
-	void Vertices::cubeGenerator(wrapperGL::VAOList& ref, glm::vec3 topLeft, glm::vec3 bottomRight, glm::vec3 center)
-	{
-		if (ref.eboLength != 36 || ref.vboLength != 24) 
-		{
-			throw std::runtime_error("EBO and VBO size incorrect");
-		}
-
-		memcpy(ref.vbos, blockPrototypeVBO, 192 * sizeof(float));
-		memcpy(ref.ebos, blockPrototypeEBO, 36 * sizeof(unsigned int));
 		glm::vec3 diff = bottomRight - topLeft;
 
-		for (int i = 0; i < 24; i++)
+		for (int i = 0; i < retData->vboLength; i++)
 		{
-			wrapperGL::VBO& vbo = ref.vbos[i];
-			//set size
+			wrapperGL::VBO& vbo = retData->vbos[i];
+
+			//set new size
 			vbo.pos *= diff;
+
 			//set center offset
 			vbo.pos -= center;
 		}
+
+		return retData;
 	}
 
-	void Vertices::load()
+	wrapperGL::VAOList* Vertices::rectangleGenerator(glm::vec2 topLeft, glm::vec2 bottomRight, glm::vec2 center) 
 	{
-		//load block vertices
-		cubeGenerator(block, glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 0.0, 0.0));
 
+		glm::vec3 topLeftVec3 = glm::vec3(topLeft, 0.0);
+		glm::vec3 bottomRightVec3 = glm::vec3(bottomRight, 0.0);
+		glm::vec3 venterVec3 = glm::vec3(center, 0.0);
+
+		return objectGenerator(rectanglePrototypeVBO, rectanglePrototypeEBO, sizeof(rectanglePrototypeVBO), sizeof(rectanglePrototypeEBO),topLeftVec3, bottomRightVec3, venterVec3);
 	}
 
-
+	wrapperGL::VAOList* Vertices::cubeGenerator(glm::vec3 topLeft, glm::vec3 bottomRight, glm::vec3 center)
+	{
+		return objectGenerator(blockPrototypeVBO, blockPrototypeEBO, sizeof(blockPrototypeVBO), sizeof(blockPrototypeEBO),topLeft, bottomRight, center);
+	}
 
 }

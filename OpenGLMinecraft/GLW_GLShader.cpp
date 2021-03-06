@@ -9,6 +9,10 @@
 namespace wrapperGL
 {
 	
+	ShaderProgram::ShaderProgram() 
+	{
+		ID = -1;
+	}
 
 	ShaderProgram::ShaderProgram(const char* vertexCode, const char* fragmentCode)
 	{

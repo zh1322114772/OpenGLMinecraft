@@ -26,7 +26,8 @@ namespace renderer
 			mousePos.y = 0.0;
 
 			//load block
-			block_id = wrapperGL::GLWrapper::loadVAOS(Vertices::block);
+			blockV = Vertices::cubeGenerator(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 0.0, 0.0));
+			blockVID = wrapperGL::GLWrapper::loadVAOS(*blockV);
 
 			//enable depth test
 			glEnable(GL_DEPTH_TEST);
@@ -79,7 +80,7 @@ namespace renderer
 
 			//draw new content
 
-			wrapperGL::GLWrapper::activeTexture(shader.get(), img_v, "fTexture", GL_TEXTURE0);
+			wrapperGL::GLWrapper::activateTexture(shader.get(), img_v, "fTexture", GL_TEXTURE0);
 
 			//draw cube
 			auto model = glm::mat4(1.0f);
@@ -89,8 +90,7 @@ namespace renderer
 			shader->setInt("modelMatSize", 1);
 			shader->setMat4("modelMat[0]", model);
 
-			glBindVertexArray(block_id.vao_id);
-			glDrawElements(GL_TRIANGLES, Vertices::block.eboLength, GL_UNSIGNED_INT, 0);
+			wrapperGL::GLWrapper::draw(blockVID);
 		}
 
 		void  World3D::renderAreaChangedCallback(const int& newWidth, const int& newHeight)

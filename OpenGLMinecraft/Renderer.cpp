@@ -108,9 +108,6 @@ namespace renderer
 
 		//set program state
 		Easy3D::programStatus = 1;
-
-		//load all vertices
-		renderer::Vertices::load();
 	}
 
 	void Easy3D::setContorller(int id)

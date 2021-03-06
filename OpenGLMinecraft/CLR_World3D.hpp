@@ -27,7 +27,8 @@ namespace renderer
 			//test purpose
 			wrapperGL::ImageObject img;
 			wrapperGL::TextureID img_v;
-			wrapperGL::VAOID block_id;
+			wrapperGL::VAOID blockVID;
+			wrapperGL::VAOList* blockV;
 
 		public:
 			World3D()

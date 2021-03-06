@@ -27,10 +27,16 @@ namespace wrapperGL
 	struct VAOList
 	{
 
-		int vboLength;
+		//element buffer object length
 		int eboLength;
 
+		//vertex buffer object length
+		int vboLength;
+
+		//vertex array
 		VBO* vbos = nullptr;
+
+		//element array
 		unsigned int* ebos = nullptr;
 
 		/// <summary>
@@ -76,6 +82,12 @@ namespace wrapperGL
 
 		//opengl buffer id
 		unsigned int ebo_id;
+
+		//element buffer object length
+		int eboLength;
+
+		//vertex buffer object length
+		int vboLength;
 	};
 
 	/**

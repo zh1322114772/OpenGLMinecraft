@@ -48,7 +48,10 @@ namespace wrapperGL
 	VAOID GLWrapper::loadVAOS(VAOList& v)
 	{
 		VAOID ret;
-		
+		//copy length
+		ret.eboLength = v.eboLength;
+		ret.vboLength = v.vboLength;
+
 		glGenVertexArrays(1, &(ret.vao_id));
 
 		//generate ebo and vbo buffers
@@ -81,7 +84,7 @@ namespace wrapperGL
 		return ret;
 	}
 
-	void GLWrapper::unloadVAOS(VAOID& v)
+	void GLWrapper::unloadVAOS(const VAOID& v)
 	{
 		glDeleteVertexArrays(1, &(v.vao_id));
 		glDeleteBuffers(1, &(v.ebo_id));
@@ -143,17 +146,22 @@ namespace wrapperGL
 		return ret;
 	}
 
+	void GLWrapper::draw(const VAOID& vid) 
+	{
+		glBindVertexArray(vid.vao_id);
+		glDrawElements(GL_TRIANGLES, vid.eboLength, GL_UNSIGNED_INT, 0);
+	}
+
 	void GLWrapper::UnloadTexture(TextureID& t) 
 	{
 		glDeleteTextures(1, &(t.id));
 	}
 	
-	void GLWrapper::activeTexture(ShaderProgram* shader, TextureID& tid, const char* parameter, int texture_id)
+	void GLWrapper::activateTexture(ShaderProgram* shader, const TextureID& tid, const char* parameter, int texture_id)
 	{
 		shader->setInt(parameter, texture_id - GL_TEXTURE0);
 		glActiveTexture(texture_id);
 		glBindTexture(GL_TEXTURE_2D, tid.id);
-	
 	}
 
 
