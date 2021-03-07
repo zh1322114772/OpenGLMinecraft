@@ -45,12 +45,12 @@ namespace wrapperGL
 		}
 	}
 
-	VAOID GLWrapper::loadVAOS(VAOList& v)
+	VAOID GLWrapper::loadVAOS(VAOList* v)
 	{
 		VAOID ret;
 		//copy length
-		ret.eboLength = v.eboLength;
-		ret.vboLength = v.vboLength;
+		ret.eboLength = v->eboLength;
+		ret.vboLength = v->vboLength;
 
 		glGenVertexArrays(1, &(ret.vao_id));
 
@@ -63,11 +63,11 @@ namespace wrapperGL
 
 		//bind VBO
 		glBindBuffer(GL_ARRAY_BUFFER, ret.vbo_id);
-		glBufferData(GL_ARRAY_BUFFER, v.vboLength * sizeof(VBO), v.vbos, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, v->vboLength * sizeof(VBO), v->vbos, GL_STATIC_DRAW);
 
 		//bind EBO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ret.ebo_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, v.eboLength * sizeof(unsigned int), v.ebos, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, v->eboLength * sizeof(unsigned int), v->ebos, GL_STATIC_DRAW);
 
 		//bind attributes
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)0); //vertex location
@@ -91,31 +91,36 @@ namespace wrapperGL
 		glDeleteBuffers(1, &(v.vbo_id));
 	}
 
-	ImageObject GLWrapper::loadImage(const char* path) 
+	ImageObject* GLWrapper::loadImage(const char* path) 
 	{
-		ImageObject ret;
-		ret.img_arr = stbi_load(path, &(ret.width), &(ret.height), &(ret.format), 0);
+		ImageObject* ret = new ImageObject();
+		ret->img_arr = stbi_load(path, &(ret->width), &(ret->height), &(ret->format), 0);
 
-		if (!ret.img_arr) throw std::runtime_error(("Unable to load image file: " + std::string(path)).c_str());
+		if (!ret->img_arr) throw std::runtime_error(("Unable to load image file: " + std::string(path)).c_str());
 
 		return ret;
 	}
 
-	void GLWrapper::freeImage(ImageObject& obj) 
+	void GLWrapper::freeImage(ImageObject* obj) 
 	{
-		stbi_image_free(obj.img_arr);
+		stbi_image_free(obj->img_arr);
 	}
 
-	TextureID GLWrapper::loadTexture(ImageObject& obj)
+	void GLWrapper::freeImage(void* p) 
+	{
+		stbi_image_free(p);
+	}
+
+	TextureID GLWrapper::loadTexture(ImageObject* obj)
 	{
 		TextureID ret;
 
-		if (obj.format == 3)
+		if (obj->format == 3)
 		{
 			//rgb color format
 			ret.format = GL_RGB;
 		}
-		else if (obj.format == 4)
+		else if (obj->format == 4)
 		{
 			//rgba color format
 			ret.format = GL_RGBA;
@@ -126,8 +131,8 @@ namespace wrapperGL
 			throw std::runtime_error("Unsupported color format");
 		}
 
-		ret.height = obj.height;
-		ret.width = obj.width;
+		ret.height = obj->height;
+		ret.width = obj->width;
 
 		//gen texture id
 		glGenTextures(1, &(ret.id));
@@ -140,7 +145,7 @@ namespace wrapperGL
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, ret.format, ret.width, ret.height, 0, ret.format, GL_UNSIGNED_BYTE, obj.img_arr);
+		glTexImage2D(GL_TEXTURE_2D, 0, ret.format, ret.width, ret.height, 0, ret.format, GL_UNSIGNED_BYTE, obj->img_arr);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		return ret;

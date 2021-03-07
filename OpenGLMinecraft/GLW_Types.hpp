@@ -66,6 +66,10 @@ namespace wrapperGL
 
 		//image height
 		int height;
+
+		ImageObject();
+
+		~ImageObject();
 	};
 
 

@@ -2,7 +2,6 @@
 #include "Render_Types.hpp"
 #include "GLW_Types.hpp"
 #include "GLW_GLShader.hpp"
-#include <memory>
 /// <summary>
 /// this controller load resources from disk
 /// </summary>
@@ -22,7 +21,7 @@ namespace renderer
 			/// <summary>
 			/// image arr in memory
 			/// </summary>
-			wrapperGL::ImageObject backgroundImg;
+			wrapperGL::ImageObject* backgroundImg;
 
 			/// <summary>
 			/// vao vertices id 
@@ -37,7 +36,27 @@ namespace renderer
 			/// <summary>
 			/// shader for opengl
 			/// </summary>
-			std::shared_ptr<wrapperGL::ShaderProgram> shader;
+			wrapperGL::ShaderProgram* shader;
+
+			/// <summary>
+			/// current total loading progress
+			/// </summary>
+			float progress;
+
+			/// <summary>
+			/// current texture loading progress adjusted 0-1
+			/// </summary>
+			float textureLoaderProgress;
+
+			/// <summary>
+			/// current texture loading progress unadjusted
+			/// </summary>
+			int textureLoaderProgressI;
+
+			/// <summary>
+			/// load textures to vram
+			/// </summary>
+			void textureLoader();
 
 		public:
 
