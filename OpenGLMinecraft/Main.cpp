@@ -8,7 +8,6 @@
 int main(void) 
 {
 
-
 	try {
 		renderer::Easy3D::setGameWidnow("Minecraft OpenGL", 1024, 768);
 

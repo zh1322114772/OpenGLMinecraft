@@ -1,6 +1,6 @@
 #pragma once
 #include "GLW_GLHeaders.hpp"
-#include <glm/glm.hpp>
+#include "GLW_GlmHeaders.hpp"
 #include <vector>
 
 namespace renderer

@@ -8,6 +8,10 @@ namespace game
 		{
 			wrapperGL::TextureID TextureIDs::IDList[CFG_TEXTURE_ID_LAST];
 
+			wrapperGL::VAOID VAOObjectList::cube;
+
+			renderer::controllers::world3D::BlockMesh* BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_LAST];
+			
 			char TextureFileNameList::idList[CFG_TEXTURE_ID_LAST][48] = {"stone.png", 
 																		"dirt.png",
 																		"cobblestone.png",

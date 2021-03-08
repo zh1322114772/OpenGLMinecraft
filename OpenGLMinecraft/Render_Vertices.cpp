@@ -45,7 +45,7 @@ namespace renderer
 
 	wrapperGL::VAOList* Vertices::objectGenerator(const float* protoVbo, const unsigned int* protoEbo, int vboSize, int eboSize, glm::vec3 topLeft, glm::vec3 bottomRight, glm::vec3 center) 
 	{
-		wrapperGL::VAOList* retData = new wrapperGL::VAOList(vboSize / sizeof(wrapperGL::VBO), eboSize);
+		wrapperGL::VAOList* retData = new wrapperGL::VAOList(vboSize / sizeof(wrapperGL::VBO), eboSize / sizeof(unsigned int));
 
 		//copy data from prototype
 		memcpy(retData->vbos, protoVbo, vboSize);

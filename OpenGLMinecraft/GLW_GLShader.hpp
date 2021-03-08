@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <glm/glm.hpp>
+#include "GLW_GlmHeaders.hpp"
 
 namespace wrapperGL
 {

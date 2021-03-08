@@ -25,8 +25,6 @@ namespace renderer
 			
 
 			//test purpose
-			wrapperGL::ImageObject* img;
-			wrapperGL::TextureID img_v;
 			wrapperGL::VAOID blockVID;
 			wrapperGL::VAOList* blockV;
 

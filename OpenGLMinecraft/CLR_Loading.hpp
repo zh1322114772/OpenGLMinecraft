@@ -56,7 +56,27 @@ namespace renderer
 			/// <summary>
 			/// load textures to vram
 			/// </summary>
-			void textureLoader();
+			inline void textureLoader();
+
+			/// <summary>
+			/// current meshblock loading progress adjusted to 0-1
+			/// </summary>
+			float meshBlockLoaderProgress;
+
+			/// <summary>
+			/// load meshblocks
+			/// </summary>
+			inline void meshBlockLoader();
+
+			/// <summary>
+			/// current vertices loading progress adjusted to 0-1
+			/// </summary>
+			float verticesLoaderProgress;
+
+			/// <summary>
+			/// load vertices
+			/// </summary>
+			inline void verticesLoader();
 
 		public:
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "GLW_Types.hpp"
+#include "CLR_World3D_Types.hpp"
 
 //texture id
 enum CFG_TEXTURE_ID
@@ -22,6 +23,24 @@ enum CFG_TEXTURE_ID
 
 #define CFG_TEXTURE_DIRECTORY "data\\textures\\blocks\\"
 
+//block mesh id
+enum CFG_BLCOKMESH_ID 
+{
+	CFG_BLOCKMESH_ID_STONE,
+	CFG_BLOCKMESH_ID_DIRT,
+	CFG_BLOCKMESH_ID_COBBLESTONE,
+	CFG_BLOCKMESH_ID_OAK_PLANKS,
+	CFG_BLOCKMESH_ID_SPRUCE_PLANKS,
+	CFG_BLOCKMESH_ID_BRICH_PLANKS,
+	CFG_BLOCKMESH_ID_JUNGLE_PLANKS,
+	CFG_BLOCKMESH_ID_ACACIA_PLANKS,
+	CFG_BLOCKMESH_ID_DARK_OAK_PLANKS,
+	CFG_BLOCKMESH_ID_BEDROCK,
+	CFG_BLOCKMESH_ID_SAND,
+
+	CFG_BLOCKMESH_ID_LAST
+};
+
 
 namespace game
 {
@@ -29,16 +48,30 @@ namespace game
 	{
 		namespace resource 
 		{
-			/// <summary>
-			/// loaded texture ids
-			/// </summary>
-
-			class TextureIDs 
+			struct VAOObjectList 
 			{
-			public:
+				static wrapperGL::VAOID cube;
+			};
+
+			/// <summary>
+			/// blockMsh id list
+			/// </summary>
+			struct BlockMeshIDs 
+			{
+				static renderer::controllers::world3D::BlockMesh* IDList[CFG_BLOCKMESH_ID_LAST];
+			};
+
+			/// <summary>
+			/// texture id list
+			/// </summary>
+			struct TextureIDs 
+			{
 				static wrapperGL::TextureID IDList[CFG_TEXTURE_ID_LAST];
 			};
 
+			/// <summary>
+			/// texture id file name list
+			/// </summary>
 			class TextureFileNameList 
 			{
 			private:

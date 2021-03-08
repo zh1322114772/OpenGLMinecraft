@@ -29,8 +29,15 @@ namespace wrapperGL
 			throw std::runtime_error("Unable to initialize GLAD");
 		}
 
-		glViewport(0, 0, width, height);
+		//ensure that graphics card supports at least 24 active textures
+		int maxTextureUnit;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnit);
+		if (maxTextureUnit < 18) 
+		{
+			throw std::runtime_error("Unsupported graphics card, minimum texture image units must be larger than 18");
+		}
 
+		glViewport(0, 0, width, height);
 	}
 
 	void GLWrapper::setCursorCenter(GLFWwindow*& handle, bool b) 

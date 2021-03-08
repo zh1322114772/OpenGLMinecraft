@@ -1,9 +1,7 @@
 #pragma once
 #include "GLW_GLWrapper.hpp"
 #include "GLW_GLShader.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "GLW_GlmHeaders.hpp"
 #include <unordered_map>
 #include "Render_Types.hpp"
 #include <stdexcept>

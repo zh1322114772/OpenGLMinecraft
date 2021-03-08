@@ -1,6 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "GLW_GlmHeaders.hpp"
 #include "GLW_GLHeaders.hpp"
 namespace wrapperGL
 {
@@ -18,6 +17,7 @@ namespace wrapperGL
 		//texture coordinates
 		glm::vec2 tex;
 		
+		VBO();
 	};
 
 	/**
@@ -92,6 +92,8 @@ namespace wrapperGL
 
 		//vertex buffer object length
 		int vboLength;
+		
+		VAOID();
 	};
 
 	/**
@@ -110,6 +112,8 @@ namespace wrapperGL
 
 		//image height
 		int height;
+
+		TextureID();
 	};
 
 

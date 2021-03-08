@@ -3,6 +3,7 @@
 #include "GLSL_Code.hpp"
 #include "GLW_GLWrapper.hpp"
 #include "Renderer.hpp"
+#include "CFG_Resources.hpp"
 
 namespace renderer
 {
@@ -11,10 +12,6 @@ namespace renderer
 		void World3D::onStart()
 		{
 			shader = std::shared_ptr<wrapperGL::ShaderProgram>(new wrapperGL::ShaderProgram(GLSL::World3DvertexShaderCode, GLSL::World3DFragmentCode));
-			//load textures
-			img = wrapperGL::GLWrapper::loadImage("data\\textures\\blocks\\cobblestone.png");
-			img_v = wrapperGL::GLWrapper::loadTexture(img);
-
 
 			//set camera and projection matrix
 			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.1f, 100.f);
@@ -27,6 +24,7 @@ namespace renderer
 
 			//load block
 			blockV = Vertices::cubeGenerator(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 0.0, 0.0));
+
 			blockVID = wrapperGL::GLWrapper::loadVAOS(blockV);
 
 		}
@@ -79,7 +77,7 @@ namespace renderer
 
 			//draw new content
 
-			wrapperGL::GLWrapper::activateTexture(shader.get(), img_v, "fTexture", GL_TEXTURE0);
+			wrapperGL::GLWrapper::activateTexture(shader.get(), game::config::resource::TextureIDs::IDList[CFG_TEXTURE_ID_BEDROCK], "fTexture", GL_TEXTURE0);
 
 			//draw cube
 			auto model = glm::mat4(1.0f);

@@ -134,6 +134,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)3rdLibs\headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,6 +161,8 @@
     <ClCompile Include="Render_Vertices.cpp" />
     <ClCompile Include="GLW_Types.hpp" />
     <ClCompile Include="CLR_World3D.cpp" />
+    <ClCompile Include="TickClock.cpp" />
+    <ClCompile Include="TickClock_Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CFG_ControllerIDs.hpp" />
@@ -168,6 +171,7 @@
     <ClInclude Include="GLSL_Code.hpp" />
     <ClInclude Include="GLW_GLHeaders.hpp" />
     <ClInclude Include="CLR_Loading.hpp" />
+    <ClInclude Include="GLW_GlmHeaders.hpp" />
     <ClInclude Include="Render_Vertices.hpp" />
     <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="GLW_GLWrapper.hpp" />
@@ -175,6 +179,8 @@
     <ClInclude Include="Render_Types.hpp" />
     <ClInclude Include="CLR_World3D.hpp" />
     <ClInclude Include="CLR_World3D_Types.hpp" />
+    <ClInclude Include="TickClock.hpp" />
+    <ClInclude Include="TickClock_Types.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

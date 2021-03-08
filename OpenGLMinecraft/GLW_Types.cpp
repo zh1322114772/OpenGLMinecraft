@@ -37,4 +37,29 @@ namespace wrapperGL
 		wrapperGL::GLWrapper::freeImage(img_arr);
 	}
 
+	VBO::VBO() 
+	{
+		pos = glm::vec3(0.0);
+		norm = glm::vec3(0.0);
+		tex = glm::vec2(0.0);
+	}
+
+	VAOID::VAOID() 
+	{
+		vao_id = -1;
+		vbo_id = -1;
+		ebo_id = -1;
+		eboLength = -1;
+		vboLength = -1;
+	}
+
+	TextureID::TextureID() 
+	{
+		id = -1;
+		format = -1;
+		width = -1;
+		height = -1;
+
+	}
+
 }

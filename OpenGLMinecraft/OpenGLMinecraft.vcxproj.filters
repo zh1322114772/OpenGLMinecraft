@@ -52,6 +52,12 @@
     <Filter Include="Source Files\Game\Config">
       <UniqueIdentifier>{39a56a8b-8cc5-415f-9a09-8ca93c315a67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Tickerable">
+      <UniqueIdentifier>{2bfa5890-c8d3-47c4-a595-e5c9f9abedb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tickerable">
+      <UniqueIdentifier>{63873aa4-bf47-4581-9050-69acc7961949}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -99,6 +105,12 @@
     <ClCompile Include="GLW_Types.cpp">
       <Filter>Source Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
+    <ClCompile Include="TickClock.cpp">
+      <Filter>Source Files\Tickerable</Filter>
+    </ClCompile>
+    <ClCompile Include="TickClock_Types.cpp">
+      <Filter>Source Files\Tickerable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLW_GLWrapper.hpp">
@@ -139,6 +151,15 @@
     </ClInclude>
     <ClInclude Include="CFG_Resources.hpp">
       <Filter>Header Files\Game\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="GLW_GlmHeaders.hpp">
+      <Filter>Header Files\Render\OpenGLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="TickClock.hpp">
+      <Filter>Header Files\Tickerable</Filter>
+    </ClInclude>
+    <ClInclude Include="TickClock_Types.hpp">
+      <Filter>Header Files\Tickerable</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
 #pragma once
 #include "GLW_GLHeaders.hpp"
 #include "GLW_GLShader.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "GLW_GlmHeaders.hpp"
 #include <vector>
 #include "GLW_Types.hpp"
 
