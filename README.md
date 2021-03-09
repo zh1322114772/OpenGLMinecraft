@@ -1,2 +1,2 @@
 # OpenGL-Minecraft
-3D Minecraft made by OpenGL
+3D Minecraft written in c++ with OpenGL
