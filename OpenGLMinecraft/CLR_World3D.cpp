@@ -9,12 +9,18 @@ namespace renderer
 {
 	namespace controllers
 	{
+		World3D::World3D(tickerable::WorldTickClock* clock)
+		{
+			tickClock = clock;
+		}
+
+
 		void World3D::onStart()
 		{
 			shader = std::shared_ptr<wrapperGL::ShaderProgram>(new wrapperGL::ShaderProgram(GLSL::World3DvertexShaderCode, GLSL::World3DFragmentCode));
 
 			//set camera and projection matrix
-			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.1f, 100.f);
+			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.5f, 100.f);
 			renderer::Easy3D::setMouseCenter(true);
 			
 			camera = world3D::Camera(glm::vec3(0.0, 0.0, 0.0));
@@ -27,6 +33,9 @@ namespace renderer
 
 			blockVID = wrapperGL::GLWrapper::loadVAOS(blockV);
 
+			//init clock clock
+			tickClock->start();
+			tickClock->pause();
 		}
 
 
@@ -47,19 +56,23 @@ namespace renderer
 
 		void World3D::onExit()
 		{
-
+			tickClock->stop();
 		}
 
 		void World3D::onEnable()
 		{
 			//enable depth test
 			glEnable(GL_DEPTH_TEST);
+
+			tickClock->resume();
 		}
 
 		void World3D::onDisable()
 		{
 			//enable depth test
 			glDisable(GL_DEPTH_TEST);
+
+			tickClock->pause();
 		}
 
 		void World3D::onDraw(const double& delta_t)
@@ -136,8 +149,9 @@ namespace renderer
 				camera.Pos += glm::cross(camera.lookAt, camera.up) * (float)delta_t;
 			}
 
-			std::cout << "  X: " << camera.Pos.x << "  Y: " << camera.Pos.y << "  Z: " << camera.Pos.z << std::endl;
-
+			//set input to world tick clock
+			tickClock->getInputGetter()->setPosition(camera.Pos.x, camera.Pos.y, camera.Pos.z);
+			tickClock->getInputGetter()->setView(camera.lookAt);
 		}
 	}
 

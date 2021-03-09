@@ -6,6 +6,8 @@
 #include "GLW_Types.hpp"
 #include <memory>
 #include <iostream>
+#include "WorldTickClock.hpp"
+
 namespace renderer
 {
 
@@ -23,17 +25,20 @@ namespace renderer
 			world3D::Camera camera;
 			glm::vec2 mousePos;
 			
+			//event updater
+			tickerable::WorldTickClock* tickClock;
 
 			//test purpose
 			wrapperGL::VAOID blockVID;
 			wrapperGL::VAOList* blockV;
 
 		public:
-			World3D()
-			{
-				
-
-			}
+			/// <summary>
+			/// constructor
+			/// </summary>
+			/// <param name="clock">tick clock to update events</param>
+			/// <returns></returns>
+			World3D(tickerable::WorldTickClock* clock);
 			
 			/// <summary>
 			/// set current camera

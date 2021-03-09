@@ -131,9 +131,8 @@ namespace renderer
 			//must be status 1
 			throw std::runtime_error("please call this function before Start() and after setGameWindow()");
 		}
-		currentController = c;
-		controllers.push_back(c);
 
+		controllers.push_back(c);
 		return controllers.size() - 1;
 	}
 

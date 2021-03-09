@@ -35,7 +35,7 @@ namespace tickerable
 		}
 		else 
 		{
-			throw std::runtime_error("Tick clock is not running, unable to suspend.");
+			throw std::runtime_error("Tick clock is not running, unable to pause.");
 		}
 	
 	}
@@ -105,14 +105,14 @@ namespace tickerable
 				//tick all tasks
 				for (auto i = taskList.begin(); i < taskList.end(); i++)
 				{
-					(*i)->Tick(delta_t);
+					(*i)->Tick(delta_t, taskList);
 				}
 				milliTime1 = (double)(duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count()) / 1000.0;
 
 				//get delta t
 				delta_t = milliTime1 - milliTime;
 
-				//sleep till desired tick time
+				//sleep till desire tick time
 				int remainTime = (int)(tick - delta_t);
 				if (remainTime > 0) 
 				{

@@ -6,7 +6,7 @@
 namespace tickerable
 {
 	/// <summary>
-	/// this clock class repeatedly invoke it's tasks
+	/// this clock class 
 	/// </summary>
 	class TickClock 
 	{

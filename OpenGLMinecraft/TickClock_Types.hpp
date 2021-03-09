@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 namespace tickerable
 {
 	/// <summary>
@@ -21,7 +23,8 @@ namespace tickerable
 		/// this function will be called on every tick
 		/// </summary>
 		/// <param name="delta_t">time intervals between two ticks</param>
-		virtual void Tick(const double& delta_t) = 0;
+		/// <param name="taskList">task list</param>
+		virtual void Tick(const double& delta_t, const std::vector<Task*>& taskList) = 0;
 	};
 
 

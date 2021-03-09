@@ -51,6 +51,11 @@ namespace game
 			struct VAOObjectList 
 			{
 				static wrapperGL::VAOID cube;
+
+				/// <summary>
+				/// load all vertices
+				/// </summary>
+				static void load();
 			};
 
 			/// <summary>
@@ -59,6 +64,11 @@ namespace game
 			struct BlockMeshIDs 
 			{
 				static renderer::controllers::world3D::BlockMesh* IDList[CFG_BLOCKMESH_ID_LAST];
+
+				/// <summary>
+				/// load all block meshes
+				/// </summary>
+				static void load();
 			};
 
 			/// <summary>

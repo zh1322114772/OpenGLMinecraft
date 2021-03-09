@@ -58,6 +58,12 @@
     <Filter Include="Header Files\Tickerable">
       <UniqueIdentifier>{63873aa4-bf47-4581-9050-69acc7961949}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Tickerable\Tasks">
+      <UniqueIdentifier>{f1b22d8c-96d0-424d-aa45-078bee22b13b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tickerable\Tasks">
+      <UniqueIdentifier>{97a6a75c-ef05-41d2-8140-6c3f0fd9cf26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -111,6 +117,15 @@
     <ClCompile Include="TickClock_Types.cpp">
       <Filter>Source Files\Tickerable</Filter>
     </ClCompile>
+    <ClCompile Include="TKB_InputGetter.cpp">
+      <Filter>Source Files\Tickerable\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTickClock.cpp">
+      <Filter>Source Files\Tickerable</Filter>
+    </ClCompile>
+    <ClCompile Include="TKB_ChunkLoader.cpp">
+      <Filter>Source Files\Tickerable\Tasks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLW_GLWrapper.hpp">
@@ -160,6 +175,18 @@
     </ClInclude>
     <ClInclude Include="TickClock_Types.hpp">
       <Filter>Header Files\Tickerable</Filter>
+    </ClInclude>
+    <ClInclude Include="TKB_InputGetter.hpp">
+      <Filter>Header Files\Tickerable\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTickClock.hpp">
+      <Filter>Header Files\Tickerable</Filter>
+    </ClInclude>
+    <ClInclude Include="TKB_ChunkLoader.hpp">
+      <Filter>Header Files\Tickerable\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="CFG_Blocks.hpp">
+      <Filter>Header Files\Game\Config</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

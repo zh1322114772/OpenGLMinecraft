@@ -163,8 +163,12 @@
     <ClCompile Include="CLR_World3D.cpp" />
     <ClCompile Include="TickClock.cpp" />
     <ClCompile Include="TickClock_Types.cpp" />
+    <ClCompile Include="TKB_ChunkLoader.cpp" />
+    <ClCompile Include="TKB_InputGetter.cpp" />
+    <ClCompile Include="WorldTickClock.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CFG_Blocks.hpp" />
     <ClInclude Include="CFG_ControllerIDs.hpp" />
     <ClInclude Include="CFG_GlobalVars.hpp" />
     <ClInclude Include="CFG_Resources.hpp" />
@@ -181,6 +185,9 @@
     <ClInclude Include="CLR_World3D_Types.hpp" />
     <ClInclude Include="TickClock.hpp" />
     <ClInclude Include="TickClock_Types.hpp" />
+    <ClInclude Include="TKB_ChunkLoader.hpp" />
+    <ClInclude Include="TKB_InputGetter.hpp" />
+    <ClInclude Include="WorldTickClock.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
