@@ -32,6 +32,23 @@ namespace renderer
 			wrapperGL::VAOID blockVID;
 			wrapperGL::VAOList* blockV;
 
+			/// <summary>
+			/// draw single block
+			/// </summary>
+			/// <param name="m">blockMesh</param>
+			inline void blockDrawer(renderer::controllers::world3D::BlockMesh* m);
+
+			/// <summary>
+			/// draw single chunk
+			/// </summary>
+			/// <param name="chunk"></param>
+			inline void chunkDrawer(tickerable::tasks::chunkLoaderTypes::Chunk* chunk);
+
+			/// <summary>
+			/// draw chunks
+			/// </summary>
+			inline void terrainDrawer();
+
 		public:
 			/// <summary>
 			/// constructor

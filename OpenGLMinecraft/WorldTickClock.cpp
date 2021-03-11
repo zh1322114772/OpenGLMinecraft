@@ -8,13 +8,18 @@ namespace tickerable
 		inputGetter = new tasks::InputGetter();
 		addTask(inputGetter);
 
-		chunkLoader = new tasks::ChunkLoader(16);
+		chunkLoader = new tasks::ChunkLoader(10);
 		addTask(chunkLoader);
 	}
 
 	tasks::InputGetter* WorldTickClock::getInputGetter() 
 	{
 		return inputGetter;
+	}
+
+	tasks::ChunkLoader* WorldTickClock::getChunkLoader() 
+	{
+		return chunkLoader;
 	}
 
 	WorldTickClock::~WorldTickClock() 

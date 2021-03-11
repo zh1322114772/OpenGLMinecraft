@@ -1,32 +1,36 @@
 #pragma once
 #include "CFG_BLOCKS.hpp"
-#include <atomic>
 #include "TickClock_Types.hpp"
 #include <queue>
 #include <limits>
+
+#define MAX_RADIUS 64
+
 namespace tickerable
 {
 	namespace tasks
 	{
 		namespace chunkLoaderTypes 
 		{
+
 			struct Chunk 
 			{
+
+				/// <summary>
+				/// if chunk is in active list
+				/// </summary>
+				bool isActive = false;
+
 				/// <summary>
 				/// chunk world location
 				/// </summary>
 				long long locationX = LLONG_MAX, locationY = LLONG_MAX;
 
 				/// <summary>
-				/// current chunk status 
-				/// </summary>
-				std::atomic<bool> isLoading = true;
-
-				/// <summary>
 				/// chunk data y, x, z
 				/// </summary>
 				game::config::blocks::Block blocks[256][16][16];
-				
+
 			};
 		
 		}
@@ -43,7 +47,7 @@ namespace tickerable
 			/// <summary>
 			/// in use chunks
 			/// </summary>
-			std::vector<chunkLoaderTypes::Chunk*> ativeList;
+			std::vector<chunkLoaderTypes::Chunk*> activeChunkList;
 
 			/// <summary>
 			/// recycled chunks
@@ -51,14 +55,24 @@ namespace tickerable
 			std::queue<chunkLoaderTypes::Chunk*> recycleList;
 
 			/// <summary>
-			/// maximum radius of 64, used to check if a chunk should be loaded or recycled
-			/// </summary>
-			bool chunkRegionMask[129][129] = {false};
-
-			/// <summary>
 			/// total chunks
 			/// </summary>
 			int chunkListSize;
+
+			/// <summary>
+			/// template that represents where the chunk should be loaded and recycled
+			/// </summary>
+			bool chunkLoadRegion[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
+
+			/// <summary>
+			/// mask that represents where the loaded chunks are located at
+			/// </summary>
+			bool chunkLoadedMask[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
+
+			/// <summary>
+			/// boundaries of chunkLoadRegion template
+			/// </summary>
+			unsigned short int leftTop, rightBottom;
 
 			/// <summary>
 			/// generate terrain in chunk
@@ -77,6 +91,18 @@ namespace tickerable
 			ChunkLoader(const int v);
 
 			~ChunkLoader();
+
+			/// <summary>
+			/// get chunk list
+			/// </summary>
+			/// <returns></returns>
+			chunkLoaderTypes::Chunk** getChunkList();
+
+			/// <summary>
+			/// size of chunk list
+			/// </summary>
+			/// <returns></returns>
+			int getChunkListSize();
 
 			void onEnable() override;
 

@@ -17,6 +17,9 @@ namespace wrapperGL
 		//texture coordinates
 		glm::vec2 tex;
 		
+		//face
+		float face;
+
 		VBO();
 	};
 

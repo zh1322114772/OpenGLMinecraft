@@ -7,10 +7,12 @@ namespace renderer
 		"layout(location = 0) in vec3 vPos;\n"
 		"layout(location = 1) in vec3 vNorm;\n"
 		"layout(location = 2) in vec2 vTex;\n"
+		"layout(location = 3) in float vFace;\n"
 
 		"out vec3 fPos;\n"
 		"out vec3 fNorm;\n"
 		"out vec2 fTex;\n"
+		"out float fFace;\n"
 
 		"uniform mat4 modelMat[48];\n"
 		"uniform int modelMatSize;\n"
@@ -29,28 +31,41 @@ namespace renderer
 		"fPos = worldPos.xyz;\n"
 		"fNorm = normalize(vNorm);\n"
 		"fTex = vTex;\n"
+		"fFace = vFace;\n"
 		"}\n";
 
-	char GLSL::World3DFragmentCode[] =
+	char GLSL::World3DWorldFragmentCode[] =
 		"#version 330 core\n"
 
-		"uniform sampler2D fTexture;\n"
 		"in vec3 fPos;\n"
 		"in vec3 fNorm;\n"
 		"in vec2 fTex;\n"
+		"in float fFace;\n"
+
+		"struct TextureFace\n"
+		"{\n"
+		"	sampler2D fTexture;\n"
+		"	sampler2D fTextureOS;\n"
+		"	sampler2D fTextureN;\n"
+		"	bool hasOsTexture;\n"
+		"	bool hasNTexture;\n"
+		"};\n"
+
+		"uniform TextureFace faces[6];\n"
 
 		"out vec4 fragColor;\n"
 
 		"void main()\n"
 		"{\n"
-		"	fragColor = vec4(texture(fTexture, fTex).xyz, 1.0);\n"
-		"}\n";
+		"	fragColor = vec4(texture(faces[int(fFace)].fTexture, fTex).xyz, 1.0);\n"
+		"};\n";
 
 	char GLSL::LoadingShaderCode[] =
 		"#version 330 core\n"
 		"layout(location = 0) in vec3 vPos;\n"
 		"layout(location = 1) in vec3 vNorm;\n"
 		"layout(location = 2) in vec2 vTex;\n"
+		"layout(location = 3) in float vFace;\n"
 
 		"out vec2 fTex;\n"
 

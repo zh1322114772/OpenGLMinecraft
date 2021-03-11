@@ -9,11 +9,11 @@ namespace renderer
 	{
 	private:
 		//block vertices prototype
-		const static float blockPrototypeVBO[192];
+		const static float blockPrototypeVBO[216];
 		const static unsigned int blockPrototypeEBO[36];
 
 		//rectangle vertices prototype
-		const static float rectanglePrototypeVBO[32];
+		const static float rectanglePrototypeVBO[36];
 		const static unsigned int rectanglePrototypeEBO[6];
 
 		/// <summary>

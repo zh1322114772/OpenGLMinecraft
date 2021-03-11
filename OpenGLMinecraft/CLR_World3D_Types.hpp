@@ -99,7 +99,7 @@ namespace renderer
 				/// <summary>
 				/// vao id
 				/// </summary>
-				unsigned int VAOID;
+				wrapperGL::VAOID VAOID;
 
 				/// <summary>
 				/// the face that's pointing at (0, 0, 1) direction

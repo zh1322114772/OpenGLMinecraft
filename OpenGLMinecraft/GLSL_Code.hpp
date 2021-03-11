@@ -9,7 +9,7 @@ namespace renderer
 	struct GLSL 
 	{
 		static char World3DvertexShaderCode[];
-		static char World3DFragmentCode[];
+		static char World3DWorldFragmentCode[];
 		static char LoadingShaderCode[];
 		static char LoadingFragmentCode[];
 	};

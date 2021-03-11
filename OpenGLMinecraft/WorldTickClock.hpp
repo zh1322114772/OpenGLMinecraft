@@ -38,6 +38,11 @@ namespace tickerable
 		/// <returns></returns>
 		tasks::InputGetter* getInputGetter();
 
+		/// <summary>
+		/// get chunk loader pointer
+		/// </summary>
+		/// <returns></returns>
+		tasks::ChunkLoader* getChunkLoader();
 	};
 
 

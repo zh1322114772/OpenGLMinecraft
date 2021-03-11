@@ -80,6 +80,15 @@ namespace wrapperGL
 		static void activateTexture(ShaderProgram* shader ,const TextureID& tid, const char* parameter, int texture_id);
 
 		/// <summary>
+		/// to bind a texture to simpler2D
+		/// </summary>
+		/// <param name="shader">current shader program</param>
+		/// <param name="uid">gl texture id</param>
+		/// <param name="parameter">GLSL simpler2D name</param>
+		/// <param name="texture_id">bind to texture id</param>
+		static void activateTexture(ShaderProgram* shader, unsigned int uid, const char* parameter, int texture_id);
+
+		/// <summary>
 		/// wrapper for glDrawElement
 		/// </summary>
 		/// <param name="vid">VAOID</param>

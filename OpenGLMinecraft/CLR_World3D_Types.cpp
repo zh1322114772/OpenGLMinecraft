@@ -65,14 +65,14 @@ namespace renderer
 				singleFrameHeight = frameHeight;
 			}
 
-			BlockMesh::BlockMesh(TextureBundle& fa, TextureBundle& fb, TextureBundle& fc, TextureBundle& fd, TextureBundle& fe, TextureBundle& ff, wrapperGL::VAOID& vao):faceA(fa), faceB(fb), faceC(fc), faceD(fd), faceE(fe), faceF(ff)
+			BlockMesh::BlockMesh(TextureBundle& fa, TextureBundle& fb, TextureBundle& fc, TextureBundle& fd, TextureBundle& fe, TextureBundle& ff, wrapperGL::VAOID& vao):faceA(fa), faceB(fb), faceC(fc), faceD(fd), faceE(fe), faceF(ff), VAOID(vao)
 			{
-				VAOID = vao.vao_id;
+
 			}
 
-			BlockMesh::BlockMesh(TextureBundle& f, wrapperGL::VAOID& vao) : faceA(f), faceB(f), faceC(f), faceD(f), faceE(f), faceF(f)
+			BlockMesh::BlockMesh(TextureBundle& f, wrapperGL::VAOID& vao) : faceA(f), faceB(f), faceC(f), faceD(f), faceE(f), faceF(f), VAOID(vao)
 			{
-				VAOID = vao.vao_id;
+
 			}
 		}
 	}

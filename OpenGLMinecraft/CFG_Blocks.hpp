@@ -11,6 +11,8 @@ namespace game
 			{
 				CFG_BLCOKMESH_ID blockID;
 
+				bool hide = false;
+
 				Block(CFG_BLCOKMESH_ID id) : blockID(id)
 				{
 
@@ -23,6 +25,15 @@ namespace game
 			};
 
 			//define some blocks
+			struct AirBlock : public Block 
+			{
+				AirBlock() :Block(CFG_BLOCKMESH_ID_AIR) 
+				{
+				
+				}
+			};
+
+
 			struct DirtBlock : public Block
 			{
 				DirtBlock() :Block(CFG_BLOCKMESH_ID_DIRT)

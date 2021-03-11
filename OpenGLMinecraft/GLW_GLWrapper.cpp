@@ -29,12 +29,18 @@ namespace wrapperGL
 			throw std::runtime_error("Unable to initialize GLAD");
 		}
 
-		//ensure that graphics card supports at least 24 active textures
-		int maxTextureUnit;
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnit);
-		if (maxTextureUnit < 18) 
+		//ensure that graphics card supports at least 18 active textures
+		int argv;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &argv);
+		if (argv < 18)
 		{
 			throw std::runtime_error("Unsupported graphics card, minimum texture image units must be larger than 18");
+		}
+
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &argv);
+		if (argv < 8192) 
+		{
+			throw std::runtime_error("Unsupported graphics card, maximum texture szie must be larger than 8192");
 		}
 
 		glViewport(0, 0, width, height);
@@ -80,11 +86,13 @@ namespace wrapperGL
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)0); //vertex location
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)offsetof(VBO, norm)); //normal direction
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)offsetof(VBO, tex)); //coordinates
+		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)offsetof(VBO, face)); //face
 
 		//enable attributes
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
 
 		glBindVertexArray(0);
 
@@ -171,10 +179,14 @@ namespace wrapperGL
 	
 	void GLWrapper::activateTexture(ShaderProgram* shader, const TextureID& tid, const char* parameter, int texture_id)
 	{
-		shader->setInt(parameter, texture_id - GL_TEXTURE0);
-		glActiveTexture(texture_id);
-		glBindTexture(GL_TEXTURE_2D, tid.id);
+		activateTexture(shader, tid.id, parameter, texture_id);
 	}
 
+	void GLWrapper::activateTexture(ShaderProgram* shader, unsigned int uid, const char* parameter, int texture_id) 
+	{
+		shader->setInt(parameter, texture_id - GL_TEXTURE0);
+		glActiveTexture(texture_id);
+		glBindTexture(GL_TEXTURE_2D, uid);
+	}
 
 }
