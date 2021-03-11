@@ -1,5 +1,6 @@
 # OpenGL-Minecraft
 3D Minecraft written in c++ with OpenGL
 
-# current progress 3/11/2021
+# progress
+3/11/2021
 ![screenshots](sc3112021.bmp)
