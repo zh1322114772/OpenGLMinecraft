@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BitMapProcess.cpp" />
     <ClCompile Include="CFG_ControllerIDs.cpp" />
     <ClCompile Include="CFG_GlobalVars.cpp" />
     <ClCompile Include="CFG_Resources.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="WorldTickClock.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BitMapProcess.hpp" />
     <ClInclude Include="CFG_Blocks.hpp" />
     <ClInclude Include="CFG_ControllerIDs.hpp" />
     <ClInclude Include="CFG_GlobalVars.hpp" />

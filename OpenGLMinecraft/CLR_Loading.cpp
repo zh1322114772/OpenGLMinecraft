@@ -7,6 +7,7 @@
 #include "CFG_Resources.hpp"
 #include "Renderer.hpp"
 #include "CFG_ControllerIDs.hpp"
+#include "BitMapProcess.hpp"
 
 namespace renderer
 {

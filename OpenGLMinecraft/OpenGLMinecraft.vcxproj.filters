@@ -64,6 +64,12 @@
     <Filter Include="Source Files\Tickerable\Tasks">
       <UniqueIdentifier>{97a6a75c-ef05-41d2-8140-6c3f0fd9cf26}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\3rd">
+      <UniqueIdentifier>{ad74e688-b888-452e-82d0-4ac20c07f628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rd">
+      <UniqueIdentifier>{7811c44b-f9eb-4ff5-8642-0784c225df16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -126,6 +132,9 @@
     <ClCompile Include="TKB_ChunkLoader.cpp">
       <Filter>Source Files\Tickerable\Tasks</Filter>
     </ClCompile>
+    <ClCompile Include="BitMapProcess.cpp">
+      <Filter>Source Files\3rd</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLW_GLWrapper.hpp">
@@ -187,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="CFG_Blocks.hpp">
       <Filter>Header Files\Game\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="BitMapProcess.hpp">
+      <Filter>Header Files\3rd</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
