@@ -35,10 +35,10 @@ namespace other
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		static wrapperGL::ImageObject* RGB2RGBA(wrapperGL::ImageObject* i);
+		static wrapperGL::ImageObject* rgb2rgba(wrapperGL::ImageObject* i);
 
 		/// <summary>
-		/// select specific image channel from multiple srouces and combine to single RGBA image
+		/// select specific image channel from multiple srouces and combine it into a single RGBA image
 		/// ensure that all sources have same size
 		/// </summary>
 		/// <param name="sourceA">source a </param>
@@ -50,6 +50,6 @@ namespace other
 		/// <param name="sourceD">source D</param>
 		/// <param name="channelD">specific channel from sourceD</param>
 		/// <returns></returns>
-		static wrapperGL::ImageObject* ChannelMerge(wrapperGL::ImageObject* sourceA, char channelA, wrapperGL::ImageObject* sourceB, char channelB, wrapperGL::ImageObject* sourceC, char channelC, wrapperGL::ImageObject* sourceD, char channelD);
+		static wrapperGL::ImageObject* channelMerge(wrapperGL::ImageObject* sourceA, char channelA, wrapperGL::ImageObject* sourceB, char channelB, wrapperGL::ImageObject* sourceC, char channelC, wrapperGL::ImageObject* sourceD, char channelD);
 	};
 }

@@ -78,7 +78,7 @@ namespace other
 		return res;
 	}
 
-	wrapperGL::ImageObject* BitMapProcess::RGB2RGBA(wrapperGL::ImageObject* i) 
+	wrapperGL::ImageObject* BitMapProcess::rgb2rgba(wrapperGL::ImageObject* i) 
 	{
 		if (i->format != 3) 
 		{
@@ -102,7 +102,7 @@ namespace other
 		return ret;
 	}
 
-	wrapperGL::ImageObject* BitMapProcess::ChannelMerge(wrapperGL::ImageObject* sourceA, char channelA, wrapperGL::ImageObject* sourceB, char channelB, wrapperGL::ImageObject* sourceC, char channelC, wrapperGL::ImageObject* sourceD, char channelD) 
+	wrapperGL::ImageObject* BitMapProcess::channelMerge(wrapperGL::ImageObject* sourceA, char channelA, wrapperGL::ImageObject* sourceB, char channelB, wrapperGL::ImageObject* sourceC, char channelC, wrapperGL::ImageObject* sourceD, char channelD) 
 	{
 		if (sourceA == nullptr) 
 		{
