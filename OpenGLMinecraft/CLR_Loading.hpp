@@ -2,6 +2,7 @@
 #include "Render_Types.hpp"
 #include "GLW_Types.hpp"
 #include "GLW_GLShader.hpp"
+#include <tuple>
 /// <summary>
 /// this controller load resources from disk
 /// </summary>
@@ -57,6 +58,18 @@ namespace renderer
 			/// load textures to vram
 			/// </summary>
 			inline void textureLoader();
+			
+			/// <summary>
+			/// load texture, normal, specular and occlusion maps
+			/// </summary>
+			/// <param name="fileName">texture file name</param>
+			/// <returns>return nullptr if bitmap does not exists</returns>
+			inline std::tuple<wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*> loadBitMaps(const char* fileName);
+
+			/// <summary>
+			/// load multiple textures and combine it into one
+			/// </summary>
+			inline wrapperGL::ImageObject* makeTexture(const char* fileName);
 
 			/// <summary>
 			/// current meshblock loading progress adjusted to 0-1

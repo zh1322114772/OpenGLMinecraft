@@ -8,6 +8,7 @@
 #include "Renderer.hpp"
 #include "CFG_ControllerIDs.hpp"
 #include "BitMapProcess.hpp"
+#include <string>
 
 namespace renderer
 {
@@ -65,13 +66,131 @@ namespace renderer
 		{
 		
 		}
+	
+		std::tuple<wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*> Loading::loadBitMaps(const char* fileName) 
+		{
+			//construct file name
+			std::string tName = fileName;
+			std::string tPng = ".png";
+			std::string tNormal = "_n";
+			std::string tSpecular = "_s";
+			std::string tOcclusion = "_o";
+
+			using namespace wrapperGL;
+
+			ImageObject* img;
+			ImageObject* imgN;
+			ImageObject* imgO;
+			ImageObject* imgS;
+
+			//load texture
+			try 
+			{
+				img = GLWrapper::loadImage((tName + tPng).c_str());
+			}
+			catch (const std::exception& e) 
+			{
+				//if the texture is not exist, then it makes no sense to load other maps
+				//so, just return 
+				return std::make_tuple(nullptr, nullptr, nullptr, nullptr);
+			}
+
+			//load normal map
+			try 
+			{
+				imgN = GLWrapper::loadImage((tName + tNormal + tPng).c_str());
+			}
+			catch (const std::exception& e) 
+			{
+				imgN = nullptr;
+			}
+
+			//load specular map
+			try 
+			{
+				imgS = GLWrapper::loadImage((tName + tSpecular + tPng).c_str());
+			}
+			catch (const std::exception& e)
+			{
+				imgS = nullptr;
+			}
+
+			//load occlusion
+			try 
+			{
+				imgO = GLWrapper::loadImage((tName + tOcclusion + tPng).c_str());
+			}
+			catch (const std::exception& e) 
+			{
+				imgO = nullptr;
+			}
+
+			return std::make_tuple(img, imgN, imgS, imgO);
+		}
+
+		wrapperGL::ImageObject* Loading::makeTexture(const char* fileName)
+		{
+			auto [img, imgN, imgS, imgO] = loadBitMaps(fileName);
+
+			//if this block has a uniform texture
+			if (img) 
+			{
+				//normal maps for different directions
+				//nullptr for now, will be implemented later...
+				wrapperGL::ImageObject* imgNRight = nullptr;
+				wrapperGL::ImageObject* imgNBack = nullptr;
+				wrapperGL::ImageObject* imgNLeft = nullptr;
+				wrapperGL::ImageObject* imgNTop = nullptr;
+				wrapperGL::ImageObject* imgNBottom = nullptr;
+
+				//merge occlusion nad specular map together
+				wrapperGL::ImageObject* mapOS = nullptr;
+				if (imgS && imgO) 
+				{
+					//merge six 6 specular and 6 occlusion maps into 3 rgba maps
+					mapOS = other::BitMapProcess::channelMerge(imgS, 0, imgO, 0, imgS, 0, imgO, 0);
+				}
+
+				//merge all bit maps into one
+				auto ret = other::BitMapProcess::merge({ other::At(img, 0, 0),
+													other::At(img, img->width, 0),
+													other::At(img, img->width * 2, 0),
+													other::At(img, img->width * 3, 0),
+													other::At(img, img->width * 4, 0),
+													other::At(img, img->width * 5, 0),
+													other::At(imgN, img->width * 6, 0),
+													other::At(imgNRight, img->width * 7, 0),
+													other::At(imgNBack, img->width * 8, 0),
+													other::At(imgNLeft, img->width * 9, 0),
+													other::At(imgNTop, img->width * 10, 0),
+													other::At(imgNBottom, img->width * 11, 0),
+													other::At(mapOS, img->width * 12, 0),
+													other::At(mapOS, img->width * 13, 0),
+													other::At(mapOS, img->width * 14, 0) });
+
+				//clean up
+				delete img;
+				delete imgN;
+				delete imgO;
+				delete imgS;
+				delete imgNRight;
+				delete imgNBack;
+				delete imgNLeft;
+				delete imgNTop;
+				delete imgNBottom;
+				delete mapOS;
+
+				return ret;
+			}
+		
+		}
 
 		void Loading::textureLoader() 
 		{
 			if (textureLoaderProgressI < CFG_TEXTURE_ID_LAST) 
 			{
 				//more textures need to be loaded
-				wrapperGL::ImageObject* imgObj = wrapperGL::GLWrapper::loadImage(game::config::resource::TextureFileNameList::getName((CFG_TEXTURE_ID)textureLoaderProgressI).c_str());
+				wrapperGL::ImageObject* imgObj = makeTexture(game::config::resource::TextureFileNameList::getName((CFG_TEXTURE_ID)textureLoaderProgressI).c_str());
 				game::config::resource::TextureIDs::IDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgObj);
 				
 				//free imgObj

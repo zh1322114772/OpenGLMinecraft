@@ -29,14 +29,8 @@ namespace wrapperGL
 			throw std::runtime_error("Unable to initialize GLAD");
 		}
 
-		//ensure that graphics card supports at least 18 active textures
+		//ensure that graphics card supports 8192*8192 texture
 		int argv;
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &argv);
-		if (argv < 18)
-		{
-			throw std::runtime_error("Unsupported graphics card, minimum texture image units must be larger than 18");
-		}
-
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &argv);
 		if (argv < 8192) 
 		{
@@ -87,12 +81,14 @@ namespace wrapperGL
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)offsetof(VBO, norm)); //normal direction
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)offsetof(VBO, tex)); //coordinates
 		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)offsetof(VBO, face)); //face
+		glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(VBO), (void*)offsetof(VBO, extra)); //extra attribute
 
 		//enable attributes
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(4);
 
 		glBindVertexArray(0);
 
@@ -157,8 +153,8 @@ namespace wrapperGL
 		//set arguments
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, ret.format, ret.width, ret.height, 0, ret.format, GL_UNSIGNED_BYTE, obj->img_arr);
 		glGenerateMipmap(GL_TEXTURE_2D);

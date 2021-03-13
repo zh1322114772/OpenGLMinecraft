@@ -51,5 +51,14 @@ namespace other
 		/// <param name="channelD">specific channel from sourceD</param>
 		/// <returns></returns>
 		static wrapperGL::ImageObject* channelMerge(wrapperGL::ImageObject* sourceA, char channelA, wrapperGL::ImageObject* sourceB, char channelB, wrapperGL::ImageObject* sourceC, char channelC, wrapperGL::ImageObject* sourceD, char channelD);
+
+		/// <summary>
+		/// copy image
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns></returns>
+		static wrapperGL::ImageObject* copy(wrapperGL::ImageObject* s);
+
+
 	};
 }

@@ -154,7 +154,7 @@ namespace tickerable
 						{
 							chunk->blocks[h][w][l] = game::config::blocks::AirBlock();
 							//hide air block
-							chunk->blocks[h][w][l].hide = true;
+							chunk->hide[h][w][l] = true;
 						}
 					}
 				}
@@ -165,7 +165,7 @@ namespace tickerable
 						for (int l = 0; l < 16; l++)
 						{
 							chunk->blocks[h][w][l] = game::config::blocks::DirtBlock();
-							chunk->blocks[h][w][l].hide = false;
+							chunk->hide[h][w][l] = false;
 						}
 					}
 				
@@ -189,7 +189,7 @@ namespace tickerable
 							(chunk->blocks[h][w][l + 1].blockID != CFG_BLOCKMESH_ID_AIR) &&
 							(chunk->blocks[h][w][l - 1].blockID != CFG_BLOCKMESH_ID_AIR)) 
 						{
-							chunk->blocks[h][w][l].hide = true;
+							chunk->hide[h][w][l] = true;
 						}
 
 					}
@@ -203,12 +203,12 @@ namespace tickerable
 				{
 					if ((chunk->blocks[h + 1][w][0].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][w][0].blockID != CFG_BLOCKMESH_ID_AIR)) 
 					{
-						chunk->blocks[h][w][0].hide = true;
+						chunk->hide[h][w][0] = true;
 					}
 
 					if ((chunk->blocks[h + 1][w][15].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][w][15].blockID != CFG_BLOCKMESH_ID_AIR))
 					{
-						chunk->blocks[h][w][15].hide = true;
+						chunk->hide[h][w][15] = true;
 					}
 				}
 
@@ -216,16 +216,39 @@ namespace tickerable
 				{
 					if ((chunk->blocks[h + 1][0][l].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][0][l].blockID != CFG_BLOCKMESH_ID_AIR))
 					{
-						chunk->blocks[h][0][l].hide = true;
+						chunk->hide[h][0][l] = true;
 					}
 
 					if ((chunk->blocks[h + 1][15][l].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][15][l].blockID != CFG_BLOCKMESH_ID_AIR))
 					{
-						chunk->blocks[h][15][l].hide = true;
+						chunk->hide[h][15][l] = true;
 					}	
 				}
 			}
 
+			//set hide strip and hide slice
+
+			for (int h = 0; h < 255; h++)
+			{
+				bool emptySlice = true;
+				for (int w = 0; w < 16; w++)
+				{
+					bool emptyStrip = true;
+					for (int l = 0; l < 16; l++)
+					{
+						if (!chunk->hide[h][w][l]) 
+						{
+							emptyStrip = false;
+							emptySlice = false;
+							break;
+						}
+					}
+
+					chunk->hideStrip[h][w] = emptyStrip;
+				}
+
+				chunk->hideSlice[h] = emptySlice;
+			}
 
 			//set in active list
 			chunk->isActive = true;

@@ -43,6 +43,7 @@ namespace wrapperGL
 		norm = glm::vec3(0.0);
 		tex = glm::vec2(0.0);
 		face = 0.0;
+		extra = 0.0;
 	}
 
 	VAOID::VAOID() 

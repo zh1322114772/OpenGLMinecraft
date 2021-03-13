@@ -42,22 +42,20 @@ namespace renderer
 		"in vec2 fTex;\n"
 		"in float fFace;\n"
 
-		"struct TextureFace\n"
-		"{\n"
-		"	sampler2D fTexture;\n"
-		"	sampler2D fTextureOS;\n"
-		"	sampler2D fTextureN;\n"
-		"	bool hasOsTexture;\n"
-		"	bool hasNTexture;\n"
-		"};\n"
-
-		"uniform TextureFace faces[6];\n"
+		"uniform sampler2D fTexture;\n"
 
 		"out vec4 fragColor;\n"
 
+		"vec2 getTextureCoords(vec2 org, float face)\n"
+		"{\n"
+		"	float x = ((face + org.x)/ 15.0);\n"
+		"	float y = org.y;\n"
+		"	return vec2(x, y);\n"
+		"};\n"
+
 		"void main()\n"
 		"{\n"
-		"	fragColor = vec4(texture(faces[int(fFace)].fTexture, fTex).xyz, 1.0);\n"
+		"	fragColor = vec4(texture(fTexture, getTextureCoords(fTex, fFace)).xyz, 1.0);\n"
 		"};\n";
 
 	char GLSL::LoadingShaderCode[] =

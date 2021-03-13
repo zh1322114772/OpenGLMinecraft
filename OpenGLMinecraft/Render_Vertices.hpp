@@ -9,11 +9,11 @@ namespace renderer
 	{
 	private:
 		//block vertices prototype
-		const static float blockPrototypeVBO[216];
+		const static float blockPrototypeVBO[240];
 		const static unsigned int blockPrototypeEBO[36];
 
 		//rectangle vertices prototype
-		const static float rectanglePrototypeVBO[36];
+		const static float rectanglePrototypeVBO[40];
 		const static unsigned int rectanglePrototypeEBO[6];
 
 		/// <summary>
@@ -50,6 +50,15 @@ namespace renderer
 		/// <returns>VAOList object</returns>
 		static wrapperGL::VAOList* rectangleGenerator(glm::vec2 topLeft, glm::vec2 bottomRight, glm::vec2 center);
 
+		/// <summary>
+		/// generate a VAOLIST for cubes
+		/// </summary>
+		/// <param name="x">numbers of x cubes</param>
+		/// <param name="y">numbers of y cubes</param>
+		/// <param name="z">numbers of z cubes</param>
+		/// <param name="center">cube offsets</param>
+		/// <returns></returns>
+		static wrapperGL::VAOList* cubesGenerator(int x, int y, int z, glm::vec3 center);
 	};
 
 

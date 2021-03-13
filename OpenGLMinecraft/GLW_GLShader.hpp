@@ -32,6 +32,14 @@ namespace wrapperGL
 		void setBool(const std::string& parameter, bool val) const;
 
 		/// <summary>
+		/// set uniform boolean array to GLSL program
+		/// </summary>
+		/// <param name="parameter">GLSL parameter</param>
+		/// <param name="valArr"> boolean array</param>
+		/// <param name="size"> array size</param>
+		void setBool(const std::string& parameter, bool* valArr, const int size) const;
+
+		/// <summary>
 		/// set uniform integer to GLSL program
 		/// </summary>
 		/// <param name="parameter">GLSL parameter</param>
@@ -39,11 +47,27 @@ namespace wrapperGL
 		void setInt(const std::string& parameter, int val) const;
 
 		/// <summary>
+		/// set uniform integer array to GLSL program
+		/// </summary>
+		/// <param name="parameter">GLSL parameter</param>
+		/// <param name="valArr"> integer array</param>
+		/// <param name="size"> array size</param>
+		void setInt(const std::string& parameter, int* valArr, const int size) const;
+
+		/// <summary>
 		/// set uniform float to GLSL program
 		/// </summary>
 		/// <param name="parameter">GLSL parameter</param>
 		/// <param name="val">float value</param>
 		void setFloat(const std::string& parameter, float val) const;
+
+		/// <summary>
+		/// set uniform float array to GLSL program
+		/// </summary>
+		/// <param name="parameter">GLSL parameter</param>
+		/// <param name="valArr"> float array</param>
+		/// <param name="size"> array size</param>
+		void setFloat(const std::string& parameter, float* valArr, const int size) const;
 
 		/// <summary>
 		/// set uniform vec3 to GLSL program

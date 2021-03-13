@@ -20,6 +20,9 @@ namespace wrapperGL
 		//face
 		float face;
 
+		//extra value
+		float extra;
+
 		VBO();
 	};
 

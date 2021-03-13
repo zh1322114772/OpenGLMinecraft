@@ -8,20 +8,31 @@ namespace other
 	{
 		int width = 0;
 		int	height = 0;
+		std::vector<At> drawList;
 
 		for (auto i = list.begin(); i < list.end(); i++) 
 		{
+			if ((*i).img == nullptr) 
+			{
+				continue;
+			}
+
+			drawList.push_back(*i);
+
 			//ensure is rgba format
 			if ((*i).img->format != 4) 
 			{
 				throw std::runtime_error("Unable to process the image with channels of " + (*i).img->format);
 			}
 
-			width += (*i).img->width;
-
-			if ((*i).img->height > height) 
+			if ((*i).X + (*i).img->width > width)
 			{
-				height = (*i).img->height;
+				width = (*i).X + (*i).img->width;
+			}
+
+			if ((*i).Y + (*i).img->height > height) 
+			{
+				height = (*i).Y + (*i).img->height;
 			}
 		}
 	
@@ -38,14 +49,16 @@ namespace other
 		res->width = width;
 		res->img_arr = (unsigned char*) malloc(height * width * 4);
 
-		
+		//clear with 0
+		memset(res->img_arr, 0, height * width * 4);
+
 		for (int i = 0; i < height; i ++) 
 		{
 			//initial location of every row
 			auto ptr = (res->img_arr + (i * width * 4));
 
 			//paste row from source
-			for (auto iter = list.begin(); iter < list.end(); iter++)
+			for (auto iter = drawList.begin(); iter < drawList.end(); iter++)
 			{
 
 				auto source = (*iter);
@@ -57,19 +70,8 @@ namespace other
 				}
 
 				auto sptr = (source.img->img_arr + ((i - source.Y) * source.img->width * 4));
-
-				//if the width of the source image exceeds the width of the final image
-				int exceed = (source.X + source.img->width) - res->width;
-
-
-				if (exceed > 0)
-				{
-					memcpy(ptr + (source.X * 4), sptr, (source.img->width - exceed) * 4);
-				}
-				else
-				{
-					memcpy(ptr + (source.X * 4), sptr, (source.img->width) * 4);
-				}
+				memcpy(ptr + (source.X * 4), sptr, (source.img->width) * 4);
+				
 			}
 			
 			
@@ -149,6 +151,18 @@ namespace other
 				ret->img_arr[(i * 4) + 3] = sourceD->img_arr[(i * 4) + channelD];
 			}
 		}
+
+		return ret;
+	}
+
+	wrapperGL::ImageObject* BitMapProcess::copy(wrapperGL::ImageObject* s) 
+	{
+		auto ret = new wrapperGL::ImageObject();
+		ret->format = s->format;
+		ret->height = s->height;
+		ret->width = s->width;
+		ret->img_arr = (unsigned char*)malloc(ret->format * ret->width * ret->height);
+		memcpy(ret->img_arr, s->img_arr, ret->format * ret->width * ret->height);
 
 		return ret;
 	}

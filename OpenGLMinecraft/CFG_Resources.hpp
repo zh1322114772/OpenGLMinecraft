@@ -52,6 +52,7 @@ namespace game
 			struct VAOObjectList 
 			{
 				static wrapperGL::VAOID cube;
+				static wrapperGL::VAOID cubes;
 
 				/// <summary>
 				/// load all vertices

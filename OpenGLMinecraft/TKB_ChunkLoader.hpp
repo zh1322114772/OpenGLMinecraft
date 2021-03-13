@@ -31,6 +31,20 @@ namespace tickerable
 				/// </summary>
 				game::config::blocks::Block blocks[256][16][16];
 
+				/// <summary>
+				/// hide single block
+				/// </summary>
+				bool hide[256][16][16] = { false };
+
+				/// <summary>
+				/// hide 16 blocks
+				/// </summary>
+				bool hideStrip[256][16] = { false };
+
+				/// <summary>
+				/// hide 256 blocks
+				/// </summary>
+				bool hideSlice[256] = { false };
 			};
 		
 		}

@@ -11,8 +11,6 @@ namespace game
 			{
 				CFG_BLCOKMESH_ID blockID;
 
-				bool hide = false;
-
 				Block(CFG_BLCOKMESH_ID id) : blockID(id)
 				{
 

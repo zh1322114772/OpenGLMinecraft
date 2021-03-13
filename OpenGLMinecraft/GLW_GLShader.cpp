@@ -79,6 +79,22 @@ namespace wrapperGL
 		glUniform1f(paraLoc, val);
 	};
 
+	void ShaderProgram::setBool(const std::string& parameter, bool* val, const int size) const
+	{
+		glUniform1iv(paraLoc, size, (const GLint*)val);
+	};
+
+	void ShaderProgram::setInt(const std::string& parameter, int* val, const int size) const
+	{
+		glUniform1iv(paraLoc, size, (const GLint*)val);
+	};
+
+	void ShaderProgram::setFloat(const std::string& parameter, float* val, const int size) const
+	{
+		glUniform1fv(paraLoc, size, (const GLfloat*)val);
+	};
+
+
 	void ShaderProgram::setVec3(const std::string& parameter, glm::vec3& val) const 
 	{
 		glUniform3fv(paraLoc, 1, glm::value_ptr(val));
