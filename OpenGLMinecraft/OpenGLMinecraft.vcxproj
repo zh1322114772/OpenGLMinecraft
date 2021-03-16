@@ -156,6 +156,7 @@
     <ClCompile Include="CLR_World3D_Types.cpp" />
     <ClCompile Include="GLSL_Code.cpp" />
     <ClCompile Include="GLW_Types.cpp" />
+    <ClCompile Include="Other.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLW_GLWrapper.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="TickClock_Types.cpp" />
     <ClCompile Include="TKB_ChunkLoader.cpp" />
     <ClCompile Include="TKB_InputGetter.cpp" />
+    <ClCompile Include="TKB_OutputGetter.cpp" />
     <ClCompile Include="WorldTickClock.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +182,7 @@
     <ClInclude Include="GLW_GLHeaders.hpp" />
     <ClInclude Include="CLR_Loading.hpp" />
     <ClInclude Include="GLW_GlmHeaders.hpp" />
+    <ClInclude Include="Other.hpp" />
     <ClInclude Include="Render_Vertices.hpp" />
     <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="GLW_GLWrapper.hpp" />
@@ -191,6 +194,7 @@
     <ClInclude Include="TickClock_Types.hpp" />
     <ClInclude Include="TKB_ChunkLoader.hpp" />
     <ClInclude Include="TKB_InputGetter.hpp" />
+    <ClInclude Include="TKB_OutputGetter.hpp" />
     <ClInclude Include="WorldTickClock.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

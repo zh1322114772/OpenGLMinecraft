@@ -22,8 +22,13 @@ namespace renderer
 			/// </summary>
 			struct BlockMesh 
 			{
+				static const unsigned char VISIBLE = 0b00;
+				static const unsigned char TRANSPARENT = 0b01;
+				static const unsigned char INVISIBLE = 0b10;
 
 				unsigned int textureID;
+
+				unsigned char visible = VISIBLE;
 
 				/// <summary>
 				/// constructor
@@ -31,6 +36,14 @@ namespace renderer
 				/// <param name="tID">texture id</param>
 				/// <returns></returns>
 				BlockMesh(wrapperGL::TextureID& tID);
+				
+				/// <summary>
+				/// constructor
+				/// </summary>
+				/// <param name="tID">texture id</param>
+				/// <param name="t">if texture is transparent</param>
+				/// <returns></returns>
+				BlockMesh(wrapperGL::TextureID& tID, unsigned char t);
 			};
 
 			struct Camera 

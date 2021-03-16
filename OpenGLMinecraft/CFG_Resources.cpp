@@ -60,6 +60,10 @@ namespace game
 				using namespace renderer::controllers::world3D;
 				using namespace game::config::resource;
 
+				//air
+				// set air block to invisible
+				BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_AIR] = new BlockMesh(TextureIDs::IDList[CFG_TEXTURE_ID_STONE], BlockMesh::INVISIBLE);
+
 				//stone
 				BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_STONE] = new BlockMesh(TextureIDs::IDList[CFG_TEXTURE_ID_STONE]);
 

@@ -192,7 +192,7 @@ namespace renderer
 				//more textures need to be loaded
 				wrapperGL::ImageObject* imgObj = makeTexture(game::config::resource::TextureFileNameList::getName((CFG_TEXTURE_ID)textureLoaderProgressI).c_str());
 				game::config::resource::TextureIDs::IDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgObj);
-				
+
 				//free imgObj
 				delete imgObj;
 

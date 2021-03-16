@@ -1,10 +1,13 @@
 #include "TKB_ChunkLoader.hpp"
 #include "TKB_InputGetter.hpp"
 #include "CFG_Blocks.hpp"
-
+#include <thread>
+#include <vector>
+#include "Other.hpp"
 #include <iostream>
 
 #define PI 3.1415926
+#define MAX_HEIGHT 40
 #include "math.h"
 namespace tickerable
 {
@@ -21,7 +24,7 @@ namespace tickerable
 			return chunkList;
 		}
 
-		ChunkLoader::ChunkLoader(const int v) : viewDistance(v) 
+		ChunkLoader::ChunkLoader(const int v, unsigned long long s) : viewDistance(v), seed(s)
 		{
 			if (viewDistance >= MAX_RADIUS) 
 			{
@@ -119,6 +122,8 @@ namespace tickerable
 			
 			}
 
+			std::vector<std::thread> loadingTasks;
+
 			//generate new chunks
 			for (long long i = leftTop; i < rightBottom; i++) 
 			{
@@ -130,131 +135,186 @@ namespace tickerable
 						auto chunk = recycleList.front();
 						recycleList.pop();
 
-						
-						genChunkData(chunk, (i - MAX_RADIUS) + centerChunkX, (j - MAX_RADIUS) + centerChunkY);
+						chunk->locationX = (i - MAX_RADIUS) + centerChunkX;
+						chunk->locationY = (j - MAX_RADIUS) + centerChunkY;
+
+						//add to loading list
+						loadingTasks.push_back(std::thread(&ChunkLoader::genChunkData, this, chunk));
 						activeChunkList.push_back(chunk);
 					}
 				
 				}
 			}
 
+			//generate new chunks
+			for (auto i = loadingTasks.begin(); i < loadingTasks.end(); i++) 
+			{
+				(*i).join();
+			}
+
 		}
 		
-		void ChunkLoader::genChunkData(chunkLoaderTypes::Chunk* chunk, long long locX, long long locY) 
+		void ChunkLoader::genChunkData(chunkLoaderTypes::Chunk* chunk) 
 		{
-
-			// test purpose
-			for (int h = 0; h < 256; h++) 
-			{
-				if (h > 5) 
-				{
-					for (int w = 0; w < 16; w++) 
-					{
-						for (int l = 0; l < 16; l++) 
-						{
-							chunk->blocks[h][w][l] = game::config::blocks::AirBlock();
-							//hide air block
-							chunk->hide[h][w][l] = true;
-						}
-					}
-				}
-				else 
-				{
-					for (int w = 0; w < 16; w++)
-					{
-						for (int l = 0; l < 16; l++)
-						{
-							chunk->blocks[h][w][l] = game::config::blocks::DirtBlock();
-							chunk->hide[h][w][l] = false;
-						}
-					}
-				
-				}
+			//0-----1
+			//|     |
+			//|     |
+			//3-----2
+			float coordinateHeights[4];
+			coordinateHeights[0] = other::Other::randomGeneratorF(seed, (chunk->locationX) * (chunk->locationY));
+			coordinateHeights[1] = other::Other::randomGeneratorF(seed, (chunk->locationX + 1) * (chunk->locationY));
+			coordinateHeights[2] = other::Other::randomGeneratorF(seed, (chunk->locationX + 1) * (chunk->locationY - 1));
+			coordinateHeights[3] = other::Other::randomGeneratorF(seed, (chunk->locationX) * (chunk->locationY - 1));
 			
-			}
-
-			//hide inner blocks
-			for (int h = 1; h < 255; h++) 
+			for (int x = 0; x < 16; x++) 
 			{
-				for (int w = 1; w < 15; w++) 
+				for (int z = 0; z < 16; z++) 
 				{
-					for (int l = 1; l < 15; l++) 
+					auto current = glm::vec3((float)x, 0.0, (float)z);
+
+					float h1 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 16.0), current, 7);
+					float h2 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 16.0), current, 7);
+					float h3 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 0.0), current, 7);
+					float h4 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 0.0), current, 7);
+
+					int thisHeight = (((h1 * coordinateHeights[0]) + (h2 * coordinateHeights[1]) + (h3 * coordinateHeights[2]) + (h4 * coordinateHeights[3])) / 4.0) * MAX_HEIGHT;
+
+					for (int y = 0; y < 256; y++) 
 					{
-
-						//if surrounding blocks are not air, then hide
-						if ((chunk->blocks[h + 1][w][l].blockID != CFG_BLOCKMESH_ID_AIR) &&
-							(chunk->blocks[h - 1][w][l].blockID != CFG_BLOCKMESH_ID_AIR) &&
-							(chunk->blocks[h][w + 1][l].blockID != CFG_BLOCKMESH_ID_AIR) &&
-							(chunk->blocks[h][w - 1][l].blockID != CFG_BLOCKMESH_ID_AIR) &&
-							(chunk->blocks[h][w][l + 1].blockID != CFG_BLOCKMESH_ID_AIR) &&
-							(chunk->blocks[h][w][l - 1].blockID != CFG_BLOCKMESH_ID_AIR)) 
+						if (y > thisHeight)
 						{
-							chunk->hide[h][w][l] = true;
+							chunk->blocks[y][x][z] = game::config::blocks::AirBlock();
 						}
-
+						else 
+						{
+							chunk->blocks[y][x][z] = game::config::blocks::OakPlankBlock();
+						}
 					}
 				}
 			}
 
-			//hide border blocks
-			for (int h = 1; h < 255; h++) 
+			/***
+			//hide invisible blocks to optimize the fps//
+			using namespace game::config::resource;
+			using namespace renderer::controllers::world3D;
+
+			//init visible states
+			for (int h = 0; h < 256; h++)
 			{
+				for (int w = 0; w < 16; w++)
+				{
+					unsigned int bitString = 0;
+					for (int l = 0; l < 16; l++) 
+					{
+						bitString >>= 2;
+						bitString += ((BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible) << 30);
+					}
+
+					chunk->visibleState[h][w] = bitString;
+				}
+			}
+			
+			//hide inner blocks
+			unsigned int PosMask = 0b11;
+			for (int h = 1; h < 255; h++)
+			{
+				for (int w = 1; w < 15; w++)
+				{
+					unsigned int bitString = chunk->visibleState[h][w];
+					for (int l = 1; l < 15; l++)
+					{
+
+						//if surrounding blocks are not transparent or invisible, then hide self
+						if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][l].blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][l].blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[chunk->blocks[h][w + 1][l].blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[chunk->blocks[h][w - 1][l].blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[chunk->blocks[h][w][l + 1].blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[chunk->blocks[h][w][l - 1].blockID]->visible == BlockMesh::VISIBLE))
+						{
+							bitString = (~(PosMask << (l * 2)) & bitString) + (BlockMesh::INVISIBLE << (l * 2));
+						}
+
+					}
+					chunk->visibleState[h][w] = bitString;
+				}
+			}
+			
+			
+			//check border blocks
+			for (int h = 1; h < 255; h++)
+			{
+				//check 2d horizontal
 				for (int w = 0; w < 16; w++) 
 				{
-					if ((chunk->blocks[h + 1][w][0].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][w][0].blockID != CFG_BLOCKMESH_ID_AIR)) 
+					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][0].blockID]->visible == BlockMesh::VISIBLE) && 
+						(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][0].blockID]->visible == BlockMesh::VISIBLE)) 
 					{
-						chunk->hide[h][w][0] = true;
+						chunk->visibleState[h][w] = (chunk->visibleStates[h][w] & 0b11111111111111111111111111111100) + (BlockMesh::INVISIBLE);
 					}
 
-					if ((chunk->blocks[h + 1][w][15].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][w][15].blockID != CFG_BLOCKMESH_ID_AIR))
+					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][15].blockID]->visible == BlockMesh::VISIBLE) &&
+						(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][15].blockID]->visible == BlockMesh::VISIBLE))
 					{
-						chunk->hide[h][w][15] = true;
-					}
+						chunk->visibleState[h][w] = (chunk->visibleStates[h][w] & 0b00111111111111111111111111111111) + (BlockMesh::INVISIBLE << 30);
+					}					
 				}
+				
+				//check 2d vertical
+				unsigned int bitString0 = chunk->visibleState[h][0];
+				unsigned int bitString1 = chunk->visibleState[h][15];
 
 				for (int l = 1; l < 15; l++) 
 				{
-					if ((chunk->blocks[h + 1][0][l].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][0][l].blockID != CFG_BLOCKMESH_ID_AIR))
+					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][0][l].blockID]->visible == BlockMesh::VISIBLE) &&
+						(BlockMeshIDs::IDList[chunk->blocks[h - 1][0][l].blockID]->visible == BlockMesh::VISIBLE))
 					{
-						chunk->hide[h][0][l] = true;
+						bitString0 = (~(PosMask << (l * 2)) & bitString0) + (BlockMesh::INVISIBLE << (l * 2));
 					}
 
-					if ((chunk->blocks[h + 1][15][l].blockID != CFG_BLOCKMESH_ID_AIR) && (chunk->blocks[h - 1][15][l].blockID != CFG_BLOCKMESH_ID_AIR))
+					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][15][l].blockID]->visible == BlockMesh::VISIBLE) &&
+						(BlockMeshIDs::IDList[chunk->blocks[h - 1][15][l].blockID]->visible == BlockMesh::VISIBLE))
 					{
-						chunk->hide[h][15][l] = true;
-					}	
+						bitString1 = (~(PosMask << (l * 2)) & bitString1) + (BlockMesh::INVISIBLE << (l * 2));
+					}
+				
 				}
+
+				chunk->visibleState[h][0] = bitString0;
+				chunk->visibleState[h][15] = bitString1;
+				
 			}
-
-			//set hide strip and hide slice
-
-			for (int h = 0; h < 255; h++)
+			
+			//set slice visible
+			for (int h = 0; h < 256; h++) 
 			{
-				bool emptySlice = true;
+				unsigned short int bitString = 0;
 				for (int w = 0; w < 16; w++)
 				{
-					bool emptyStrip = true;
-					for (int l = 0; l < 16; l++)
+					bool hasVisible = false;
+					unsigned int visibleBitString = chunk->visibleState[h][w];
+
+					for (int l = 0; l < 16; l++) 
 					{
-						if (!chunk->hide[h][w][l]) 
+						if ((visibleBitString & PosMask) == BlockMesh::VISIBLE) 
 						{
-							emptyStrip = false;
-							emptySlice = false;
+							hasVisible = true;
 							break;
 						}
+						visibleBitString >>= 2;
 					}
 
-					chunk->hideStrip[h][w] = emptyStrip;
+					//write data 
+					bitString >>= 1;
+					bitString += (hasVisible << 15);
 				}
 
-				chunk->hideSlice[h] = emptySlice;
+				chunk->sliceVisible[h] = bitString;
 			}
+			***/
 
-			//set in active list
+			//set active 
 			chunk->isActive = true;
-			chunk->locationX = locX;
-			chunk->locationY = locY;
-
 		}
 
 		ChunkLoader::~ChunkLoader() 

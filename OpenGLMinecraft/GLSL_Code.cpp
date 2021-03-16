@@ -42,20 +42,62 @@ namespace renderer
 		"in vec2 fTex;\n"
 		"in float fFace;\n"
 
+		"struct GlobalLight\n"
+		"{\n"
+		"	vec3 lightDirection;\n"
+		"	vec3 lightColorA;\n"
+		"	vec3 lightColorD;\n"
+		"	vec3 lightColorS;\n"
+		"};\n"
+
 		"uniform sampler2D fTexture;\n"
+		"uniform GlobalLight globalLight;\n"
+		"uniform vec3 cameraPosition;\n"
 
 		"out vec4 fragColor;\n"
-
-		"vec2 getTextureCoords(vec2 org, float face)\n"
+		
+		"vec3 globalIllumination(GlobalLight l, vec3 color, float specular, vec3 normPos)\n"
 		"{\n"
-		"	float x = ((face + org.x)/ 15.0);\n"
-		"	float y = org.y;\n"
-		"	return vec2(x, y);\n"
+		"	vec3 ambientColor = color * l.lightColorA;\n"
+
+		"	float directBrightness = max(0, dot(-l.lightDirection, normPos));\n"
+		"	vec3 directColor = color * directBrightness * l.lightColorD;\n"
+	
+		"	vec3 lightReflection = reflect(l.lightDirection, normPos);\n"
+		"	vec3 cameraDirection = normalize(cameraPosition - fPos);\n"
+		"	float specularBrightness = pow(max(0, dot(lightReflection, cameraDirection)), 32) * specular;\n"
+		"	vec3 specularColor = color * specularBrightness * l.lightColorS;\n"
+
+		"	return ambientColor + directColor + specularColor;\n"
 		"};\n"
+
+		"vec4 getTextureColor(vec2 org)\n"
+		"{\n"
+		"	float x = ((fFace + org.x)/ 15);\n"
+		"	float y = org.y;\n"
+		"	return texture(fTexture, vec2(x, y));\n"
+		"};\n"
+
+		"vec2 getSOColor(vec2 org)\n"
+		"{\n"
+		"	int offset = int(fFace) / 2;\n"
+		"	int select = int(fFace) % 2;\n"
+
+		"	float x = (12.0 + float(offset) + org.x)/15;\n"
+		"	float y = org.y;\n"
+		"	vec4 res = texture(fTexture, vec2(x, y));\n"
+		"	return vec2(res[select * 2], res[(select * 2) + 1]);\n"
+		"}\n"
 
 		"void main()\n"
 		"{\n"
-		"	fragColor = vec4(texture(fTexture, getTextureCoords(fTex, fFace)).xyz, 1.0);\n"
+
+		"	vec4 textureColor = getTextureColor(fTex);\n"
+		"	vec2 SOColor = getSOColor(fTex);\n"
+
+		"	vec3 globalColor = globalIllumination(globalLight, textureColor.xyz, SOColor.x, fNorm);\n"
+		"	fragColor = vec4(globalColor, 1.0);\n"
+
 		"};\n";
 
 	char GLSL::LoadingShaderCode[] =

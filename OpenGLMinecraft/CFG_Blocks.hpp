@@ -48,9 +48,9 @@ namespace game
 				}
 			};
 
-			struct CobbleStone : public Block
+			struct CobbleStoneBlock : public Block
 			{
-				CobbleStone() :Block(CFG_BLOCKMESH_ID_COBBLESTONE)
+				CobbleStoneBlock() :Block(CFG_BLOCKMESH_ID_COBBLESTONE)
 				{
 
 				}

@@ -94,6 +94,15 @@ namespace wrapperGL
 		glUniform1fv(paraLoc, size, (const GLfloat*)val);
 	};
 
+	void ShaderProgram::setUInt(const std::string& parameter, unsigned int val) const 
+	{
+		glUniform1ui(paraLoc, val);
+	}
+
+	void ShaderProgram::setUInt(const std::string& parameter, unsigned int* valArr, const int size) const 
+	{
+		glUniform1uiv(paraLoc, size, (const GLuint*)valArr);
+	}
 
 	void ShaderProgram::setVec3(const std::string& parameter, glm::vec3& val) const 
 	{

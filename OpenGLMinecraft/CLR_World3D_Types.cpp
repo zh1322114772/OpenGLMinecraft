@@ -26,6 +26,11 @@ namespace renderer
 			{
 
 			}
+
+			BlockMesh::BlockMesh(wrapperGL::TextureID& tID, unsigned char t) : textureID(tID.id), visible(t) 
+			{
+			
+			}
 		}
 	}
 

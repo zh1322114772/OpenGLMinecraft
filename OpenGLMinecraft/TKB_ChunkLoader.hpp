@@ -29,24 +29,15 @@ namespace tickerable
 				/// <summary>
 				/// chunk data y, x, z
 				/// </summary>
-				game::config::blocks::Block blocks[256][16][16];
+				game::config::blocks::Block blocks[256][16][16] = {game::config::blocks::AirBlock()};
 
 				/// <summary>
-				/// hide single block
+				/// visible states for every block in a chunk
 				/// </summary>
-				bool hide[256][16][16] = { false };
+				bool blockVisible[256][16][16] = { false };
 
-				/// <summary>
-				/// hide 16 blocks
-				/// </summary>
-				bool hideStrip[256][16] = { false };
-
-				/// <summary>
-				/// hide 256 blocks
-				/// </summary>
-				bool hideSlice[256] = { false };
 			};
-		
+
 		}
 
 		class ChunkLoader : public Task
@@ -89,20 +80,24 @@ namespace tickerable
 			unsigned short int leftTop, rightBottom;
 
 			/// <summary>
+			/// world random seed
+			/// </summary>
+			unsigned long long seed;
+
+			/// <summary>
 			/// generate terrain in chunk
 			/// </summary>
 			/// <param name="chunk">chunk pointer</param>
-			/// <param name="locX">chunk x location</param>
-			/// <param name="locY">chunk y location</param>
-			inline void genChunkData(chunkLoaderTypes::Chunk* chunk, long long locX, long long locY);
+			void genChunkData(chunkLoaderTypes::Chunk* chunk);
 
 		public:
 			/// <summary>
 			/// constructor
 			/// </summary>
 			/// <param name="v"> view distance </param>
+			/// <param name="seed"> world seed </param>
 			/// <returns></returns>
-			ChunkLoader(const int v);
+			ChunkLoader(const int v, unsigned long long seed);
 
 			~ChunkLoader();
 
@@ -117,6 +112,8 @@ namespace tickerable
 			/// </summary>
 			/// <returns></returns>
 			int getChunkListSize();
+
+
 
 			void onEnable() override;
 

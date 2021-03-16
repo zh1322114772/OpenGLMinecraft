@@ -55,6 +55,21 @@ namespace wrapperGL
 		void setInt(const std::string& parameter, int* valArr, const int size) const;
 
 		/// <summary>
+		/// set uniform unsigned integer to GLSL program
+		/// </summary>
+		/// <param name="parameter">GLSL parameter</param>
+		/// <param name="val">unsigned integer value</param>
+		void setUInt(const std::string& parameter, unsigned int val) const;
+
+		/// <summary>
+		/// set uniform unsigned integer array to GLSL program
+		/// </summary>
+		/// <param name="parameter">GLSL parameter</param>
+		/// <param name="valArr"> unsigned integer array</param>
+		/// <param name="size"> array size</param>
+		void setUInt(const std::string& parameter, unsigned int* valArr, const int size) const;
+
+		/// <summary>
 		/// set uniform float to GLSL program
 		/// </summary>
 		/// <param name="parameter">GLSL parameter</param>

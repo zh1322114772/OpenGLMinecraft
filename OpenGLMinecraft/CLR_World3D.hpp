@@ -35,8 +35,8 @@ namespace renderer
 			/// <summary>
 			/// draw single block
 			/// </summary>
-			/// <param name="m">blockMesh</param>
-			inline void blockDrawer(renderer::controllers::world3D::BlockMesh* m);
+			/// <param name="m">block</param>
+			inline void blockDrawer(game::config::blocks::Block m);
 
 			/// <summary>
 			/// draw single chunk

@@ -23,7 +23,7 @@ namespace renderer
 			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.5f, 200.f);
 			renderer::Easy3D::setMouseCenter(true);
 			
-			camera = world3D::Camera(glm::vec3(8.0, 5.0, 8.0));
+			camera = world3D::Camera(glm::vec3(0.0, 20.0, 0.0));
 
 			mousePos.x = -1.57;
 			mousePos.y = 0.0;
@@ -71,16 +71,36 @@ namespace renderer
 			tickClock->pause();
 		}
 
-		void World3D::blockDrawer(renderer::controllers::world3D::BlockMesh* m) 
+		void World3D::blockDrawer(game::config::blocks::Block block) 
 		{
+			//active textures
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, m->textureID);
+			glBindTexture(GL_TEXTURE_2D, game::config::resource::BlockMeshIDs::IDList[block.blockID]->textureID);
 
-			wrapperGL::GLWrapper::draw(game::config::resource::VAOObjectList::cubes);
+			wrapperGL::GLWrapper::draw(game::config::resource::VAOObjectList::cube);
 		}
 
 		void World3D::chunkDrawer(tickerable::tasks::chunkLoaderTypes::Chunk* chunk) 
 		{
+
+			for (int y = 0; y < 256; y++) 
+			{
+				for (int x = 0; x < 16; x++) 
+				{
+					for (int z = 0; z < 16; z++) 
+					{
+						if (game::config::resource::BlockMeshIDs::IDList[chunk->blocks[y][x][z].blockID]->visible == renderer::controllers::world3D::BlockMesh::VISIBLE) 
+						{
+							auto offset = glm::translate(glm::mat4(1.0), glm::vec3((chunk->locationX * 16) + (float)x, (float)y, (chunk->locationY * 16) + (float)z));
+							shader->setMat4("modelMat[0]", offset);
+							blockDrawer(chunk->blocks[y][x][z]);
+						}
+					
+					}
+				}
+			}
+
+			/***
 			auto chunkLoc = glm::mat4(1.0);
 			auto blockLoc = glm::mat4(1.0);
 			//if chunk is in recycle list, then just skip
@@ -88,22 +108,28 @@ namespace renderer
 
 			for (int y = 0; y < 256; y++)
 			{
-				//if slice is empty then skip it
-				if (!chunk->hideSlice[y]) 
+				unsigned short int sliceVisible = chunk->sliceVisible[y];
+
+				//if 1*16*16 area has visible block
+				if (sliceVisible)
 				{
 					for (int x = 0; x < 16; x++)
 					{
-						//if strip is empty then skip it
-						if (!chunk->hideStrip[y][x])
+						bool sliceVisibleCmpBit = sliceVisible & 0b1;
+						sliceVisible >>= 1;
+
+						//if 1*1*16 area has visible block
+						if (sliceVisibleCmpBit)
 						{
 							blockLoc = glm::translate(glm::mat4(1.0), glm::vec3((chunk->locationX * 16) + (float)x, (float)y, (chunk->locationY * 16)));
 							shader->setMat4("modelMat[0]", blockLoc);
-							blockDrawer(game::config::resource::BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_DIRT]);
+							shader->setUInt("isBlockVisible", chunk->visibleState[y][x]);
+							blockDrawer(chunk->blocks[y][x]);
 						}
 					}
 				}
 			}
-		
+			*/
 		}
 
 		void World3D::terrainDrawer() 
@@ -116,14 +142,36 @@ namespace renderer
 			shader->setInt("modelMatSize", 1);
 			for (auto i = 0; i < chunkListSize; i++)
 			{
-				chunkDrawer(chunkList[i]);
+				if (chunkList[i]->isActive) 
+				{
+					chunkDrawer(chunkList[i]);
+				}
+				
 			}
 		
 		}
 
 		void World3D::onDraw(const double& delta_t)
 		{
+			static double testTime = 0;
+			testTime += delta_t;
+
 			shader->use();
+
+			//std::cout << sinf(testTime * 0.1) << " " << cosf(testTime * 0.1) << std::endl;
+
+			//test global light
+			glm::vec3 lightDirection(0.5, -0.5, 0.5);
+			lightDirection = glm::normalize(lightDirection);
+			glm::vec3 sunColor(0.7, 0.7, 0.55);
+			glm::vec3 sunShadeColor(0.35, 0.35, 0.22);
+			glm::vec3 sunSpecular(1.5, 1.5, 1.2);
+
+			shader->setVec3("globalLight.lightDirection", lightDirection);
+			shader->setVec3("globalLight.lightColorA", sunShadeColor);
+			shader->setVec3("globalLight.lightColorD", sunColor);
+			shader->setVec3("globalLight.lightColorS", sunSpecular);
+			shader->setVec3("cameraPosition", camera.Pos);
 
 			//set view and projection matrices to vertex shader
 			glm::mat4 lookAtMatrix = glm::lookAt(camera.Pos, camera.Pos + camera.lookAt, camera.up);
@@ -186,6 +234,8 @@ namespace renderer
 			{
 				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t;
 			}
+
+			std::cout << camera.Pos.x << " " << camera.Pos.y << " " << camera.Pos.z << std::endl;
 
 			//set input to world tick clock
 			tickClock->getInputGetter()->setPosition(camera.Pos.x, camera.Pos.y, camera.Pos.z);
