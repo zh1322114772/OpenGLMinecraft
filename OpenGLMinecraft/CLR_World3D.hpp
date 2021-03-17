@@ -7,6 +7,7 @@
 #include <memory>
 #include <iostream>
 #include "WorldTickClock.hpp"
+#include "TKB_ChunkLoader.hpp"
 
 namespace renderer
 {
@@ -31,18 +32,6 @@ namespace renderer
 			//test purpose
 			wrapperGL::VAOID blockVID;
 			wrapperGL::VAOList* blockV;
-
-			/// <summary>
-			/// draw single block
-			/// </summary>
-			/// <param name="m">block</param>
-			inline void blockDrawer(game::config::blocks::Block m);
-
-			/// <summary>
-			/// draw single chunk
-			/// </summary>
-			/// <param name="chunk"></param>
-			inline void chunkDrawer(tickerable::tasks::chunkLoaderTypes::Chunk* chunk);
 
 			/// <summary>
 			/// draw chunks

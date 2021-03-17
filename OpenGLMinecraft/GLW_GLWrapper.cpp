@@ -29,8 +29,16 @@ namespace wrapperGL
 			throw std::runtime_error("Unable to initialize GLAD");
 		}
 
-		//ensure that graphics card supports 8192*8192 texture
 		int argv;
+
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &argv);
+		//ensure graphics card supports least 24 texture units
+		if (argv < 24) 
+		{
+			throw std::runtime_error("Unsupported graphics card, minimum texture unit size must be larger than 24");
+		}
+
+		//ensure graphics card supports 8192*8192 texture
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &argv);
 		if (argv < 8192) 
 		{

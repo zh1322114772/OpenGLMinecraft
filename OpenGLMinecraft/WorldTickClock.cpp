@@ -8,8 +8,11 @@ namespace tickerable
 		inputGetter = new tasks::InputGetter();
 		addTask(inputGetter);
 
-		chunkLoader = new tasks::ChunkLoader(7, 5302000);
+		chunkLoader = new tasks::ChunkLoader(12, 5302000);
 		addTask(chunkLoader);
+
+		outputGetter = new tasks::OutputGetter(12);
+		addTask(outputGetter);
 	}
 
 	tasks::InputGetter* WorldTickClock::getInputGetter() 
@@ -22,9 +25,15 @@ namespace tickerable
 		return chunkLoader;
 	}
 
+	tasks::OutputGetter* WorldTickClock::getOutputGetter() 
+	{
+		return outputGetter;
+	}
+
 	WorldTickClock::~WorldTickClock() 
 	{
 		delete inputGetter;
 		delete chunkLoader;
+		delete outputGetter;
 	}
 }

@@ -47,7 +47,7 @@ namespace game
 				delete vaoList;
 
 				//cubes
-				vaoList = renderer::Vertices::cubesGenerator(1, 1, 16, glm::vec3(0.0));
+				vaoList = renderer::Vertices::cubesGenerator(24, glm::vec3(0.0));
 				VAOObjectList::cubes = wrapperGL::GLWrapper::loadVAOS(vaoList);
 				delete vaoList;
 			}

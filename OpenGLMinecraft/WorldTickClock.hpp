@@ -2,6 +2,7 @@
 #include "TickClock.hpp"
 #include "TKB_InputGetter.hpp"
 #include "TKB_ChunkLoader.hpp"
+#include "TKB_OutputGetter.hpp"
 
 namespace tickerable
 {
@@ -20,6 +21,11 @@ namespace tickerable
 		/// chunk loader that load chunks
 		/// </summary>
 		tasks::ChunkLoader* chunkLoader;
+
+		/// <summary>
+		/// deliver outputs to render thread
+		/// </summary>
+		tasks::OutputGetter* outputGetter;
 
 	public:
 
@@ -43,6 +49,12 @@ namespace tickerable
 		/// </summary>
 		/// <returns></returns>
 		tasks::ChunkLoader* getChunkLoader();
+
+		/// <summary>
+		/// get ouput getter pointer
+		/// </summary>
+		/// <returns></returns>
+		tasks::OutputGetter* getOutputGetter();
 	};
 
 

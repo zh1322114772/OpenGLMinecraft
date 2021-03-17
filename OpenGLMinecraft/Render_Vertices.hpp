@@ -53,12 +53,10 @@ namespace renderer
 		/// <summary>
 		/// generate a VAOLIST for cubes
 		/// </summary>
-		/// <param name="x">numbers of x cubes</param>
-		/// <param name="y">numbers of y cubes</param>
-		/// <param name="z">numbers of z cubes</param>
+		/// <param name="x">number of x cubes</param>
 		/// <param name="center">cube offsets</param>
 		/// <returns></returns>
-		static wrapperGL::VAOList* cubesGenerator(int x, int y, int z, glm::vec3 center);
+		static wrapperGL::VAOList* cubesGenerator(int x , glm::vec3 center);
 	};
 
 

@@ -24,6 +24,11 @@ namespace tickerable
 			return chunkList;
 		}
 
+		const std::vector<chunkLoaderTypes::Chunk*>& ChunkLoader::getActiveList()
+		{
+			return activeChunkList;
+		}
+
 		ChunkLoader::ChunkLoader(const int v, unsigned long long s) : viewDistance(v), seed(s)
 		{
 			if (viewDistance >= MAX_RADIUS) 
@@ -81,6 +86,14 @@ namespace tickerable
 		{
 		
 		
+		}
+
+		long long ChunkLoader::XYtoX(long long x, long long y) 
+		{
+
+			long long z1 = ((x << 6) ^ y) + (x | (y << 5)) + ((x << 4) & y) + (x ^ (y << 3)) + ((x << 2) | y) + (x & (y << 1));
+
+			return z1;
 		}
 
 		void ChunkLoader::Tick(const double& delta_t, const std::vector<Task*>& taskList) 
@@ -161,10 +174,10 @@ namespace tickerable
 			//|     |
 			//3-----2
 			float coordinateHeights[4];
-			coordinateHeights[0] = other::Other::randomGeneratorF(seed, (chunk->locationX) * (chunk->locationY));
-			coordinateHeights[1] = other::Other::randomGeneratorF(seed, (chunk->locationX + 1) * (chunk->locationY));
-			coordinateHeights[2] = other::Other::randomGeneratorF(seed, (chunk->locationX + 1) * (chunk->locationY - 1));
-			coordinateHeights[3] = other::Other::randomGeneratorF(seed, (chunk->locationX) * (chunk->locationY - 1));
+			coordinateHeights[0] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX), (chunk->locationY)));
+			coordinateHeights[1] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX + 1), (chunk->locationY)));
+			coordinateHeights[2] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX + 1), (chunk->locationY - 1)));
+			coordinateHeights[3] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX), (chunk->locationY - 1)));
 			
 			for (int x = 0; x < 16; x++) 
 			{
@@ -172,10 +185,10 @@ namespace tickerable
 				{
 					auto current = glm::vec3((float)x, 0.0, (float)z);
 
-					float h1 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 16.0), current, 7);
-					float h2 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 16.0), current, 7);
-					float h3 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 0.0), current, 7);
-					float h4 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 0.0), current, 7);
+					float h1 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 16.0), current, 8);
+					float h2 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 16.0), current, 8);
+					float h3 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 0.0), current, 8);
+					float h4 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 0.0), current, 8);
 
 					int thisHeight = (((h1 * coordinateHeights[0]) + (h2 * coordinateHeights[1]) + (h3 * coordinateHeights[2]) + (h4 * coordinateHeights[3])) / 4.0) * MAX_HEIGHT;
 
@@ -193,7 +206,8 @@ namespace tickerable
 				}
 			}
 
-			/***
+
+			
 			//hide invisible blocks to optimize the fps//
 			using namespace game::config::resource;
 			using namespace renderer::controllers::world3D;
@@ -203,16 +217,13 @@ namespace tickerable
 			{
 				for (int w = 0; w < 16; w++)
 				{
-					unsigned int bitString = 0;
 					for (int l = 0; l < 16; l++) 
 					{
-						bitString >>= 2;
-						bitString += ((BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible) << 30);
+						chunk->blockVisible[h][w][l] = (BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible != BlockMesh::INVISIBLE);
 					}
-
-					chunk->visibleState[h][w] = bitString;
 				}
 			}
+			
 			
 			//hide inner blocks
 			unsigned int PosMask = 0b11;
@@ -220,7 +231,6 @@ namespace tickerable
 			{
 				for (int w = 1; w < 15; w++)
 				{
-					unsigned int bitString = chunk->visibleState[h][w];
 					for (int l = 1; l < 15; l++)
 					{
 
@@ -232,11 +242,10 @@ namespace tickerable
 							(BlockMeshIDs::IDList[chunk->blocks[h][w][l + 1].blockID]->visible == BlockMesh::VISIBLE) &&
 							(BlockMeshIDs::IDList[chunk->blocks[h][w][l - 1].blockID]->visible == BlockMesh::VISIBLE))
 						{
-							bitString = (~(PosMask << (l * 2)) & bitString) + (BlockMesh::INVISIBLE << (l * 2));
+							chunk->blockVisible[h][w][l] = false;
 						}
 
 					}
-					chunk->visibleState[h][w] = bitString;
 				}
 			}
 			
@@ -250,68 +259,33 @@ namespace tickerable
 					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][0].blockID]->visible == BlockMesh::VISIBLE) && 
 						(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][0].blockID]->visible == BlockMesh::VISIBLE)) 
 					{
-						chunk->visibleState[h][w] = (chunk->visibleStates[h][w] & 0b11111111111111111111111111111100) + (BlockMesh::INVISIBLE);
+						chunk->blockVisible[h][w][0] = false;
 					}
 
 					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][15].blockID]->visible == BlockMesh::VISIBLE) &&
 						(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][15].blockID]->visible == BlockMesh::VISIBLE))
 					{
-						chunk->visibleState[h][w] = (chunk->visibleStates[h][w] & 0b00111111111111111111111111111111) + (BlockMesh::INVISIBLE << 30);
+						chunk->blockVisible[h][w][15] = false;
 					}					
 				}
 				
 				//check 2d vertical
-				unsigned int bitString0 = chunk->visibleState[h][0];
-				unsigned int bitString1 = chunk->visibleState[h][15];
-
 				for (int l = 1; l < 15; l++) 
 				{
 					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][0][l].blockID]->visible == BlockMesh::VISIBLE) &&
 						(BlockMeshIDs::IDList[chunk->blocks[h - 1][0][l].blockID]->visible == BlockMesh::VISIBLE))
 					{
-						bitString0 = (~(PosMask << (l * 2)) & bitString0) + (BlockMesh::INVISIBLE << (l * 2));
+						chunk->blockVisible[h][0][l] = false;
 					}
 
 					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][15][l].blockID]->visible == BlockMesh::VISIBLE) &&
 						(BlockMeshIDs::IDList[chunk->blocks[h - 1][15][l].blockID]->visible == BlockMesh::VISIBLE))
 					{
-						bitString1 = (~(PosMask << (l * 2)) & bitString1) + (BlockMesh::INVISIBLE << (l * 2));
+						chunk->blockVisible[h][15][l] = false;
 					}
 				
-				}
-
-				chunk->visibleState[h][0] = bitString0;
-				chunk->visibleState[h][15] = bitString1;
-				
+				}				
 			}
-			
-			//set slice visible
-			for (int h = 0; h < 256; h++) 
-			{
-				unsigned short int bitString = 0;
-				for (int w = 0; w < 16; w++)
-				{
-					bool hasVisible = false;
-					unsigned int visibleBitString = chunk->visibleState[h][w];
-
-					for (int l = 0; l < 16; l++) 
-					{
-						if ((visibleBitString & PosMask) == BlockMesh::VISIBLE) 
-						{
-							hasVisible = true;
-							break;
-						}
-						visibleBitString >>= 2;
-					}
-
-					//write data 
-					bitString >>= 1;
-					bitString += (hasVisible << 15);
-				}
-
-				chunk->sliceVisible[h] = bitString;
-			}
-			***/
 
 			//set active 
 			chunk->isActive = true;

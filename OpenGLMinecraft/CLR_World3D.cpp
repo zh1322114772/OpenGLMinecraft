@@ -17,10 +17,10 @@ namespace renderer
 
 		void World3D::onStart()
 		{
-			shader = std::shared_ptr<wrapperGL::ShaderProgram>(new wrapperGL::ShaderProgram(GLSL::World3DvertexShaderCode, GLSL::World3DWorldFragmentCode));
+			shader = std::shared_ptr<wrapperGL::ShaderProgram>(new wrapperGL::ShaderProgram(GLSL::World3DBlockVertexShaderCode, GLSL::World3DBlockFragmentCode));
 
 			//set camera and projection matrix
-			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.5f, 200.f);
+			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.5f, 1000.f);
 			renderer::Easy3D::setMouseCenter(true);
 			
 			camera = world3D::Camera(glm::vec3(0.0, 20.0, 0.0));
@@ -71,82 +71,73 @@ namespace renderer
 			tickClock->pause();
 		}
 
-		void World3D::blockDrawer(game::config::blocks::Block block) 
-		{
-			//active textures
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, game::config::resource::BlockMeshIDs::IDList[block.blockID]->textureID);
-
-			wrapperGL::GLWrapper::draw(game::config::resource::VAOObjectList::cube);
-		}
-
-		void World3D::chunkDrawer(tickerable::tasks::chunkLoaderTypes::Chunk* chunk) 
-		{
-
-			for (int y = 0; y < 256; y++) 
-			{
-				for (int x = 0; x < 16; x++) 
-				{
-					for (int z = 0; z < 16; z++) 
-					{
-						if (game::config::resource::BlockMeshIDs::IDList[chunk->blocks[y][x][z].blockID]->visible == renderer::controllers::world3D::BlockMesh::VISIBLE) 
-						{
-							auto offset = glm::translate(glm::mat4(1.0), glm::vec3((chunk->locationX * 16) + (float)x, (float)y, (chunk->locationY * 16) + (float)z));
-							shader->setMat4("modelMat[0]", offset);
-							blockDrawer(chunk->blocks[y][x][z]);
-						}
-					
-					}
-				}
-			}
-
-			/***
-			auto chunkLoc = glm::mat4(1.0);
-			auto blockLoc = glm::mat4(1.0);
-			//if chunk is in recycle list, then just skip
-			if (!chunk->isActive) return;
-
-			for (int y = 0; y < 256; y++)
-			{
-				unsigned short int sliceVisible = chunk->sliceVisible[y];
-
-				//if 1*16*16 area has visible block
-				if (sliceVisible)
-				{
-					for (int x = 0; x < 16; x++)
-					{
-						bool sliceVisibleCmpBit = sliceVisible & 0b1;
-						sliceVisible >>= 1;
-
-						//if 1*1*16 area has visible block
-						if (sliceVisibleCmpBit)
-						{
-							blockLoc = glm::translate(glm::mat4(1.0), glm::vec3((chunk->locationX * 16) + (float)x, (float)y, (chunk->locationY * 16)));
-							shader->setMat4("modelMat[0]", blockLoc);
-							shader->setUInt("isBlockVisible", chunk->visibleState[y][x]);
-							blockDrawer(chunk->blocks[y][x]);
-						}
-					}
-				}
-			}
-			*/
-		}
-
 		void World3D::terrainDrawer() 
 		{
-			//bind textures
-			shader->setInt("fTexture", 0);
-
-			auto chunkList = tickClock->getChunkLoader()->getChunkList();
-			auto chunkListSize = tickClock->getChunkLoader()->getChunkListSize();
-			shader->setInt("modelMatSize", 1);
-			for (auto i = 0; i < chunkListSize; i++)
+			//set textures
+			for (int i = 0; i < 24; i++) 
 			{
-				if (chunkList[i]->isActive) 
+				shader->setInt("fTexture["+std::to_string(i)+"]", i);
+			}
+
+			auto chunkList = tickClock->getOutputGetter()->getChunkBuffer();
+			auto chunkListSize = tickClock->getOutputGetter()->getChunkBufferSize();
+
+			//record block position
+			float blockPos[72];
+			unsigned int blockTex[24];
+			int blockCounter = 0;
+			
+			//iterate through all active chunks
+			for (int c = 0; c < chunkListSize; c++)
+			{
+				auto thisChunk = &chunkList[c];
+				float thisChunkX = thisChunk->locationX * 16;
+				float thisChunkZ = thisChunk->locationY * 16;
+
+				//iterate through single chunk
+				for (int y = 0; y < 256; y++)
 				{
-					chunkDrawer(chunkList[i]);
+					//if slice exist visible blocks
+					if (!(thisChunk->info[y][0])) continue;
+
+					//iterate through every single block in a slice
+					for (int i = 0; i < 256; i++) 
+					{
+						unsigned long long info = thisChunk->info[y][i];
+
+						//check if reachs to the end
+						if (!info) break;
+						
+						if (blockCounter >= 24) 
+						{
+							//send position data to gpu
+							shader->setFloat("blockPosition", blockPos, 72);
+
+							//bind texture
+							for (int k = 0; k < 24; k++)
+							{
+								glActiveTexture(GL_TEXTURE0 + k);
+								glBindTexture(GL_TEXTURE_2D, blockTex[k]);
+							}
+
+							wrapperGL::GLWrapper::draw(game::config::resource::VAOObjectList::cubes);
+							blockCounter = 0;
+						}
+
+						//write block position data
+						blockPos[(blockCounter * 3)] = thisChunkX + (float)((info & 0xf0) >> 4);
+						blockPos[(blockCounter * 3) + 1] = (float)y;
+						blockPos[(blockCounter * 3) + 2] = thisChunkZ + (float)(info & 0xf);
+
+						//write block texture data
+						blockTex[blockCounter] = ((info & 0xffffffff00000000) >> 32);
+
+						blockCounter++;
+					}
+
 				}
-				
+
+
 			}
 		
 		}
@@ -235,7 +226,7 @@ namespace renderer
 				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t;
 			}
 
-			std::cout << camera.Pos.x << " " << camera.Pos.y << " " << camera.Pos.z << std::endl;
+			//std::cout << camera.Pos.x << " " << camera.Pos.y << " " << camera.Pos.z << std::endl;
 
 			//set input to world tick clock
 			tickClock->getInputGetter()->setPosition(camera.Pos.x, camera.Pos.y, camera.Pos.z);

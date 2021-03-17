@@ -89,6 +89,14 @@ namespace tickerable
 			/// </summary>
 			/// <param name="chunk">chunk pointer</param>
 			void genChunkData(chunkLoaderTypes::Chunk* chunk);
+			
+			/// <summary>
+			/// convert two values into one
+			/// </summary>
+			/// <param name="x">value 0</param>
+			/// <param name="y">value 1</param>
+			/// <returns></returns>
+			inline long long XYtoX(long long x, long long y);
 
 		public:
 			/// <summary>
@@ -113,7 +121,11 @@ namespace tickerable
 			/// <returns></returns>
 			int getChunkListSize();
 
-
+			/// <summary>
+			/// get active chunk list
+			/// </summary>
+			/// <returns></returns>
+			const std::vector<chunkLoaderTypes::Chunk*>& getActiveList();
 
 			void onEnable() override;
 

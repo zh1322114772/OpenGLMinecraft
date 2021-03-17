@@ -1,5 +1,6 @@
 #pragma once
 #include "TickClock_Types.hpp"
+#include <limits>
 
 namespace tickerable
 {
@@ -13,16 +14,16 @@ namespace tickerable
 				/// every unsigned long long stores 3 infomation
 				///	bit 0-4: z position
 				/// bit 4-8: x position
-				/// bit 8-9: should be always 1,  
+				/// bit 8-9: 0 if block is invisible, otherwise should always be 1  
 				/// bit 9-32: reserved
-				/// bit 32-64: block id
+				/// bit 32-64: texture id
 				/// </summary>
-				unsigned long long info[256][16][16] = {0};
+				unsigned long long info[256][256] = {0};
 				
 				/// <summary>
-				/// if chunk is ready to be rendered
+				/// chunk world location
 				/// </summary>
-				bool isVisible = false;
+				long long locationX = LLONG_MAX, locationY = LLONG_MAX;
 			};
 
 
@@ -38,7 +39,7 @@ namespace tickerable
 			/// <summary>
 			/// number of active chunks
 			/// </summary>
-			int counter = 0;
+			int chunkActiveCount = 0;
 
 			/// <summary>
 			/// total chunk buffers
@@ -53,6 +54,17 @@ namespace tickerable
 			/// <returns></returns>
 			OutputGetter(const int viewDistance);
 
+			/// <summary>
+			/// get chunk buffer size
+			/// </summary>
+			/// <returns></returns>
+			int getChunkBufferSize();
+
+			/// <summary>
+			/// get chunk buffer
+			/// </summary>
+			/// <returns></returns>
+			outputGetterTypes::ChunkBuffer* getChunkBuffer();
 
 			void onEnable() override;
 
