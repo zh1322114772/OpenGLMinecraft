@@ -20,6 +20,11 @@ namespace tickerable
 		virtual void onDisable() = 0;
 
 		/// <summary>
+		/// this function will be called before TickClock is destroyed
+		/// </summary>
+		virtual void onExit() = 0;
+
+		/// <summary>
 		/// this function will be called on every tick
 		/// </summary>
 		/// <param name="delta_t">time intervals between two ticks</param>

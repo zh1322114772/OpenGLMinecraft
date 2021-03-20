@@ -23,7 +23,7 @@ namespace renderer
 			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.5f, 1000.f);
 			renderer::Easy3D::setMouseCenter(true);
 			
-			camera = world3D::Camera(glm::vec3(0.0, 20.0, 0.0));
+			camera = world3D::Camera(glm::vec3(0.0, 150.0, 0.0));
 
 			mousePos.x = -1.57;
 			mousePos.y = 0.0;
@@ -79,7 +79,7 @@ namespace renderer
 				shader->setInt("fTexture["+std::to_string(i)+"]", i);
 			}
 
-			auto chunkList = tickClock->getOutputGetter()->getChunkBuffer();
+			auto chunkList = tickClock->getOutputGetter()->getChunkBuffers();
 			auto chunkListSize = tickClock->getOutputGetter()->getChunkBufferSize();
 
 			//record block position
@@ -90,7 +90,7 @@ namespace renderer
 			//iterate through all active chunks
 			for (int c = 0; c < chunkListSize; c++)
 			{
-				auto thisChunk = &chunkList[c];
+				auto thisChunk = chunkList[c];
 				float thisChunkX = thisChunk->locationX * 16;
 				float thisChunkZ = thisChunk->locationY * 16;
 
@@ -208,22 +208,22 @@ namespace renderer
 			//change position
 			if (keyboardEvent.keyPressed[GLFW_KEY_W]) 
 			{
-				camera.Pos += camera.lookAt * 5.0f * (float)delta_t;
+				camera.Pos += camera.lookAt * 5.0f * (float)delta_t * 10.0f;
 			}
 			
 			if (keyboardEvent.keyPressed[GLFW_KEY_S]) 
 			{
-				camera.Pos -= camera.lookAt * 5.0f * (float)delta_t;
+				camera.Pos -= camera.lookAt * 5.0f * (float)delta_t * 10.0f;
 			}
 
 			if (keyboardEvent.keyPressed[GLFW_KEY_A]) 
 			{
-				camera.Pos -= glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t;
+				camera.Pos -= glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 10.0f;
 			}
 
 			if (keyboardEvent.keyPressed[GLFW_KEY_D]) 
 			{
-				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t;
+				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 10.0f;
 			}
 
 			//std::cout << camera.Pos.x << " " << camera.Pos.y << " " << camera.Pos.z << std::endl;

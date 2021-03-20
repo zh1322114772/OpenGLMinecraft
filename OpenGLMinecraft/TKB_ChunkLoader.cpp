@@ -5,9 +5,10 @@
 #include <vector>
 #include "Other.hpp"
 #include <iostream>
+#include <chrono>
 
 #define PI 3.1415926
-#define MAX_HEIGHT 40
+#define MAX_HEIGHT 200
 #include "math.h"
 namespace tickerable
 {
@@ -44,14 +45,15 @@ namespace tickerable
 			for (int i = 0; i < chunkListSize; i++)
 			{
 				chunkList[i] = new chunkLoaderTypes::Chunk();
+				chunkList[i]->chunkID = i;
 				recycleList.push(chunkList[i]);
 			}
 
 			//init template to false
-			memset(chunkLoadRegion, false, ((MAX_RADIUS * 2) + 1) * ((MAX_RADIUS * 2) + 1));
+			memset(chunkRegionMap, false, ((MAX_RADIUS * 2) + 1) * ((MAX_RADIUS * 2) + 1));
 
 			//set center
-			chunkLoadRegion[MAX_RADIUS][MAX_RADIUS] = true;
+			chunkRegionMap[MAX_RADIUS][MAX_RADIUS] = true;
 
 			//generate chunk loading template
 			for (int i = 1; i < viewDistance; i++) 
@@ -66,7 +68,7 @@ namespace tickerable
 					int y = sinf(currentRad) * i;
 					int x = cosf(currentRad) * i;
 
-					chunkLoadRegion[MAX_RADIUS + x][MAX_RADIUS + y] = true;
+					chunkRegionMap[MAX_RADIUS + x][MAX_RADIUS + y] = true;
 					currentRad += deltaRad;
 				}
 			}
@@ -88,6 +90,11 @@ namespace tickerable
 		
 		}
 
+		void ChunkLoader::onExit() 
+		{
+		
+		}
+
 		long long ChunkLoader::XYtoX(long long x, long long y) 
 		{
 
@@ -105,8 +112,8 @@ namespace tickerable
 			long long centerChunkX = floor(position.x / 16);
 			long long centerChunkY = floor(position.z / 16);
 
-			//clear mask
-			memset(chunkLoadedMask, false, ((MAX_RADIUS * 2) + 1) * ((MAX_RADIUS * 2) + 1));
+			//clear map
+			memset(chunkLoadingMap, false, ((MAX_RADIUS * 2) + 1) * ((MAX_RADIUS * 2) + 1));
 
 			//check if existence chunks are still in range
 			if (activeChunkList.size() > 0) 
@@ -128,22 +135,23 @@ namespace tickerable
 					}
 					else
 					{
-						//set to loaded mask
-						chunkLoadedMask[MAX_RADIUS + offsetFromCenterX][MAX_RADIUS + offsetFromCenterY] = true;
+						//set to loading map
+						chunkLoadingMap[MAX_RADIUS + offsetFromCenterX][MAX_RADIUS + offsetFromCenterY] = true;
 					}
 				}
 			
 			}
 
-			std::vector<std::thread> loadingTasks;
+			std::vector<std::thread> tasks;
+			std::queue<chunkLoaderTypes::Chunk*> newGeneratedChunks;
 
 			//generate new chunks
 			for (long long i = leftTop; i < rightBottom; i++) 
 			{
 				for (long long j = leftTop; j < rightBottom; j++)
 				{
-					//compare mask
-					if (chunkLoadRegion[i][j] && !chunkLoadedMask[i][j]) 
+					//compare template map and loading map
+					if (chunkRegionMap[i][j] && !chunkLoadingMap[i][j]) 
 					{
 						auto chunk = recycleList.front();
 						recycleList.pop();
@@ -152,45 +160,95 @@ namespace tickerable
 						chunk->locationY = (j - MAX_RADIUS) + centerChunkY;
 
 						//add to loading list
-						loadingTasks.push_back(std::thread(&ChunkLoader::genChunkData, this, chunk));
+						tasks.push_back(std::thread(&ChunkLoader::genChunkData, this, chunk));
+						newGeneratedChunks.push(chunk);
 						activeChunkList.push_back(chunk);
 					}
 				
 				}
 			}
 
-			//generate new chunks
-			for (auto i = loadingTasks.begin(); i < loadingTasks.end(); i++) 
+			//run multithreads
+			for (auto i = tasks.begin(); i < tasks.end(); i++)
 			{
 				(*i).join();
 			}
 
+
+			//hide inner blocks
+			if (!newGeneratedChunks.empty()) 
+			{
+				//clear map and threads
+				memset(chunkPositionMap, 0, ((MAX_RADIUS * 2) + 1) * ((MAX_RADIUS * 2) + 1) * sizeof(chunkLoaderTypes::Chunk*));
+				tasks.clear();
+
+				//map chunk positions to position map
+				while (!newGeneratedChunks.empty()) 
+				{
+					auto i = newGeneratedChunks.front();
+					newGeneratedChunks.pop();
+
+					long long x = (i->locationX - centerChunkX) + MAX_RADIUS;
+					long long y = (i->locationY - centerChunkY) + MAX_RADIUS;
+
+					chunkPositionMap[x][y] = i;
+					tasks.push_back(std::thread(&ChunkLoader::hideBlocks, this, i, x, y));
+				}
+
+				//run multithreads
+				for (auto i = tasks.begin(); i < tasks.end(); i++)
+				{
+					(*i).join();
+				}
+			}
 		}
 		
-		void ChunkLoader::genChunkData(chunkLoaderTypes::Chunk* chunk) 
+		float ChunkLoader::getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float size, float flatness,float currentX, float currentY) 
 		{
 			//0-----1
 			//|     |
 			//|     |
 			//3-----2
-			float coordinateHeights[4];
-			coordinateHeights[0] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX), (chunk->locationY)));
-			coordinateHeights[1] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX + 1), (chunk->locationY)));
-			coordinateHeights[2] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX + 1), (chunk->locationY - 1)));
-			coordinateHeights[3] = other::Other::randomGeneratorF(seed, XYtoX((chunk->locationX), (chunk->locationY - 1)));
+			glm::vec4 coordinateHeights;
+			glm::vec4 similarity;
+			glm::vec2 currentPos(currentX, currentY);
+
+			long long px = (long long)topLeftX;
+			long long py = (long long)topLeftY;
+
+			coordinateHeights[0] = other::Other::randomGeneratorF(seed, XYtoX(px, py)) * flatness;
+			coordinateHeights[1] = other::Other::randomGeneratorF(seed, XYtoX((px + 1), py)) * flatness;
+			coordinateHeights[2] = other::Other::randomGeneratorF(seed, XYtoX((px + 1), (py - 1))) * flatness;
+			coordinateHeights[3] = other::Other::randomGeneratorF(seed, XYtoX(px, (py - 1))) * flatness;
+
+			similarity[0] = other::Other::gaussianSimilarity(glm::vec2(0.0, size - 1), currentPos, size / 2);
+			similarity[1] = other::Other::gaussianSimilarity(glm::vec2(size - 1, size - 1), currentPos, size / 2);
+			similarity[2] = other::Other::gaussianSimilarity(glm::vec2(size - 1, 0.0), currentPos, size / 2);
+			similarity[3] = other::Other::gaussianSimilarity(glm::vec2(0.0, 0.0), currentPos, size / 2);
+
+			auto nonLinearSimilarity = (6.0f * glm::pow(similarity, glm::vec4(5.0))) - (15.0f * glm::pow(similarity, glm::vec4(4.0))) + (10.0f * glm::pow(similarity, glm::vec4(3.0)));
+
+			float mixHeight = glm::dot(coordinateHeights, nonLinearSimilarity) / 4.0;
 			
+			return mixHeight;
+		}
+
+		void ChunkLoader::genChunkData(chunkLoaderTypes::Chunk* chunk) 
+		{
+
 			for (int x = 0; x < 16; x++) 
 			{
 				for (int z = 0; z < 16; z++) 
 				{
-					auto current = glm::vec3((float)x, 0.0, (float)z);
+					float currentX = ((chunk->locationX * 16) + x) - (floorf((float)chunk->locationX / 4) * 64);
+					float currentY = ((chunk->locationY * 16) + z) - (floorf((float)chunk->locationY / 4) * 64);
 
-					float h1 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 16.0), current, 8);
-					float h2 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 16.0), current, 8);
-					float h3 = other::Other::gaussianSimilarity(glm::vec3(16.0, 0.0, 0.0), current, 8);
-					float h4 = other::Other::gaussianSimilarity(glm::vec3(0.0, 0.0, 0.0), current, 8);
+					float region = getSimilarityMix(seed + 123456, floorf((float)chunk->locationX / 4), floorf((float)chunk->locationY / 4), 64, 1.4, currentX, currentY);
+					//float flatness = getSimilarityMix(seed, chunk->locationX, chunk->locationY, 16, 0.2 , x, z);
 
-					int thisHeight = (((h1 * coordinateHeights[0]) + (h2 * coordinateHeights[1]) + (h3 * coordinateHeights[2]) + (h4 * coordinateHeights[3])) / 4.0) * MAX_HEIGHT;
+					//std::cout << ((flatness * 0.5) - 0.4) << std::endl;
+
+					int thisHeight = (0.3 + (region * 0.5)) * MAX_HEIGHT;
 
 					for (int y = 0; y < 256; y++) 
 					{
@@ -206,90 +264,122 @@ namespace tickerable
 				}
 			}
 
+		}
 
-			
+		void ChunkLoader::hideBlocks(chunkLoaderTypes::Chunk* chunk, long long x, long long y) 
+		{
 			//hide invisible blocks to optimize the fps//
 			using namespace game::config::resource;
 			using namespace renderer::controllers::world3D;
+			using namespace std::chrono;
 
 			//init visible states
 			for (int h = 0; h < 256; h++)
 			{
 				for (int w = 0; w < 16; w++)
 				{
-					for (int l = 0; l < 16; l++) 
+					for (int l = 0; l < 16; l++)
 					{
 						chunk->blockVisible[h][w][l] = (BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible != BlockMesh::INVISIBLE);
 					}
 				}
 			}
-			
-			
+
+
+
 			//hide inner blocks
-			unsigned int PosMask = 0b11;
+
 			for (int h = 1; h < 255; h++)
 			{
-				for (int w = 1; w < 15; w++)
+				for (int w = 0; w < 16; w++)
 				{
-					for (int l = 1; l < 15; l++)
+					for (int l = 0; l < 16; l++)
 					{
+						//if block is already invisble then skip
+						if (BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible == BlockMesh::INVISIBLE) 
+						{
+							continue;
+						}
+
+						game::config::blocks::Block* forward = &chunk->blocks[h][w][l];
+						game::config::blocks::Block* backward = &chunk->blocks[h][w][l];
+						game::config::blocks::Block* left = &chunk->blocks[h][w][l];
+						game::config::blocks::Block* right = &chunk->blocks[h][w][l];
+
+						//get forward block
+						if (l >= 15) 
+						{
+							if (chunkPositionMap[x][y + 1] != nullptr) 
+							{
+								forward = &chunkPositionMap[x][y + 1]->blocks[h][w][0];
+							}
+	
+						}
+						else 
+						{
+							forward = &chunk->blocks[h][w][l + 1];
+						}
+
+						//get backword block
+						if (l <= 0) 
+						{
+							if (chunkPositionMap[x][y - 1] != nullptr) 
+							{
+								backward = &chunkPositionMap[x][y - 1]->blocks[h][w][15];
+							}
+							
+						}
+						else 
+						{
+							backward = &chunk->blocks[h][w][l - 1];
+						}
+
+						//get right block
+						if (w >= 15) 
+						{
+							if (chunkPositionMap[x + 1][y] != nullptr) 
+							{
+								right = &chunkPositionMap[x + 1][y]->blocks[h][0][l];
+							}
+						
+						}
+						else 
+						{
+							right = &chunk->blocks[h][w + 1][l];
+						}
+
+						//get left block
+						if (w <= 0) 
+						{
+							if (chunkPositionMap[x - 1][y] != nullptr)
+							{
+								left = &chunkPositionMap[x - 1][y]->blocks[h][15][l];
+							}
+						}
+						else 
+						{
+							left = &chunk->blocks[h][w - 1][l];
+						}
 
 						//if surrounding blocks are not transparent or invisible, then hide self
 						if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][l].blockID]->visible == BlockMesh::VISIBLE) &&
 							(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][l].blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[chunk->blocks[h][w + 1][l].blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[chunk->blocks[h][w - 1][l].blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[chunk->blocks[h][w][l + 1].blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[chunk->blocks[h][w][l - 1].blockID]->visible == BlockMesh::VISIBLE))
+							(BlockMeshIDs::IDList[right->blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[left->blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[forward->blockID]->visible == BlockMesh::VISIBLE) &&
+							(BlockMeshIDs::IDList[backward->blockID]->visible == BlockMesh::VISIBLE))
 						{
 							chunk->blockVisible[h][w][l] = false;
 						}
-
 					}
 				}
-			}
-			
-			
-			//check border blocks
-			for (int h = 1; h < 255; h++)
-			{
-				//check 2d horizontal
-				for (int w = 0; w < 16; w++) 
-				{
-					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][0].blockID]->visible == BlockMesh::VISIBLE) && 
-						(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][0].blockID]->visible == BlockMesh::VISIBLE)) 
-					{
-						chunk->blockVisible[h][w][0] = false;
-					}
-
-					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][15].blockID]->visible == BlockMesh::VISIBLE) &&
-						(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][15].blockID]->visible == BlockMesh::VISIBLE))
-					{
-						chunk->blockVisible[h][w][15] = false;
-					}					
-				}
-				
-				//check 2d vertical
-				for (int l = 1; l < 15; l++) 
-				{
-					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][0][l].blockID]->visible == BlockMesh::VISIBLE) &&
-						(BlockMeshIDs::IDList[chunk->blocks[h - 1][0][l].blockID]->visible == BlockMesh::VISIBLE))
-					{
-						chunk->blockVisible[h][0][l] = false;
-					}
-
-					if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][15][l].blockID]->visible == BlockMesh::VISIBLE) &&
-						(BlockMeshIDs::IDList[chunk->blocks[h - 1][15][l].blockID]->visible == BlockMesh::VISIBLE))
-					{
-						chunk->blockVisible[h][15][l] = false;
-					}
-				
-				}				
 			}
 
 			//set active 
 			chunk->isActive = true;
+			chunk->timeStamp = duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
 		}
+
 
 		ChunkLoader::~ChunkLoader() 
 		{

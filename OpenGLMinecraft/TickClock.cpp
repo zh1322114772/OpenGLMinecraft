@@ -57,6 +57,15 @@ namespace tickerable
 		}
 	
 	}
+
+	TickClock::~TickClock() 
+	{
+		for (auto i = taskList.begin(); i < taskList.end(); i++)
+		{
+			(*i)->onExit();
+		}
+	}
+
 	void TickClock::resume() 
 	{
 		if (status == PAUSED) 
@@ -111,6 +120,8 @@ namespace tickerable
 
 				//get delta t
 				delta_t = milliTime1 - milliTime;
+
+				std::cout << delta_t << std::endl;
 
 				//sleep till desire tick time
 				int remainTime = (int)(tick - delta_t);

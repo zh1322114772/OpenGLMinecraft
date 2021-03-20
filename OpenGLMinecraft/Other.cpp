@@ -22,7 +22,7 @@ namespace other
 	}
 
 
-	float Other::gaussianSimilarity(glm::vec3 x, glm::vec3 l, float sigma) 
+	float Other::gaussianSimilarity(glm::vec2 x, glm::vec2 l, float sigma) 
 	{
 		return exp(-powf(glm::length(x - l), 2) / (2 * powf(sigma, 2)));
 	}

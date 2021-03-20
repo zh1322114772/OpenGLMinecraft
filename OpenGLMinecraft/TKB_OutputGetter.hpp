@@ -1,5 +1,6 @@
 #pragma once
 #include "TickClock_Types.hpp"
+#include "TKB_ChunkLoader.hpp"
 #include <limits>
 
 namespace tickerable
@@ -24,6 +25,13 @@ namespace tickerable
 				/// chunk world location
 				/// </summary>
 				long long locationX = LLONG_MAX, locationY = LLONG_MAX;
+
+				/// <summary>
+				/// chunk time stamp
+				/// </summary>
+				long long timeStamp = 0;
+
+				unsigned int chunkID;
 			};
 
 
@@ -44,7 +52,26 @@ namespace tickerable
 			/// <summary>
 			/// total chunk buffers
 			/// </summary>
-			outputGetterTypes::ChunkBuffer* chunkBuffers;
+			outputGetterTypes::ChunkBuffer** chunkBuffers;
+
+			/// <summary>
+			/// chunk buffer active list
+			/// </summary>
+			outputGetterTypes::ChunkBuffer** chunkBuffersActive;
+
+
+
+			/// <summary>
+			/// chunk render buffer size
+			/// </summary>
+			int chunkBufferSize;
+
+			/// <summary>
+			/// process chunk data to chunk buffer
+			/// </summary>
+			/// <param name="chunkBuffer">chunk buffer</param>
+			/// <param name="chunkData">chunk data</param>
+			void chunkData2ChunkBuffer(outputGetterTypes::ChunkBuffer* chunkBuffer, tasks::chunkLoaderTypes::Chunk* chunkData);
 
 		public:
 			/// <summary>
@@ -64,11 +91,13 @@ namespace tickerable
 			/// get chunk buffer
 			/// </summary>
 			/// <returns></returns>
-			outputGetterTypes::ChunkBuffer* getChunkBuffer();
+			outputGetterTypes::ChunkBuffer** getChunkBuffers();
 
 			void onEnable() override;
 
 			void onDisable() override;
+
+			void onExit() override;
 
 			void Tick(const double& delta_t, const std::vector<Task*>& taskList) override;
 

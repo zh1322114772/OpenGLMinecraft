@@ -15,6 +15,12 @@ namespace tickerable
 		
 		}
 
+		void InputGetter::onExit() 
+		{
+		
+		
+		}
+
 		void InputGetter::Tick(const double& delta_t, const std::vector<Task*>& taskList) 
 		{
 			//copy inputs

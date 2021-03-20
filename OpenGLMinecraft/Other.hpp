@@ -28,7 +28,7 @@ namespace other
 		/// <param name="l">l vector</param>
 		/// <param name="sigma">sigma</param>
 		/// <returns></returns>
-		static float gaussianSimilarity(glm::vec3 x, glm::vec3 l, float sigma);
+		static float gaussianSimilarity(glm::vec2 x, glm::vec2 l, float sigma);
 
 	};
 	

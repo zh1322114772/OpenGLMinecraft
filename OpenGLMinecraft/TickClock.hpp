@@ -39,6 +39,8 @@ namespace tickerable
 		/// <param name="interval">interval in millisecond</param>
 		/// <returns></returns>
 		TickClock(const float interval);
+
+		~TickClock();
 	
 		/// <summary>
 		/// add the task to tick clock

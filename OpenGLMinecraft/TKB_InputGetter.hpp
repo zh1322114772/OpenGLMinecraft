@@ -99,6 +99,8 @@ namespace tickerable
 
 			void onDisable() override;
 
+			void onExit() override;
+
 			void Tick(const double& delta_t, const std::vector<Task*>& taskList) override;
 		
 		};
