@@ -145,6 +145,7 @@ namespace tickerable
 			std::vector<std::thread> tasks;
 			std::queue<chunkLoaderTypes::Chunk*> newGeneratedChunks;
 
+
 			//generate new chunks
 			for (long long i = leftTop; i < rightBottom; i++) 
 			{
@@ -158,6 +159,7 @@ namespace tickerable
 
 						chunk->locationX = (i - MAX_RADIUS) + centerChunkX;
 						chunk->locationY = (j - MAX_RADIUS) + centerChunkY;
+					
 
 						//add to loading list
 						tasks.push_back(std::thread(&ChunkLoader::genChunkData, this, chunk));
@@ -203,30 +205,33 @@ namespace tickerable
 			}
 		}
 		
-		float ChunkLoader::getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float size, float flatness,float currentX, float currentY) 
+		float ChunkLoader::getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float flatness, int samplingRange, float blockX, float blockZ)
 		{
 			//0-----1
 			//|     |
 			//|     |
 			//3-----2
+			float size = 16 * samplingRange;
+			long long px = (long long)floorf(topLeftX / samplingRange);
+			long long py = (long long)floorf(topLeftY / samplingRange);
 			glm::vec4 coordinateHeights;
 			glm::vec4 similarity;
-			glm::vec2 currentPos(currentX, currentY);
+			glm::vec2 currentPos((((topLeftX * 16) + blockX) - (px * size)) / size, (((topLeftY * 16) + blockZ) - (py * size)) / size);
 
-			long long px = (long long)topLeftX;
-			long long py = (long long)topLeftY;
+			//std::cout << currentPos[0] << " " << currentPos[1] << std::endl;
+
 
 			coordinateHeights[0] = other::Other::randomGeneratorF(seed, XYtoX(px, py)) * flatness;
 			coordinateHeights[1] = other::Other::randomGeneratorF(seed, XYtoX((px + 1), py)) * flatness;
 			coordinateHeights[2] = other::Other::randomGeneratorF(seed, XYtoX((px + 1), (py - 1))) * flatness;
 			coordinateHeights[3] = other::Other::randomGeneratorF(seed, XYtoX(px, (py - 1))) * flatness;
 
-			similarity[0] = other::Other::gaussianSimilarity(glm::vec2(0.0, size - 1), currentPos, size / 2);
-			similarity[1] = other::Other::gaussianSimilarity(glm::vec2(size - 1, size - 1), currentPos, size / 2);
-			similarity[2] = other::Other::gaussianSimilarity(glm::vec2(size - 1, 0.0), currentPos, size / 2);
-			similarity[3] = other::Other::gaussianSimilarity(glm::vec2(0.0, 0.0), currentPos, size / 2);
+			similarity[0] = other::Other::gaussianSimilarity(glm::vec2(0, 1), currentPos, 0.5);
+			similarity[1] = other::Other::gaussianSimilarity(glm::vec2(1, 1), currentPos, 0.5);
+			similarity[2] = other::Other::gaussianSimilarity(glm::vec2(1, 0), currentPos, 0.5);
+			similarity[3] = other::Other::gaussianSimilarity(glm::vec2(0, 0), currentPos, 0.5);
 
-			auto nonLinearSimilarity = (6.0f * glm::pow(similarity, glm::vec4(5.0))) - (15.0f * glm::pow(similarity, glm::vec4(4.0))) + (10.0f * glm::pow(similarity, glm::vec4(3.0)));
+			auto nonLinearSimilarity = (glm::pow(similarity, glm::vec4(3.0)));
 
 			float mixHeight = glm::dot(coordinateHeights, nonLinearSimilarity) / 4.0;
 			
@@ -240,27 +245,33 @@ namespace tickerable
 			{
 				for (int z = 0; z < 16; z++) 
 				{
-					float currentX = ((chunk->locationX * 16) + x) - (floorf((float)chunk->locationX / 4) * 64);
-					float currentY = ((chunk->locationY * 16) + z) - (floorf((float)chunk->locationY / 4) * 64);
 
-					float region = getSimilarityMix(seed + 123456, floorf((float)chunk->locationX / 4), floorf((float)chunk->locationY / 4), 64, 1.4, currentX, currentY);
-					//float flatness = getSimilarityMix(seed, chunk->locationX, chunk->locationY, 16, 0.2 , x, z);
+					float region = getSimilarityMix(seed, chunk->locationX, chunk->locationY, 5, 64, x, z);
+					float flatness = getSimilarityMix(seed * 2, chunk->locationX, chunk->locationY, 6, 16, x, z);
+					float flatness1 = getSimilarityMix(seed * 3, chunk->locationX, chunk->locationY, 4.5, 4, x, z);
+					float detail = getSimilarityMix(seed * 4, chunk->locationX, chunk->locationY, 1, 1, x, z);
 
-					//std::cout << ((flatness * 0.5) - 0.4) << std::endl;
-
-					int thisHeight = (0.3 + (region * 0.5)) * MAX_HEIGHT;
+					int thisHeight = ceilf((0.1 + (region * 0.4) + (flatness * 0.25) + (flatness1 * 0.05) + (detail * 0.03)) * MAX_HEIGHT);
 
 					for (int y = 0; y < 256; y++) 
 					{
 						if (y > thisHeight)
 						{
-							chunk->blocks[y][x][z] = game::config::blocks::AirBlock();
+							if (y < 60) 
+							{
+								chunk->blocks[y][x][z] = game::config::blocks::BedrockBlock();
+							}
+							else 
+							{
+								chunk->blocks[y][x][z] = game::config::blocks::AirBlock();
+							}
 						}
 						else 
 						{
-							chunk->blocks[y][x][z] = game::config::blocks::OakPlankBlock();
+							chunk->blocks[y][x][z] = game::config::blocks::DirtBlock();						
 						}
 					}
+
 				}
 			}
 
@@ -273,6 +284,9 @@ namespace tickerable
 			using namespace renderer::controllers::world3D;
 			using namespace std::chrono;
 
+			//clear block counter
+			memset(chunk->blockCounter, 0, CFG_BLOCKMESH_ID_LAST * sizeof(unsigned short int));
+
 			//init visible states
 			for (int h = 0; h < 256; h++)
 			{
@@ -280,16 +294,24 @@ namespace tickerable
 				{
 					for (int l = 0; l < 16; l++)
 					{
-						chunk->blockVisible[h][w][l] = (BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible != BlockMesh::INVISIBLE);
+						if (BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible != BlockMesh::INVISIBLE) 
+						{
+							//either visible or transparnt
+							chunk->blockVisible[h][w][l] = true;
+							chunk->blockCounter[chunk->blocks[h][w][l].blockID]++;
+						}
+						else 
+						{
+							// invisible
+							chunk->blockVisible[h][w][l] = false;
+						}
+
 					}
 				}
 			}
 
-
-
 			//hide inner blocks
-
-			for (int h = 1; h < 255; h++)
+			for (int h = 0; h < 255; h++)
 			{
 				for (int w = 0; w < 16; w++)
 				{
@@ -298,6 +320,13 @@ namespace tickerable
 						//if block is already invisble then skip
 						if (BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible == BlockMesh::INVISIBLE) 
 						{
+							continue;
+						}
+		
+						//clean bottom 
+						if (h == 0) 
+						{
+							chunk->blockVisible[h][w][l] = false;
 							continue;
 						}
 
@@ -370,6 +399,7 @@ namespace tickerable
 							(BlockMeshIDs::IDList[backward->blockID]->visible == BlockMesh::VISIBLE))
 						{
 							chunk->blockVisible[h][w][l] = false;
+							chunk->blockCounter[chunk->blocks[h][w][l].blockID]--;
 						}
 					}
 				}

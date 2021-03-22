@@ -67,9 +67,9 @@ namespace renderer
 			inline std::tuple<wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*> loadBitMaps(const char* fileName);
 
 			/// <summary>
-			/// load multiple textures and combine it into one
+			/// make game texture
 			/// </summary>
-			inline wrapperGL::ImageObject* makeTexture(const char* fileName);
+			inline std::tuple<wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*> makeTexture(const char* fileName);
 
 			/// <summary>
 			/// current meshblock loading progress adjusted to 0-1

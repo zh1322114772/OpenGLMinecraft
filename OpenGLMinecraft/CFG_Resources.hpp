@@ -78,7 +78,9 @@ namespace game
 			/// </summary>
 			struct TextureIDs 
 			{
-				static wrapperGL::TextureID IDList[CFG_TEXTURE_ID_LAST];
+				static wrapperGL::TextureID blockTextureIDList[CFG_TEXTURE_ID_LAST];
+				static wrapperGL::TextureID blockNormalIDList[CFG_TEXTURE_ID_LAST];
+				static wrapperGL::TextureID blockOSIDList[CFG_TEXTURE_ID_LAST];
 			};
 
 			/// <summary>

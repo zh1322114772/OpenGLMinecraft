@@ -22,7 +22,6 @@ namespace tickerable
 		{
 			chunkBufferSize = (int)(powf((viewDistance), 2) * PI);
 
-			chunkBuffersActive = new outputGetterTypes::ChunkBuffer* [chunkBufferSize];
 			chunkBuffers = new outputGetterTypes::ChunkBuffer* [chunkBufferSize];
 			for (int i = 0; i < chunkBufferSize; i++) 
 			{
@@ -49,64 +48,60 @@ namespace tickerable
 				delete chunkBuffers[i];
 			}
 			delete[] chunkBuffers;
-			delete[] chunkBuffersActive;
 		}
 
 		int OutputGetter::getChunkBufferSize() 
 		{
-			return chunkActiveCount;
+			return chunkBufferSize;
 		}
 
 		outputGetterTypes::ChunkBuffer** OutputGetter::getChunkBuffers()
 		{
-			return chunkBuffersActive;
+			return chunkBuffers;
 		}
 
 		void OutputGetter::chunkData2ChunkBuffer(outputGetterTypes::ChunkBuffer* chunkBuffer, tasks::chunkLoaderTypes::Chunk* chunkData) 
 		{
-
 			chunkBuffer->locationX = chunkData->locationX;
 			chunkBuffer->locationY = chunkData->locationY;
 			chunkBuffer->timeStamp = chunkData->timeStamp;
+			unsigned short int endIndex[CFG_BLOCKMESH_ID_LAST];
 
-			for (int y = 0; y < 256; y++)
+
+			//set end index
+			memcpy(endIndex, chunkData->blockCounter, sizeof(unsigned short int) * CFG_BLOCKMESH_ID_LAST);
+			memcpy(chunkBuffer->blockCounter, chunkData->blockCounter, sizeof(unsigned short int) * CFG_BLOCKMESH_ID_LAST);
+			
+			endIndex[0] -= 1;
+
+			for (int i = 1; i < CFG_BLOCKMESH_ID_LAST; i++)
 			{
-				int visibleCount = 0;
-				int invisibleCount = 255;
+				endIndex[i] = endIndex[i] + endIndex[i - 1];
+			}
 
-				for (int x = 0; x < 16; x++)
+			//set block sequence data
+			for (unsigned short int y = 0; y < 256; y++) 
+			{
+				for (unsigned char x = 0; x < 16; x++) 
 				{
-					for (int z = 0; z < 16; z++)
+					for (unsigned char z = 0; z < 16; z++) 
 					{
-
+						//if block is visible, then add it to block sequence
 						if (chunkData->blockVisible[y][x][z])
 						{
-							//block visible
-							unsigned long long data = 0;
+							outputGetterTypes::BlockInfo data;
+							data.posData.axisXZ = (x << 4) + z;
+							data.posData.axisY = y;
+							data.posData.reserved = 0;
 
-							//z axis
-							data += z;
-							//x axis
-							data += (x) << 4;
-							//9th bit always 1
-							data += 0b100000000;
-							//texture id
-							data += (unsigned long long)(game::config::resource::BlockMeshIDs::IDList[chunkData->blocks[y][x][z].blockID]->textureID) << 32;
-
-							chunkBuffer->info[y][visibleCount] = data;
-							visibleCount++;
+							chunkBuffer->blockSequence[endIndex[chunkData->blocks[y][x][z].blockID]] = data;
+							endIndex[chunkData->blocks[y][x][z].blockID]--;
 						}
-						else
-						{
-							//block invisible
-							chunkBuffer->info[y][invisibleCount] = 0;
-							invisibleCount--;
-						}
-
 					}
 				}
 			}
-		
+
+			chunkBuffer->isActive = chunkData->isActive;
 		
 		}
 
@@ -114,39 +109,26 @@ namespace tickerable
 		{
 			
 			//process chunk data
-			auto chunkList = ((ChunkLoader*)taskList[1])->getActiveList();
-			int counter = 0;
+			auto chunkList = ((ChunkLoader*)taskList[1])->getChunkList();
 
-			for (int i = 0; i < chunkList.size(); i++)
+			for (int i = 0; i < chunkBufferSize; i++)
 			{
 
-				auto ChkBfPointer = chunkBuffers[chunkList[i]->chunkID];
-				if (ChkBfPointer->timeStamp != chunkList[i]->timeStamp) 
+				if ((chunkBuffers[i]->timeStamp != chunkList[i]->timeStamp))
 				{
-					ChkBfPointer->locationX = chunkList[i]->locationX;
-					ChkBfPointer->locationY = chunkList[i]->locationY;
-					ChkBfPointer->timeStamp = chunkList[i]->timeStamp;
-
-					chunkData2ChunkBuffer(ChkBfPointer, chunkList[i]);
+					if (chunkList[i]->isActive) 
+					{
+						chunkData2ChunkBuffer(chunkBuffers[i], chunkList[i]);
+					}
+					else 
+					{
+						chunkBuffers[i]->isActive = chunkList[i]->isActive;
+					}
 				}
-				chunkBuffersActive[counter] = ChkBfPointer;
-				counter++;
 
 			}
-
-			chunkActiveCount = chunkList.size();
 			
 
-			/***
-			auto chunkList = ((ChunkLoader*)taskList[1])->getActiveList();
-
-			for (int i = 0; i < chunkList.size(); i++)
-			{
-				
-				chunkData2ChunkBuffer(chunkBuffers[i], chunkList[i]);
-			}
-			chunkActiveCount = chunkList.size();
-			*/
 		}
 
 

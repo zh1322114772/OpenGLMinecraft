@@ -139,7 +139,7 @@
       <Filter>Source Files\3rd</Filter>
     </ClCompile>
     <ClCompile Include="GLSL_Code.cpp">
-      <Filter>Source Files\Render\OpenGLWrapper</Filter>
+      <Filter>Source Files\Render\GLSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

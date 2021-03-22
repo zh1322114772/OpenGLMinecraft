@@ -3,6 +3,7 @@
 #include "TickClock_Types.hpp"
 #include <queue>
 #include <limits>
+#include "CFG_Resources.hpp"
 
 #define MAX_RADIUS 64
 
@@ -46,6 +47,10 @@ namespace tickerable
 				/// </summary>
 				bool blockVisible[256][16][16] = { false };
 
+				/// <summary>
+				/// count how many of each different types of block in a chunk
+				/// </summary>
+				unsigned short int blockCounter[CFG_BLOCKMESH_ID_LAST];
 			};
 
 		}
@@ -105,7 +110,7 @@ namespace tickerable
 			/// </summary>
 			/// <param name="chunk">chunk pointer</param>
 			void genChunkData(chunkLoaderTypes::Chunk* chunk);
-			
+
 			/// <summary>
 			/// hide chunk inner invisible blocks
 			/// </summary>
@@ -132,10 +137,11 @@ namespace tickerable
 			/// <param name="topLeftX">point top left x</param>
 			/// <param name="topLeftY">point top left y</param>
 			/// <param name="size">surrounding point width & height</param>
-			/// <param name="currentX">current point x</param>
-			/// <param name="currentY">current point y</param>
+			/// <param name="samplingRange">point sampling range, </param>
+			/// <param name="blockX">current block x position in the chunk</param>
+			/// <param name="blockZ">current block z position in the chunk</param>
 			/// <returns></returns>
-			inline float getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float size, float flatness, float currentX, float currentY);
+			inline float getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float flatness, int samplingRange, float blockX, float blockZ);
 
 		public:
 			/// <summary>

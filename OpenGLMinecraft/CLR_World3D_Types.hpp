@@ -22,28 +22,45 @@ namespace renderer
 			/// </summary>
 			struct BlockMesh 
 			{
-				static const unsigned char VISIBLE = 0b00;
-				static const unsigned char TRANSPARENT = 0b01;
-				static const unsigned char INVISIBLE = 0b10;
+				static const unsigned char VISIBLE = 0;
+				static const unsigned char TRANSPARENT = 1;
+				static const unsigned char INVISIBLE = 2;
 
+				/// <summary>
+				/// texture id
+				/// </summary>
 				unsigned int textureID;
+				
+				/// <summary>
+				/// normal map id
+				/// </summary>
+				unsigned int normalID;
+
+				/// <summary>
+				/// specular and occlusion map id
+				/// </summary>
+				unsigned int OSID;
 
 				unsigned char visible = VISIBLE;
 
 				/// <summary>
 				/// constructor
 				/// </summary>
-				/// <param name="tID">texture id</param>
+				/// <param name="tid">texture id</param>
+				/// <param name="nid">normal id</param>
+				/// <param name="osid">occlusion&specular id</param>
 				/// <returns></returns>
-				BlockMesh(wrapperGL::TextureID& tID);
+				BlockMesh(unsigned int tid, unsigned int nid, unsigned int osid);
 				
 				/// <summary>
 				/// constructor
 				/// </summary>
-				/// <param name="tID">texture id</param>
+				/// <param name="tid">texture id</param>
+				/// <param name="nid">normal id</param>
+				/// <param name="osid">occlusion&specular id</param>
 				/// <param name="t">if texture is transparent</param>
 				/// <returns></returns>
-				BlockMesh(wrapperGL::TextureID& tID, unsigned char t);
+				BlockMesh(unsigned int tid, unsigned int nid, unsigned int osid, unsigned char t);
 			};
 
 			struct Camera 

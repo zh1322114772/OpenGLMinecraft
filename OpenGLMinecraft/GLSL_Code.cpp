@@ -47,25 +47,34 @@ namespace renderer
 		"out vec3 fNorm;\n"
 		"out vec2 fTex;\n"
 		"out float fFace;\n"
-		"out int fBlock;\n"
 
-		"uniform float blockPosition[72];\n"
+		"uniform uint blockPosition[256];\n"
+		"uniform int blockCount;\n"
+		"uniform float chunkXPosition;\n"
+		"uniform float chunkYPosition;\n"
 		"uniform mat4 viewMat;\n"
 		"uniform mat4 projectionMat;\n"
 
 		"void main()\n"
 		"{\n"
 		"	int vBlock = int(vBlockf);\n"
-		"	vec3 worldPos = vec3(blockPosition[vBlock * 3], blockPosition[(vBlock * 3) + 1], blockPosition[(vBlock * 3) + 2]);\n"
 
-		"	vec4 realPos = vec4(worldPos + vPos, 1.0);\n"
+		"	if(!(vBlock < blockCount))\n"
+		"	{\n"
+		"		gl_Position = vec4(-2.0, -2.0, -2.0, 1.0);\n"
+		"		return;\n"
+		"	}\n"
+
+		"	uint blockPos = blockPosition[vBlock];\n"
+		"	vec3 blockWorldPos = vec3(float((blockPos & 255) >> 4) + chunkXPosition, float(blockPos >> 16), float(blockPos & 15) + chunkYPosition);\n"
+
+		"	vec4 realPos = vec4(blockWorldPos + vPos, 1.0);\n"
 		"	gl_Position = projectionMat * viewMat * realPos;\n"
 
 		"	fPos = realPos.xyz;\n"
 		"	fNorm = normalize(vNorm);\n"
 		"	fTex = vTex;\n"
 		"	fFace = vFace;\n"
-		"	fBlock = vBlock;\n"
 		"}\n";
 
 	char GLSL::World3DBlockFragmentCode[] =
@@ -75,7 +84,6 @@ namespace renderer
 		"in vec3 fNorm;\n"
 		"in vec2 fTex;\n"
 		"in float fFace;\n"
-		"flat in int fBlock;\n"
 
 		"struct GlobalLight\n"
 		"{\n"
@@ -85,7 +93,7 @@ namespace renderer
 		"	vec3 lightColorS;\n"
 		"};\n"
 
-		"uniform sampler2D fTexture[24];\n"
+		"uniform sampler2D fTexture[3];\n"
 		"uniform GlobalLight globalLight;\n"
 		"uniform vec3 cameraPosition;\n"
 
@@ -108,9 +116,9 @@ namespace renderer
 
 		"vec4 getTextureColor(vec2 org)\n"
 		"{\n"
-		"	float x = ((fFace + org.x)/ 15);\n"
+		"	float x = ((fFace + org.x)/ 6.0);\n"
 		"	float y = org.y;\n"
-		"	return texture(fTexture[fBlock], vec2(x, y));\n"
+		"	return texture(fTexture[0], vec2(x, y));\n"
 		"};\n"
 
 		"vec2 getSOColor(vec2 org)\n"
@@ -118,9 +126,9 @@ namespace renderer
 		"	int offset = int(fFace) / 2;\n"
 		"	int select = int(fFace) % 2;\n"
 
-		"	float x = (12.0 + float(offset) + org.x)/15;\n"
+		"	float x = (float(offset) + org.x)/ 3;\n"
 		"	float y = org.y;\n"
-		"	vec4 res = texture(fTexture[fBlock], vec2(x, y));\n"
+		"	vec4 res = texture(fTexture[1], vec2(x, y));\n"
 		"	return vec2(res[select * 2], res[(select * 2) + 1]);\n"
 		"}\n"
 

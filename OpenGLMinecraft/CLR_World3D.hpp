@@ -58,6 +58,15 @@ namespace renderer
 			/// <param name="projection">projection matrix</param>
 			void setProjection(glm::mat4& projection);
 
+			/// <summary>
+			/// draw blocks
+			/// </summary>
+			/// <param name="infoArr">chunk buffer block sequence</param>
+			/// <param name="size">block sequence size</param>
+			/// <param name="m">the block to be drawn</param>
+			inline void blockDrawer(unsigned int* infoArr, int size, world3D::BlockMesh* m);
+
+
 			//inherited from Controller
 
 			void onStart() override;

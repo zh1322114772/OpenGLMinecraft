@@ -4,6 +4,7 @@
 #include "GLW_GLWrapper.hpp"
 #include "Renderer.hpp"
 #include "CFG_Resources.hpp"
+#define MAX_BLOCK_DRAWN 256
 
 namespace renderer
 {
@@ -20,7 +21,7 @@ namespace renderer
 			shader = std::shared_ptr<wrapperGL::ShaderProgram>(new wrapperGL::ShaderProgram(GLSL::World3DBlockVertexShaderCode, GLSL::World3DBlockFragmentCode));
 
 			//set camera and projection matrix
-			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.5f, 1000.f);
+			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.7f, 1024.f);
 			renderer::Easy3D::setMouseCenter(true);
 			
 			camera = world3D::Camera(glm::vec3(0.0, 150.0, 0.0));
@@ -71,10 +72,42 @@ namespace renderer
 			tickClock->pause();
 		}
 
+		void World3D::blockDrawer(unsigned int* infoArr, int size, world3D::BlockMesh* m) 
+		{
+			//bind texture, normal, specular and occlusion maps
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m->textureID);
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, m->normalID);
+
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, m->OSID);
+
+			while (size > 0) 
+			{
+				if (size > MAX_BLOCK_DRAWN)
+				{
+					shader->setInt("blockCount", MAX_BLOCK_DRAWN);
+					shader->setUInt("blockPosition", infoArr, MAX_BLOCK_DRAWN);
+				}
+				else 
+				{
+					shader->setInt("blockCount", size);
+					shader->setUInt("blockPosition", infoArr, size);
+				}
+				wrapperGL::GLWrapper::draw(game::config::resource::VAOObjectList::cubes);
+
+				infoArr += MAX_BLOCK_DRAWN;
+				size -= MAX_BLOCK_DRAWN;
+			}
+
+		}
+
 		void World3D::terrainDrawer() 
 		{
 			//set textures
-			for (int i = 0; i < 24; i++) 
+			for (int i = 0; i < 3; i++) 
 			{
 				shader->setInt("fTexture["+std::to_string(i)+"]", i);
 			}
@@ -82,64 +115,30 @@ namespace renderer
 			auto chunkList = tickClock->getOutputGetter()->getChunkBuffers();
 			auto chunkListSize = tickClock->getOutputGetter()->getChunkBufferSize();
 
-			//record block position
-			float blockPos[72];
-			unsigned int blockTex[24];
-			int blockCounter = 0;
-			
 			//iterate through all active chunks
-			for (int c = 0; c < chunkListSize; c++)
+			for (int i = 0; i < chunkListSize; i++) 
 			{
-				auto thisChunk = chunkList[c];
-				float thisChunkX = thisChunk->locationX * 16;
-				float thisChunkZ = thisChunk->locationY * 16;
+				auto thisChunk = chunkList[i];
+				//if chunk is not in active list, then skip
+				if (!thisChunk->isActive) continue;
 
-				//iterate through single chunk
-				for (int y = 0; y < 256; y++)
+				//send chunk position to shader
+				shader->setFloat("chunkXPosition", (float)thisChunk->locationX * 16);
+				shader->setFloat("chunkYPosition", (float)thisChunk->locationY * 16);
+
+				//draw block sequence
+				auto sequence = thisChunk->blockSequence;
+				for (int j = 0; j < CFG_BLOCKMESH_ID_LAST; j++) 
 				{
-					//if slice exist visible blocks
-					if (!(thisChunk->info[y][0])) continue;
-
-					//iterate through every single block in a slice
-					for (int i = 0; i < 256; i++) 
+					if (thisChunk->blockCounter[j] > 0) 
 					{
-						unsigned long long info = thisChunk->info[y][i];
-
-						//check if reachs to the end
-						if (!info) break;
-						
-						if (blockCounter >= 24) 
-						{
-							//send position data to gpu
-							shader->setFloat("blockPosition", blockPos, 72);
-
-							//bind texture
-							for (int k = 0; k < 24; k++)
-							{
-								glActiveTexture(GL_TEXTURE0 + k);
-								glBindTexture(GL_TEXTURE_2D, blockTex[k]);
-							}
-
-							wrapperGL::GLWrapper::draw(game::config::resource::VAOObjectList::cubes);
-							blockCounter = 0;
-						}
-
-						//write block position data
-						blockPos[(blockCounter * 3)] = thisChunkX + (float)((info & 0xf0) >> 4);
-						blockPos[(blockCounter * 3) + 1] = (float)y;
-						blockPos[(blockCounter * 3) + 2] = thisChunkZ + (float)(info & 0xf);
-
-						//write block texture data
-						blockTex[blockCounter] = ((info & 0xffffffff00000000) >> 32);
-
-						blockCounter++;
+						blockDrawer((unsigned int*)sequence, thisChunk->blockCounter[j], game::config::resource::BlockMeshIDs::IDList[j]);
+						sequence += thisChunk->blockCounter[j];
 					}
-
 				}
 
-
 			}
-		
+
 		}
 
 		void World3D::onDraw(const double& delta_t)

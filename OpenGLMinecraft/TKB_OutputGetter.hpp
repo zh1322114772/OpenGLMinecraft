@@ -1,6 +1,7 @@
 #pragma once
 #include "TickClock_Types.hpp"
 #include "TKB_ChunkLoader.hpp"
+#include "CFG_Resources.hpp"
 #include <limits>
 
 namespace tickerable
@@ -9,18 +10,36 @@ namespace tickerable
 	{
 		namespace outputGetterTypes
 		{
+			union BlockInfo 
+			{
+				struct PosData
+				{
+					unsigned char axisXZ;
+					unsigned char reserved;
+					unsigned short int axisY;
+
+				}posData;
+
+				unsigned int data;
+			};
+
 			struct ChunkBuffer 
 			{
-				/// <summary>
-				/// every unsigned long long stores 3 infomation
-				///	bit 0-4: z position
-				/// bit 4-8: x position
-				/// bit 8-9: 0 if block is invisible, otherwise should always be 1  
-				/// bit 9-32: reserved
-				/// bit 32-64: texture id
-				/// </summary>
-				unsigned long long info[256][256] = {0};
 				
+				/// <summary>
+				/// every unsigned int stores block position info
+				/// bit 0 - 4: z axis
+				/// bit 4 - 8: x axis
+				/// bit 8 - 16: reserved
+				/// bit 16 - 32: y axis
+				/// </summary>
+				BlockInfo blockSequence[65536] = { 0 };
+
+				/// <summary>
+				/// count how many of each different types of block in a chunk
+				/// </summary>
+				unsigned short int blockCounter[CFG_BLOCKMESH_ID_LAST] = { 0 };
+
 				/// <summary>
 				/// chunk world location
 				/// </summary>
@@ -31,7 +50,16 @@ namespace tickerable
 				/// </summary>
 				long long timeStamp = 0;
 
+				/// <summary>
+				/// chunbuffer chunk id
+				/// </summary>
 				unsigned int chunkID;
+
+				/// <summary>
+				/// wether a chunk buffer should be rendered or not
+				/// </summary>
+				bool isActive = false;
+
 			};
 
 
@@ -44,22 +72,11 @@ namespace tickerable
 		class OutputGetter : public Task
 		{
 		private:
-			/// <summary>
-			/// number of active chunks
-			/// </summary>
-			int chunkActiveCount = 0;
 
 			/// <summary>
 			/// total chunk buffers
 			/// </summary>
 			outputGetterTypes::ChunkBuffer** chunkBuffers;
-
-			/// <summary>
-			/// chunk buffer active list
-			/// </summary>
-			outputGetterTypes::ChunkBuffer** chunkBuffersActive;
-
-
 
 			/// <summary>
 			/// chunk render buffer size

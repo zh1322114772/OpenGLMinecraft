@@ -128,9 +128,13 @@ namespace renderer
 			return std::make_tuple(img, imgN, imgS, imgO);
 		}
 
-		wrapperGL::ImageObject* Loading::makeTexture(const char* fileName)
+		std::tuple<wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*> Loading::makeTexture(const char* fileName)
 		{
 			auto [img, imgN, imgS, imgO] = loadBitMaps(fileName);
+
+			wrapperGL::ImageObject* retImg = nullptr;
+			wrapperGL::ImageObject* retImgN = nullptr;
+			wrapperGL::ImageObject* retImgOS = nullptr;
 
 			//if this block has a uniform texture
 			if (img) 
@@ -151,22 +155,26 @@ namespace renderer
 					mapOS = other::BitMapProcess::channelMerge(imgS, 0, imgO, 0, imgS, 0, imgO, 0);
 				}
 
-				//merge all bit maps into one
-				auto ret = other::BitMapProcess::merge({ other::At(img, 0, 0),
+				//merge texture
+				retImg = other::BitMapProcess::merge({ other::At(img, 0, 0),
 													other::At(img, img->width, 0),
 													other::At(img, img->width * 2, 0),
 													other::At(img, img->width * 3, 0),
 													other::At(img, img->width * 4, 0),
-													other::At(img, img->width * 5, 0),
-													other::At(imgN, img->width * 6, 0),
-													other::At(imgNRight, img->width * 7, 0),
-													other::At(imgNBack, img->width * 8, 0),
-													other::At(imgNLeft, img->width * 9, 0),
-													other::At(imgNTop, img->width * 10, 0),
-													other::At(imgNBottom, img->width * 11, 0),
-													other::At(mapOS, img->width * 12, 0),
-													other::At(mapOS, img->width * 13, 0),
-													other::At(mapOS, img->width * 14, 0) });
+													other::At(img, img->width * 5, 0) });
+
+				//merge normal maps
+				retImgN = other::BitMapProcess::merge({ other::At(imgN, 0, 0),
+													other::At(imgNRight, img->width, 0),
+													other::At(imgNBack, img->width * 2, 0),
+													other::At(imgNLeft, img->width * 3, 0),
+													other::At(imgNTop, img->width * 4, 0),
+													other::At(imgNBottom, img->width * 5, 0) });
+
+				//merge specular and occlusion maps
+				retImgOS = other::BitMapProcess::merge({ other::At(mapOS, 0, 0),
+													other::At(mapOS, img->width, 0),
+													other::At(mapOS, img->width * 2, 0) });
 
 				//clean up
 				delete img;
@@ -180,21 +188,25 @@ namespace renderer
 				delete imgNBottom;
 				delete mapOS;
 
-				return ret;
 			}
-		
+			
+			return std::make_tuple(retImg, retImgN, retImgOS);
 		}
 
 		void Loading::textureLoader() 
 		{
+			//check if more textures need to be loaded
 			if (textureLoaderProgressI < CFG_TEXTURE_ID_LAST) 
 			{
-				//more textures need to be loaded
-				wrapperGL::ImageObject* imgObj = makeTexture(game::config::resource::TextureFileNameList::getName((CFG_TEXTURE_ID)textureLoaderProgressI).c_str());
-				game::config::resource::TextureIDs::IDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgObj);
+				auto[img, imgN, imgOS] = makeTexture(game::config::resource::TextureFileNameList::getName((CFG_TEXTURE_ID)textureLoaderProgressI).c_str());
+				game::config::resource::TextureIDs::blockTextureIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(img);
+				game::config::resource::TextureIDs::blockNormalIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgN);
+				game::config::resource::TextureIDs::blockOSIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgOS);
 
 				//free imgObj
-				delete imgObj;
+				delete img;
+				delete imgN;
+				delete imgOS;
 
 				//set texture loading progress
 				textureLoaderProgressI++;

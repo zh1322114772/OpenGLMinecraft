@@ -132,7 +132,16 @@ namespace wrapperGL
 
 	TextureID GLWrapper::loadTexture(ImageObject* obj)
 	{
+		
 		TextureID ret;
+		if (obj == nullptr)
+		{
+			ret.format = -1;
+			ret.height = -1;
+			ret.width = -1;
+			ret.id = -1;
+			return ret;
+		}
 
 		if (obj->format == 3)
 		{

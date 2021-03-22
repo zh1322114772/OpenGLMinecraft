@@ -121,8 +121,6 @@ namespace tickerable
 				//get delta t
 				delta_t = milliTime1 - milliTime;
 
-				std::cout << delta_t << std::endl;
-
 				//sleep till desire tick time
 				int remainTime = (int)(tick - delta_t);
 				if (remainTime > 0) 

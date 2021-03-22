@@ -22,14 +22,14 @@ namespace renderer
 				lookAt = glm::vec3(0.0, 0.0, 0.0);
 			}
 
-			BlockMesh::BlockMesh(wrapperGL::TextureID& tID) : textureID(tID.id)
+			BlockMesh::BlockMesh(unsigned int tid, unsigned int nid, unsigned int osid):textureID(tid), normalID(nid), OSID(osid)
 			{
 
 			}
 
-			BlockMesh::BlockMesh(wrapperGL::TextureID& tID, unsigned char t) : textureID(tID.id), visible(t) 
+			BlockMesh::BlockMesh(unsigned int tid, unsigned int nid, unsigned int osid, unsigned char t) : visible(t)
 			{
-			
+				BlockMesh::BlockMesh(tid, nid, osid);
 			}
 		}
 	}
