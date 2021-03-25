@@ -9,6 +9,7 @@
 #include "CFG_ControllerIDs.hpp"
 #include "BitMapProcess.hpp"
 #include <string>
+#include <thread>
 
 namespace renderer
 {
@@ -75,6 +76,7 @@ namespace renderer
 			std::string tNormal = "_n";
 			std::string tSpecular = "_s";
 			std::string tOcclusion = "_o";
+			std::string tSide = "_side";
 
 			using namespace wrapperGL;
 
@@ -140,20 +142,21 @@ namespace renderer
 			if (img) 
 			{
 				//normal maps for different directions
-				//nullptr for now, will be implemented later...
 				wrapperGL::ImageObject* imgNRight = nullptr;
 				wrapperGL::ImageObject* imgNBack = nullptr;
 				wrapperGL::ImageObject* imgNLeft = nullptr;
 				wrapperGL::ImageObject* imgNTop = nullptr;
 				wrapperGL::ImageObject* imgNBottom = nullptr;
 
-				//merge occlusion nad specular map together
-				wrapperGL::ImageObject* mapOS = nullptr;
-				if (imgS && imgO) 
-				{
-					//merge six 6 specular and 6 occlusion maps into 3 rgba maps
-					mapOS = other::BitMapProcess::channelMerge(imgS, 0, imgO, 0, imgS, 0, imgO, 0);
-				}
+				//rotate the front normal map to get normal maps for six directions
+				imgNLeft = other::BitMapProcess::normalHorizontalRotate(imgN, true);
+				imgNBack = other::BitMapProcess::normalHorizontalRotate(imgNLeft, true);
+				imgNRight = other::BitMapProcess::normalHorizontalRotate(imgNBack, true);
+				imgNTop = other::BitMapProcess::normalVerticalRotate(imgN, true);
+				imgNBottom = other::BitMapProcess::normalVerticalRotate(imgN, false);
+
+				//merge six 6 specular and 6 occlusion maps into 3 rgba maps
+				wrapperGL::ImageObject* mapOS = other::BitMapProcess::channelMerge(imgS, 0, imgO, 0, imgS, 0, imgO, 0);
 
 				//merge texture
 				retImg = other::BitMapProcess::merge({ other::At(img, 0, 0),
@@ -165,9 +168,9 @@ namespace renderer
 
 				//merge normal maps
 				retImgN = other::BitMapProcess::merge({ other::At(imgN, 0, 0),
-													other::At(imgNRight, img->width, 0),
+													other::At(imgNLeft, img->width, 0),
 													other::At(imgNBack, img->width * 2, 0),
-													other::At(imgNLeft, img->width * 3, 0),
+													other::At(imgNRight, img->width * 3, 0),
 													other::At(imgNTop, img->width * 4, 0),
 													other::At(imgNBottom, img->width * 5, 0) });
 
@@ -189,7 +192,125 @@ namespace renderer
 				delete mapOS;
 
 			}
-			
+			else
+			{
+				std::string name = fileName;
+				std::string side = "_side";
+				std::string top = "_top";
+				std::string bottom = "_bottom";
+
+				//try to use blockname_side name combination
+				auto [img, imgN, imgS, imgO] = loadBitMaps((name + side).c_str());
+				
+				if (img) 
+				{
+					wrapperGL::ImageObject* imgNRight = nullptr;
+					wrapperGL::ImageObject* imgNBack = nullptr;
+					wrapperGL::ImageObject* imgNLeft = nullptr;
+					wrapperGL::ImageObject* imgNTop = nullptr;
+					wrapperGL::ImageObject* imgNBottom = nullptr;
+
+					wrapperGL::ImageObject* imgTop = nullptr;
+					wrapperGL::ImageObject* imgSTop = nullptr;
+					wrapperGL::ImageObject* imgOTop = nullptr;
+					wrapperGL::ImageObject* imgBottom = nullptr;
+					wrapperGL::ImageObject* imgSBottom = nullptr;
+					wrapperGL::ImageObject* imgOBottom = nullptr;
+
+					//if texture has top
+					auto [topI, topN, topS, topO] = loadBitMaps((name + top).c_str());
+					if (topI) 
+					{
+						imgTop = topI;
+						imgNTop = topN;
+						imgSTop = topS;
+						imgOTop = topO;
+					}
+					else 
+					{
+						imgTop = img;
+						imgNTop = imgN;
+						imgSTop = imgS;
+						imgOTop = imgO;
+					}
+
+					//if texture has bottom
+					auto [bottomI, bottomN, bottomS, bottomO] = loadBitMaps((name + bottom).c_str());
+					if (bottomI) 
+					{
+						imgBottom = bottomI;
+						imgNBottom = bottomN;
+						imgSBottom = bottomS;
+						imgOBottom = bottomO;
+					}
+					else 
+					{
+						imgBottom = img;
+						imgNBottom = imgN;
+						imgSBottom = imgS;
+						imgOBottom = imgO;
+					}
+
+					//rotate normal maps
+					imgNLeft = other::BitMapProcess::normalHorizontalRotate(imgN, true);
+					imgNBack = other::BitMapProcess::normalHorizontalRotate(imgNLeft, true);
+					imgNRight = other::BitMapProcess::normalHorizontalRotate(imgNBack, true);
+					auto imgNTopR = other::BitMapProcess::normalVerticalRotate(imgNTop, true);
+					auto imgNBottomR = other::BitMapProcess::normalVerticalRotate(imgNBottom, false);
+
+					//merge specular and occlusion maps
+					wrapperGL::ImageObject* mapOS = other::BitMapProcess::channelMerge(imgS, 0, imgO, 0, imgS, 0, imgO, 0);
+					wrapperGL::ImageObject* mapOS1 = other::BitMapProcess::channelMerge(imgSTop, 0, imgOTop, 0, imgSBottom, 0, imgOBottom, 0);
+
+					//merge texture
+					retImg = other::BitMapProcess::merge({ other::At(img, 0, 0),
+														other::At(img, img->width, 0),
+														other::At(img, img->width * 2, 0),
+														other::At(img, img->width * 3, 0),
+														other::At(imgTop, img->width * 4, 0),
+														other::At(imgBottom, img->width * 5, 0) });
+
+					//merge normal maps
+					retImgN = other::BitMapProcess::merge({ other::At(imgN, 0, 0),
+														other::At(imgNLeft, img->width, 0),
+														other::At(imgNBack, img->width * 2, 0),
+														other::At(imgNRight, img->width * 3, 0),
+														other::At(imgNTopR, img->width * 4, 0),
+														other::At(imgNBottomR, img->width * 5, 0) });
+
+					//merge specular and occlusion maps
+					retImgOS = other::BitMapProcess::merge({ other::At(mapOS, 0, 0),
+														other::At(mapOS, img->width, 0),
+														other::At(mapOS1, img->width * 2, 0) });
+
+					//clean up
+					delete imgNRight;
+					delete imgNBack;
+					delete imgNLeft;
+					delete imgNTop;
+					delete imgNBottom;
+					delete imgNTopR;
+					delete imgNBottomR;
+					delete imgTop;
+					delete imgSTop;
+					delete imgOTop;
+					delete imgBottom;
+					delete imgSBottom;
+					delete imgOBottom;
+					delete mapOS;
+					delete mapOS1;
+					delete img;
+					delete imgN;
+					delete imgS;
+					delete imgO;
+				}
+				else 
+				{
+					throw std::runtime_error("unable to load the texture for " + name);
+				}
+
+			}
+
 			return std::make_tuple(retImg, retImgN, retImgOS);
 		}
 
@@ -203,6 +324,10 @@ namespace renderer
 				game::config::resource::TextureIDs::blockNormalIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgN);
 				game::config::resource::TextureIDs::blockOSIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgOS);
 
+				//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				//std::cout << textureLoaderProgressI << std::endl;
+				//wrapperGL::GLWrapper::activateTexture(shader, game::config::resource::TextureIDs::blockNormalIDList[textureLoaderProgressI].id, "fTexture", GL_TEXTURE0);
+				
 				//free imgObj
 				delete img;
 				delete imgN;

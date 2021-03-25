@@ -205,7 +205,7 @@ namespace tickerable
 			}
 		}
 		
-		float ChunkLoader::getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float flatness, int samplingRange, float blockX, float blockZ)
+		std::tuple<float, glm::vec4, glm::vec4> ChunkLoader::getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float flatness, int samplingRange, float blockX, float blockZ, float select, glm::vec4 selectBias)
 		{
 			//0-----1
 			//|     |
@@ -214,17 +214,40 @@ namespace tickerable
 			float size = 16 * samplingRange;
 			long long px = (long long)floorf(topLeftX / samplingRange);
 			long long py = (long long)floorf(topLeftY / samplingRange);
-			glm::vec4 coordinateHeights;
-			glm::vec4 similarity;
+			glm::vec4 coordinateHeights(0.0f);
+			glm::vec4 similarity(0.0f);
+			glm::vec4 thresholds(1.0);
+
+			if (other::Other::randomGeneratorF(seed * 1024, XYtoX(px, py)) < (1 - select))
+			{
+				thresholds[0] = 0;
+			}
+
+			if (other::Other::randomGeneratorF(seed * 1024, XYtoX(px + 1, py)) < (1 - select))
+			{
+				thresholds[1] = 0;
+			}
+
+			if (other::Other::randomGeneratorF(seed * 1024, XYtoX(px + 1, py - 1)) < (1 - select))
+			{
+				thresholds[2] = 0;
+			}
+
+			if (other::Other::randomGeneratorF(seed * 1024, XYtoX(px, py - 1)) < (1 - select))
+			{
+				thresholds[3] = 0;
+			}
+
+			//add bias to threshold
+			thresholds += selectBias;
 			glm::vec2 currentPos((((topLeftX * 16) + blockX) - (px * size)) / size, (((topLeftY * 16) + blockZ) - (py * size)) / size);
-
-			//std::cout << currentPos[0] << " " << currentPos[1] << std::endl;
-
 
 			coordinateHeights[0] = other::Other::randomGeneratorF(seed, XYtoX(px, py)) * flatness;
 			coordinateHeights[1] = other::Other::randomGeneratorF(seed, XYtoX((px + 1), py)) * flatness;
 			coordinateHeights[2] = other::Other::randomGeneratorF(seed, XYtoX((px + 1), (py - 1))) * flatness;
 			coordinateHeights[3] = other::Other::randomGeneratorF(seed, XYtoX(px, (py - 1))) * flatness;
+
+			coordinateHeights = coordinateHeights * thresholds;
 
 			similarity[0] = other::Other::gaussianSimilarity(glm::vec2(0, 1), currentPos, 0.5);
 			similarity[1] = other::Other::gaussianSimilarity(glm::vec2(1, 1), currentPos, 0.5);
@@ -235,46 +258,103 @@ namespace tickerable
 
 			float mixHeight = glm::dot(coordinateHeights, nonLinearSimilarity) / 4.0;
 			
-			return mixHeight;
+			return std::make_tuple(mixHeight, coordinateHeights, similarity);
+		}
+
+		void ChunkLoader::verticalInfoGenerator(std::tuple<int, int,game::config::blocks::Block>* info, int& counter, long long chunkX, long long chunkY, int x, int z)
+		{
+			/***
+			float region = getSimilarityMix(seed, chunkX, chunkY, 5, 64, x, z);
+
+			float mountain = getSimilarityMix(seed * 2, chunkX, chunkY, 6, 13, x, z);
+			float mountainCoef = powf(mountain, 2);
+			float mountainSharpness = getSimilarityMix(seed * 3, chunkX, chunkY, 4 * mountainCoef, 4, x, z);
+			float mountainSharpness1 = getSimilarityMix(seed * 5, chunkX, chunkY, 2 * mountainCoef, 1.5, x, z);
+
+			float detail = getSimilarityMix(seed * 4, chunkX, chunkY, 1, 2, x, z);
+
+			int thisHeight = (0.1 + (region * 0.4) + (mountain * 0.2) - (mountainSharpness * 0.10) - (mountainSharpness1 * 0.05) + (detail * 0.05)) * MAX_HEIGHT;
+			*/
+
+			//generate region
+			auto[reg, rc, rs] = getSimilarityMix(seed, chunkX, chunkY, 6, 64, x, z);
+			auto[reg1, rc1, rs1] = getSimilarityMix(seed * 2, chunkX, chunkY, 2, 16, x, z);
+			auto [reg2, rc2, rs2] = getSimilarityMix(seed * 3, chunkX, chunkY, 2, 4, x, z);
+			auto [reg3, rc3, rs3] = getSimilarityMix(seed * 4, chunkX, chunkY, 2, 1, x, z);
+			float region = (reg * 0.6) + (reg1 * 0.25) + (reg2 * 0.12) + (reg3 * 0.03);
+
+			//generate mountains
+			float mountain = 0;
+			auto[mreg, mrc, mrs] = getSimilarityMix(seed * 5, chunkX, chunkY, 6, 48, x, z);
+			auto [mreg1, mrc1, mrs1] = getSimilarityMix(seed * 6, chunkX, chunkY, 3, 16, x, z);
+			auto [mreg2, mrc2, mrs2] = getSimilarityMix(seed * 7, chunkX, chunkY, 2, 4, x, z);
+			auto [mreg3, mrc3, mrs3] = getSimilarityMix(seed * 8, chunkX, chunkY, 1, 1, x, z);
+			float mountainCandidateRegion = other::Other::relu(powf((mreg + mreg1 + mreg2 + mreg3), 2), 1.0);
+			mountainCandidateRegion = other::Other::smooth(mountainCandidateRegion, 1);
+
+			auto[mount, mountrc, mountrs] = getSimilarityMix(seed * 9, chunkX, chunkY, 5, 8, x, z, 0.0, glm::vec4(mountainCandidateRegion));
+			auto [mount1, mountrc1, mountrs1] = getSimilarityMix(seed * 10, chunkX, chunkY, 3, 3, x, z, 0.0, glm::vec4(mount));
+			auto [mount2, mountrc2, mountrs2] = getSimilarityMix(seed * 11, chunkX, chunkY, 1, 1, x, z, 0.0, glm::vec4(mount));
+
+			mountain = (mount * 0.6) + ((mount1 - 0.5) * 0.3) + ((mount2 - 0.5) * 0.1);
+
+			int thisHeight = (0.1 + (region * 0.5) + (mountain * 0.25)) * MAX_HEIGHT;
+			//set counter to zero
+			counter = 0;
+
+			if (mountainCandidateRegion > 0) 
+			{
+				//add terrain
+				info[counter++] = std::make_tuple(0, thisHeight, game::config::blocks::CobbleStoneBlock());
+			}
+			else 
+			{
+				//add terrain
+				info[counter++] = std::make_tuple(0, thisHeight, game::config::blocks::GrassBlock());
+			}
+
+
+			//check if terrain is above the sea level
+			if (thisHeight < 50) 
+			{
+				info[counter++] = std::make_tuple(thisHeight, 50, game::config::blocks::BedrockBlock());
+			}
+		
 		}
 
 		void ChunkLoader::genChunkData(chunkLoaderTypes::Chunk* chunk) 
 		{
+
+			std::tuple<int, int, game::config::blocks::Block>* verticalInfo = new std::tuple<int, int, game::config::blocks::Block>[255];
+			int infoCounter = 0;
 
 			for (int x = 0; x < 16; x++) 
 			{
 				for (int z = 0; z < 16; z++) 
 				{
 
-					float region = getSimilarityMix(seed, chunk->locationX, chunk->locationY, 5, 64, x, z);
-					float flatness = getSimilarityMix(seed * 2, chunk->locationX, chunk->locationY, 6, 16, x, z);
-					float flatness1 = getSimilarityMix(seed * 3, chunk->locationX, chunk->locationY, 4.5, 4, x, z);
-					float detail = getSimilarityMix(seed * 4, chunk->locationX, chunk->locationY, 1, 1, x, z);
+					verticalInfoGenerator(verticalInfo, infoCounter, chunk->locationX, chunk->locationY, x, z);
+					
+					//add air as last layer
+					auto [h0, h1, blkType] = verticalInfo[infoCounter - 1];
+					verticalInfo[infoCounter++] = std::make_tuple(h1, 256, game::config::blocks::AirBlock());
 
-					int thisHeight = ceilf((0.1 + (region * 0.4) + (flatness * 0.25) + (flatness1 * 0.05) + (detail * 0.03)) * MAX_HEIGHT);
-
-					for (int y = 0; y < 256; y++) 
+					//each each layer
+					for (int j = 0; j < infoCounter; j++) 
 					{
-						if (y > thisHeight)
+						auto [h0, h1, blk] = verticalInfo[j];
+
+						for (int y = h0; y < h1; y++) 
 						{
-							if (y < 60) 
-							{
-								chunk->blocks[y][x][z] = game::config::blocks::BedrockBlock();
-							}
-							else 
-							{
-								chunk->blocks[y][x][z] = game::config::blocks::AirBlock();
-							}
+							chunk->blocks[y][x][z] = blk;
 						}
-						else 
-						{
-							chunk->blocks[y][x][z] = game::config::blocks::DirtBlock();						
-						}
+
 					}
 
 				}
 			}
 
+			delete[] verticalInfo;
 		}
 
 		void ChunkLoader::hideBlocks(chunkLoaderTypes::Chunk* chunk, long long x, long long y) 
@@ -287,6 +367,7 @@ namespace tickerable
 			//clear block counter
 			memset(chunk->blockCounter, 0, CFG_BLOCKMESH_ID_LAST * sizeof(unsigned short int));
 
+
 			//init visible states
 			for (int h = 0; h < 256; h++)
 			{
@@ -298,7 +379,6 @@ namespace tickerable
 						{
 							//either visible or transparnt
 							chunk->blockVisible[h][w][l] = true;
-							chunk->blockCounter[chunk->blocks[h][w][l].blockID]++;
 						}
 						else 
 						{
@@ -310,6 +390,7 @@ namespace tickerable
 				}
 			}
 
+			
 			//hide inner blocks
 			for (int h = 0; h < 255; h++)
 			{
@@ -399,7 +480,10 @@ namespace tickerable
 							(BlockMeshIDs::IDList[backward->blockID]->visible == BlockMesh::VISIBLE))
 						{
 							chunk->blockVisible[h][w][l] = false;
-							chunk->blockCounter[chunk->blocks[h][w][l].blockID]--;
+						}
+						else 
+						{
+							chunk->blockCounter[chunk->blocks[h][w][l].blockID]++;
 						}
 					}
 				}

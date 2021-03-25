@@ -140,8 +140,21 @@ namespace tickerable
 			/// <param name="samplingRange">point sampling range, </param>
 			/// <param name="blockX">current block x position in the chunk</param>
 			/// <param name="blockZ">current block z position in the chunk</param>
+			/// <param name="select">specify the percentage that outputs nonzero result</param>
+			/// <param name="select">specify the bias to be added to the sampling points</param>
 			/// <returns></returns>
-			inline float getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float flatness, int samplingRange, float blockX, float blockZ);
+			inline std::tuple<float, glm::vec4, glm::vec4> getSimilarityMix(unsigned long long seed, float topLeftX, float topLeftY, float flatness, int samplingRange, float blockX, float blockZ, float select = 1.0, glm::vec4 selectBias = glm::vec4(0.0));
+
+			/// <summary>
+			/// generate a list of blocks that will be filled into the chunk
+			/// </summary>
+			/// <param name="info">info array</param>
+			/// <param name="counter">info length</param>
+			/// <param name="chunkX">current chunk x</param>
+			/// <param name="chunkY">current chunk y</param>
+			/// <param name="x">x position in the chunk</param>
+			/// <param name="z">z position in the chunk</param>
+			inline void verticalInfoGenerator(std::tuple<int, int, game::config::blocks::Block>* info, int& counter, long long chunkX, long long chunkY, int x, int z);
 
 		public:
 			/// <summary>

@@ -30,6 +30,34 @@ namespace other
 		/// <returns></returns>
 		static float gaussianSimilarity(glm::vec2 x, glm::vec2 l, float sigma);
 
+		/// <summary>
+		/// calculate the impurity of vec4
+		/// </summary>
+		/// <param name="x">vec4</param>
+		/// <returns></returns>
+		static float giniImpurity(glm::vec4 x);
+
+		/// <summary>
+		/// sigmoid function
+		/// </summary>
+		/// <param name="x">val</param>
+		/// <returns></returns>
+		static float sigmoid(float x);
+
+		/// <summary>
+		///  relu function
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="at"></param>
+		/// <returns></returns>
+		static float relu(float x, float centeredAt);
+
+		/// <summary>
+		/// smooth function
+		/// </summary>
+		/// <param name="x"></param>
+		/// <returns></returns>
+		static float smooth(float x, float coef);
 	};
 	
 }

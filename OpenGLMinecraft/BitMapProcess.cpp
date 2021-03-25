@@ -108,7 +108,7 @@ namespace other
 	{
 		if (sourceA == nullptr) 
 		{
-			throw std::runtime_error("least needs one source");
+			return nullptr;
 		}
 
 		wrapperGL::ImageObject* ret = new wrapperGL::ImageObject();
@@ -163,6 +163,92 @@ namespace other
 		ret->width = s->width;
 		ret->img_arr = (unsigned char*)malloc(ret->format * ret->width * ret->height);
 		memcpy(ret->img_arr, s->img_arr, ret->format * ret->width * ret->height);
+
+		return ret;
+	}
+
+	wrapperGL::ImageObject* BitMapProcess::normalHorizontalRotate(wrapperGL::ImageObject* s, bool clockwise)
+	{
+		if (s == nullptr) 
+		{
+			return nullptr;
+		}
+
+		short int a = -1;
+		short int b = 1;
+
+		if (!clockwise) 
+		{
+			a = -a;
+			b = -b;
+		}
+
+		if (s->format != 4) 
+		{
+			throw std::runtime_error("RGBA format is required");
+		}
+		auto ret = new wrapperGL::ImageObject();
+		ret->format = s->format;
+		ret->height = s->height;
+		ret->width = s->width;
+		ret->img_arr = (unsigned char*)malloc(ret->format * ret->width * ret->height);
+
+		auto sourcePtr = s->img_arr;
+		auto imgPtr = ret->img_arr;
+		for (int i = 0; i < ret->width * ret->height; i++) 
+		{
+			imgPtr[0] = a * sourcePtr[2];
+			imgPtr[1] = sourcePtr[1];
+			imgPtr[2] = b * sourcePtr[0];
+			imgPtr[3] = sourcePtr[3];
+
+			//to next pixel
+			imgPtr += 4;
+			sourcePtr += 4;
+		}
+
+		return ret;
+	}
+
+	wrapperGL::ImageObject* BitMapProcess::normalVerticalRotate(wrapperGL::ImageObject* s, bool clockwise) 
+	{
+		if (s == nullptr)
+		{
+			return nullptr;
+		}
+
+		short int a = -1;
+		short int b = 1;
+
+		if (!clockwise)
+		{
+			a = -a;
+			b = -b;
+		}
+
+		if (s->format != 4)
+		{
+			throw std::runtime_error("RGBA format is required");
+		}
+		auto ret = new wrapperGL::ImageObject();
+		ret->format = s->format;
+		ret->height = s->height;
+		ret->width = s->width;
+		ret->img_arr = (unsigned char*)malloc(ret->format * ret->width * ret->height);
+
+		auto sourcePtr = s->img_arr;
+		auto imgPtr = ret->img_arr;
+		for (int i = 0; i < ret->width * ret->height; i++)
+		{
+			imgPtr[0] = sourcePtr[0];
+			imgPtr[1] = a * sourcePtr[2];
+			imgPtr[2] = b * sourcePtr[1];
+			imgPtr[3] = sourcePtr[3];
+
+			//to next pixel
+			imgPtr += 4;
+			sourcePtr += 4;
+		}
 
 		return ret;
 	}

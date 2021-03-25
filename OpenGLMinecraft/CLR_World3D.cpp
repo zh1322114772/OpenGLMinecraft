@@ -148,10 +148,10 @@ namespace renderer
 
 			shader->use();
 
-			//std::cout << sinf(testTime * 0.1) << " " << cosf(testTime * 0.1) << std::endl;
+			//std::cout << camera.Pos.x << " " << camera.Pos.y << " " << camera.Pos.z << std::endl;
 
 			//test global light
-			glm::vec3 lightDirection(0.5, -0.5, 0.5);
+			glm::vec3 lightDirection(0.5, -0.2, 0.5);
 			lightDirection = glm::normalize(lightDirection);
 			glm::vec3 sunColor(0.7, 0.7, 0.55);
 			glm::vec3 sunShadeColor(0.35, 0.35, 0.22);
@@ -162,6 +162,13 @@ namespace renderer
 			shader->setVec3("globalLight.lightColorD", sunColor);
 			shader->setVec3("globalLight.lightColorS", sunSpecular);
 			shader->setVec3("cameraPosition", camera.Pos);
+
+			glm::vec3 pColor(0, 0.5, 1.0);
+			glm::vec3 pSColor(0, 0.7, 1.4);
+			//test point light
+			shader->setVec3("pointLight.lightPosition", camera.Pos);
+			shader->setVec3("pointLight.lightColorD", pColor);
+			shader->setVec3("pointLight.lightColorS", pSColor);
 
 			//set view and projection matrices to vertex shader
 			glm::mat4 lookAtMatrix = glm::lookAt(camera.Pos, camera.Pos + camera.lookAt, camera.up);
@@ -207,22 +214,22 @@ namespace renderer
 			//change position
 			if (keyboardEvent.keyPressed[GLFW_KEY_W]) 
 			{
-				camera.Pos += camera.lookAt * 5.0f * (float)delta_t * 10.0f;
+				camera.Pos += camera.lookAt * 5.0f * (float)delta_t * 25.0f;
 			}
 			
 			if (keyboardEvent.keyPressed[GLFW_KEY_S]) 
 			{
-				camera.Pos -= camera.lookAt * 5.0f * (float)delta_t * 10.0f;
+				camera.Pos -= camera.lookAt * 5.0f * (float)delta_t * 25.0f;
 			}
 
 			if (keyboardEvent.keyPressed[GLFW_KEY_A]) 
 			{
-				camera.Pos -= glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 10.0f;
+				camera.Pos -= glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 25.0f;
 			}
 
 			if (keyboardEvent.keyPressed[GLFW_KEY_D]) 
 			{
-				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 10.0f;
+				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 25.0f;
 			}
 
 			//std::cout << camera.Pos.x << " " << camera.Pos.y << " " << camera.Pos.z << std::endl;

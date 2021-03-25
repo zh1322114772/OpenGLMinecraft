@@ -8,10 +8,10 @@ namespace tickerable
 		inputGetter = new tasks::InputGetter();
 		addTask(inputGetter);
 
-		chunkLoader = new tasks::ChunkLoader(24, 5302000);
+		chunkLoader = new tasks::ChunkLoader(32, 12344321);
 		addTask(chunkLoader);
 
-		outputGetter = new tasks::OutputGetter(24);
+		outputGetter = new tasks::OutputGetter(32);
 		addTask(outputGetter);
 	}
 

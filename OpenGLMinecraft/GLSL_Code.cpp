@@ -93,12 +93,38 @@ namespace renderer
 		"	vec3 lightColorS;\n"
 		"};\n"
 
+		"struct PointLight\n"
+		"{\n"
+		"	vec3 lightPosition;\n"
+		"	vec3 lightColorD;\n"
+		"	vec3 lightColorS;\n"
+		"};\n"
+
 		"uniform sampler2D fTexture[3];\n"
 		"uniform GlobalLight globalLight;\n"
+		"uniform PointLight pointLight;\n"
 		"uniform vec3 cameraPosition;\n"
 
 		"out vec4 fragColor;\n"
 		
+		"vec3 pointIllumination(PointLight l, vec3 color, float specular, vec3 normPos)\n"
+		"{\n"
+
+		"	vec3 lightDirection = normalize(fPos - l.lightPosition);\n"
+		"	float distance = length(fPos - l.lightPosition);\n"
+		"	float attenuation = 1.0/(1.0 + (0.027 * distance) + (0.0028 * pow(distance, 2)));\n"
+
+		"	float directBrightness = max(0, dot(-lightDirection, normPos));\n"
+		"	vec3 directColor = color * directBrightness * l.lightColorD;\n"
+
+		"	vec3 lightReflection = reflect(lightDirection, normPos);\n"
+		"	vec3 cameraDirection = normalize(cameraPosition - fPos);\n"
+		"	float specularBrightness = pow(max(0, dot(lightReflection, cameraDirection)), 16) * specular;\n"
+		"	vec3 specularColor = color * specularBrightness * l.lightColorS;\n"
+
+		"	return (directColor + specularColor) * attenuation;\n"
+		"}\n"
+
 		"vec3 globalIllumination(GlobalLight l, vec3 color, float specular, vec3 normPos)\n"
 		"{\n"
 		"	vec3 ambientColor = color * l.lightColorA;\n"
@@ -121,6 +147,15 @@ namespace renderer
 		"	return texture(fTexture[0], vec2(x, y));\n"
 		"};\n"
 
+		"vec3 getNormalColor(vec2 org)\n"
+		"{\n"
+		"	float x = ((fFace + org.x)/ 6.0);\n"
+		"	float y = org.y;\n"
+		"	vec3 normal = (texture(fTexture[1], vec2(x, y)).xyz * 2.0) - 1.0;\n"
+		"	normal.y = -normal.y;\n"
+		"	return normalize(normal);\n"
+		"};\n"
+
 		"vec2 getSOColor(vec2 org)\n"
 		"{\n"
 		"	int offset = int(fFace) / 2;\n"
@@ -128,7 +163,7 @@ namespace renderer
 
 		"	float x = (float(offset) + org.x)/ 3;\n"
 		"	float y = org.y;\n"
-		"	vec4 res = texture(fTexture[1], vec2(x, y));\n"
+		"	vec4 res = texture(fTexture[2], vec2(x, y));\n"
 		"	return vec2(res[select * 2], res[(select * 2) + 1]);\n"
 		"}\n"
 
@@ -137,9 +172,11 @@ namespace renderer
 
 		"	vec4 textureColor = getTextureColor(fTex);\n"
 		"	vec2 SOColor = getSOColor(fTex);\n"
+		"	vec3 normalColor = getNormalColor(fTex);\n"
 
-		"	vec3 globalColor = globalIllumination(globalLight, textureColor.xyz, SOColor.x, fNorm);\n"
-		"	fragColor = vec4(globalColor, 1.0);\n"
+		"	vec3 globalColor = globalIllumination(globalLight, textureColor.xyz, SOColor.x, normalColor);\n"
+		"	vec3 pointColor = pointIllumination(pointLight, textureColor.xyz, SOColor.x, normalColor);\n"
+		"	fragColor = vec4(pointColor + globalColor, 1.0);\n"
 
 		"};\n";
 

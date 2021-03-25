@@ -120,6 +120,22 @@ namespace game
 				}
 			};
 
+			struct GrassBlock : public Block 
+			{
+				GrassBlock() :Block(CFG_BLOCKMESH_ID_GRASS) 
+				{
+				
+				}
+			};
+
+			struct CobbleStoneMossyBlock : public Block 
+			{
+				CobbleStoneMossyBlock() : Block(CFG_BLOCKMESH_ID_COBBLESTONE_MOSSY) 
+				{
+					
+				}
+			};
+
 		}
 	}
 }

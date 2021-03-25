@@ -59,6 +59,20 @@ namespace other
 		/// <returns></returns>
 		static wrapperGL::ImageObject* copy(wrapperGL::ImageObject* s);
 
+		/// <summary>
+		/// horizontally rotate normal map
+		/// </summary>
+		/// <param name="s">normal map</param>
+		/// <param name="clockWise">clockwise rotation or counterclockwise rotation</param>
+		/// <returns>rotated normal map</returns>
+		static wrapperGL::ImageObject* normalHorizontalRotate(wrapperGL::ImageObject* s, bool clockwise);
 
+		/// <summary>
+		/// vertically rotate normal map
+		/// </summary>
+		/// <param name="s">normal map</param>
+		/// <param name="clockWise">clockwise rotation or counterclockwise rotation</param>
+		/// <returns></returns>
+		static wrapperGL::ImageObject* normalVerticalRotate(wrapperGL::ImageObject* s, bool clockwise);
 	};
 }

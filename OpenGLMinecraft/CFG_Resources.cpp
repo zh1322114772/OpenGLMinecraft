@@ -31,7 +31,9 @@ namespace game
 																		"planks_acacia",
 																		"planks_big_oak",
 																		"bedrock",
-																		"sand"};
+																		"sand",
+																		"grass",
+																		"cobblestone_mossy"};
 
 			std::string TextureFileNameList::getName(CFG_TEXTURE_ID id) 
 			{
@@ -102,6 +104,12 @@ namespace game
 
 				//SAND
 				BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_SAND] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_SAND));
+
+				//GRASS
+				BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_GRASS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_GRASS));
+
+				//COBBLE STONE MOSSY
+				BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_COBBLESTONE_MOSSY] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_COBBLESTONE_MOSSY));
 			}
 		
 		}

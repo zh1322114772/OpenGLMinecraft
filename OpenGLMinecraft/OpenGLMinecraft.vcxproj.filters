@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
@@ -12,9 +8,6 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Source Files\Game">
-      <UniqueIdentifier>{9ae57214-26f8-47f8-903e-054ed16cfafb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Game">
       <UniqueIdentifier>{a6623313-369f-4564-a878-f3bc1f14f9e8}</UniqueIdentifier>
@@ -31,6 +24,25 @@
     <Filter Include="Header Files\Render\Controllers">
       <UniqueIdentifier>{e1d4936a-e003-4ac1-b243-49a315cd33c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\GLSL">
+      <UniqueIdentifier>{45055450-213e-43b1-9d33-0bcf269c85f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Config">
+      <UniqueIdentifier>{aceb06a2-6fa2-45ba-931e-09161e9b0064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3rd">
+      <UniqueIdentifier>{ad74e688-b888-452e-82d0-4ac20c07f628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{9ae57214-26f8-47f8-903e-054ed16cfafb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Config">
+      <UniqueIdentifier>{39a56a8b-8cc5-415f-9a09-8ca93c315a67}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Render">
       <UniqueIdentifier>{21b1a9f9-3421-4a3f-a183-fdaeccfce2d7}</UniqueIdentifier>
     </Filter>
@@ -40,35 +52,23 @@
     <Filter Include="Source Files\Render\Controllers">
       <UniqueIdentifier>{ccca15fd-aecb-4573-92a8-6ffe75289f4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Render\GLSL">
-      <UniqueIdentifier>{45055450-213e-43b1-9d33-0bcf269c85f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Game\Config">
-      <UniqueIdentifier>{aceb06a2-6fa2-45ba-931e-09161e9b0064}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Render\GLSL">
       <UniqueIdentifier>{8b7eb36c-e83b-4c05-ad5f-4c0b18e4466d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Config">
-      <UniqueIdentifier>{39a56a8b-8cc5-415f-9a09-8ca93c315a67}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Tickerable">
       <UniqueIdentifier>{2bfa5890-c8d3-47c4-a595-e5c9f9abedb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tickerable\Tasks">
+      <UniqueIdentifier>{97a6a75c-ef05-41d2-8140-6c3f0fd9cf26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rd">
+      <UniqueIdentifier>{7811c44b-f9eb-4ff5-8642-0784c225df16}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Tickerable">
       <UniqueIdentifier>{63873aa4-bf47-4581-9050-69acc7961949}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Tickerable\Tasks">
       <UniqueIdentifier>{f1b22d8c-96d0-424d-aa45-078bee22b13b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Tickerable\Tasks">
-      <UniqueIdentifier>{97a6a75c-ef05-41d2-8140-6c3f0fd9cf26}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\3rd">
-      <UniqueIdentifier>{ad74e688-b888-452e-82d0-4ac20c07f628}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\3rd">
-      <UniqueIdentifier>{7811c44b-f9eb-4ff5-8642-0784c225df16}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
