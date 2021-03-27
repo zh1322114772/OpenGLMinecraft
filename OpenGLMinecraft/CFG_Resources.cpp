@@ -33,7 +33,8 @@ namespace game
 																		"bedrock",
 																		"sand",
 																		"grass",
-																		"cobblestone_mossy"};
+																		"cobblestone_mossy",
+																		"water_still"};
 
 			std::string TextureFileNameList::getName(CFG_TEXTURE_ID id) 
 			{
@@ -110,6 +111,9 @@ namespace game
 
 				//COBBLE STONE MOSSY
 				BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_COBBLESTONE_MOSSY] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_COBBLESTONE_MOSSY));
+
+				//WATER
+				BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_WATER] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_WATER), BlockMesh::RELFECT);
 			}
 		
 		}

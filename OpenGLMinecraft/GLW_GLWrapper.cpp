@@ -38,9 +38,9 @@ namespace wrapperGL
 			throw std::runtime_error("Unsupported graphics card, minimum texture unit size must be larger than 24");
 		}
 
-		//ensure graphics card supports 8192*8192 texture
+		//ensure graphics card supports 16384 * 16384 texture
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &argv);
-		if (argv < 8192) 
+		if (argv < 16384) 
 		{
 			throw std::runtime_error("Unsupported graphics card, maximum texture szie must be larger than 8192");
 		}

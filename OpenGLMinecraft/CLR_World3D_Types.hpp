@@ -25,6 +25,7 @@ namespace renderer
 				static const unsigned char VISIBLE = 0;
 				static const unsigned char TRANSPARENT = 1;
 				static const unsigned char INVISIBLE = 2;
+				static const unsigned char RELFECT = 3;
 
 				/// <summary>
 				/// texture id

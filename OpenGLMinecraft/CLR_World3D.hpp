@@ -18,8 +18,12 @@ namespace renderer
 		class World3D : public Controller
 		{
 		private:
-			//current shader program
-			std::shared_ptr<wrapperGL::ShaderProgram> shader;
+			//shader programs
+			wrapperGL::ShaderProgram* shader;
+			wrapperGL::ShaderProgram* liquidShader;
+
+			double secondCounter = 0;
+			
 
 			//view
 			glm::mat4 projectionMatrix;
@@ -64,7 +68,8 @@ namespace renderer
 			/// <param name="infoArr">chunk buffer block sequence</param>
 			/// <param name="size">block sequence size</param>
 			/// <param name="m">the block to be drawn</param>
-			inline void blockDrawer(unsigned int* infoArr, int size, world3D::BlockMesh* m);
+			/// <param name="s">shader program</param>
+			inline void blockDrawer(unsigned int* infoArr, int size, world3D::BlockMesh* m, wrapperGL::ShaderProgram* s);
 
 
 			//inherited from Controller

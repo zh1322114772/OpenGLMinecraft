@@ -136,6 +136,14 @@ namespace game
 				}
 			};
 
+			struct WaterBlock : public Block 
+			{
+				WaterBlock() : Block(CFG_BLOCKMESH_ID_WATER) 
+				{
+				
+				}
+			};
+
 		}
 	}
 }

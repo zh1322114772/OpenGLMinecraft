@@ -27,9 +27,9 @@ namespace renderer
 
 			}
 
-			BlockMesh::BlockMesh(unsigned int tid, unsigned int nid, unsigned int osid, unsigned char t) : visible(t)
+			BlockMesh::BlockMesh(unsigned int tid, unsigned int nid, unsigned int osid, unsigned char t) : visible(t), textureID(tid), normalID(nid), OSID(osid)
 			{
-				BlockMesh::BlockMesh(tid, nid, osid);
+
 			}
 		}
 	}

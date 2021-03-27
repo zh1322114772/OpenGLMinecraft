@@ -35,11 +35,17 @@ namespace other
 				height = (*i).Y + (*i).img->height;
 			}
 		}
-	
+
 		//check size
-		if (width == 0 || height == 0 || width > 8192 || height > 8192) 
+		if (width == 0 || height == 0 || width > 16384 || height > 16384)
 		{
-			throw std::runtime_error("Maximum or minimum size reached");
+			wrapperGL::ImageObject* res = new wrapperGL::ImageObject();
+			res->format = 4;
+			res->height = 1;
+			res->width = 1;
+			res->img_arr = (unsigned char*)malloc(4);
+			memset(res->img_arr, 0, 4);
+			return res;
 		}
 
 		//final image

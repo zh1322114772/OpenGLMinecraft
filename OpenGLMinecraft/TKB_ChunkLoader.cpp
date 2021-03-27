@@ -263,40 +263,32 @@ namespace tickerable
 
 		void ChunkLoader::verticalInfoGenerator(std::tuple<int, int,game::config::blocks::Block>* info, int& counter, long long chunkX, long long chunkY, int x, int z)
 		{
-			/***
-			float region = getSimilarityMix(seed, chunkX, chunkY, 5, 64, x, z);
-
-			float mountain = getSimilarityMix(seed * 2, chunkX, chunkY, 6, 13, x, z);
-			float mountainCoef = powf(mountain, 2);
-			float mountainSharpness = getSimilarityMix(seed * 3, chunkX, chunkY, 4 * mountainCoef, 4, x, z);
-			float mountainSharpness1 = getSimilarityMix(seed * 5, chunkX, chunkY, 2 * mountainCoef, 1.5, x, z);
-
-			float detail = getSimilarityMix(seed * 4, chunkX, chunkY, 1, 2, x, z);
-
-			int thisHeight = (0.1 + (region * 0.4) + (mountain * 0.2) - (mountainSharpness * 0.10) - (mountainSharpness1 * 0.05) + (detail * 0.05)) * MAX_HEIGHT;
-			*/
 
 			//generate region
-			auto[reg, rc, rs] = getSimilarityMix(seed, chunkX, chunkY, 6, 64, x, z);
-			auto[reg1, rc1, rs1] = getSimilarityMix(seed * 2, chunkX, chunkY, 2, 16, x, z);
-			auto [reg2, rc2, rs2] = getSimilarityMix(seed * 3, chunkX, chunkY, 2, 4, x, z);
-			auto [reg3, rc3, rs3] = getSimilarityMix(seed * 4, chunkX, chunkY, 2, 1, x, z);
-			float region = (reg * 0.6) + (reg1 * 0.25) + (reg2 * 0.12) + (reg3 * 0.03);
+			auto[reg, rc, rs] = getSimilarityMix(seed, chunkX, chunkY, 6, 96, x, z);
+			auto[reg1, rc1, rs1] = getSimilarityMix(seed * 2, chunkX, chunkY, 6, 48, x, z);
+			auto [reg2, rc2, rs2] = getSimilarityMix(seed * 3, chunkX, chunkY, 6, 24, x, z);
+			auto [reg3, rc3, rs3] = getSimilarityMix(seed * 4, chunkX, chunkY, 6, 12, x, z);
+			auto [reg4, rc4, rs4] = getSimilarityMix(seed * 5, chunkX, chunkY, 6, 6, x, z);
+			auto [reg5, rc5, rs5] = getSimilarityMix(seed * 6, chunkX, chunkY, 6, 3, x, z);
+			auto [reg6, rc6, rs6] = getSimilarityMix(seed * 7, chunkX, chunkY, 6, 1, x, z);
+			float region = (reg * 0.5) + (reg1 * 0.25) + (reg2 * 0.125) + (reg3 * 0.0625) + (reg4 * 0.03125) + (reg5 * 0.015625) + (reg6 * 0.0078125);
 
 			//generate mountains
 			float mountain = 0;
-			auto[mreg, mrc, mrs] = getSimilarityMix(seed * 5, chunkX, chunkY, 6, 48, x, z);
-			auto [mreg1, mrc1, mrs1] = getSimilarityMix(seed * 6, chunkX, chunkY, 3, 16, x, z);
-			auto [mreg2, mrc2, mrs2] = getSimilarityMix(seed * 7, chunkX, chunkY, 2, 4, x, z);
-			auto [mreg3, mrc3, mrs3] = getSimilarityMix(seed * 8, chunkX, chunkY, 1, 1, x, z);
+			auto[mreg, mrc, mrs] = getSimilarityMix(seed * 8, chunkX, chunkY, 5.5, 48, x, z);
+			auto [mreg1, mrc1, mrs1] = getSimilarityMix(seed * 9, chunkX, chunkY, 3, 16, x, z);
+			auto [mreg2, mrc2, mrs2] = getSimilarityMix(seed * 10, chunkX, chunkY, 2, 4, x, z);
+			auto [mreg3, mrc3, mrs3] = getSimilarityMix(seed * 11, chunkX, chunkY, 1, 1, x, z);
 			float mountainCandidateRegion = other::Other::relu(powf((mreg + mreg1 + mreg2 + mreg3), 2), 1.0);
 			mountainCandidateRegion = other::Other::smooth(mountainCandidateRegion, 1);
 
-			auto[mount, mountrc, mountrs] = getSimilarityMix(seed * 9, chunkX, chunkY, 5, 8, x, z, 0.0, glm::vec4(mountainCandidateRegion));
-			auto [mount1, mountrc1, mountrs1] = getSimilarityMix(seed * 10, chunkX, chunkY, 3, 3, x, z, 0.0, glm::vec4(mount));
-			auto [mount2, mountrc2, mountrs2] = getSimilarityMix(seed * 11, chunkX, chunkY, 1, 1, x, z, 0.0, glm::vec4(mount));
+			auto[mount, mountrc, mountrs] = getSimilarityMix(seed * 12, chunkX, chunkY, 5, 8, x, z, 0.0, glm::vec4(mountainCandidateRegion));
+			auto [mount1, mountrc1, mountrs1] = getSimilarityMix(seed * 13, chunkX, chunkY, 5, 4, x, z, 0.0, glm::vec4(mount));
+			auto [mount2, mountrc2, mountrs2] = getSimilarityMix(seed * 14, chunkX, chunkY, 4, 2, x, z, 0.0, glm::vec4(mount1));
+			auto [mount3, mountrc3, mountrs3] = getSimilarityMix(seed * 14, chunkX, chunkY, 3, 1, x, z, 0.0, glm::vec4(mount2));
 
-			mountain = (mount * 0.6) + ((mount1 - 0.5) * 0.3) + ((mount2 - 0.5) * 0.1);
+			mountain = (mount * 0.5) + (mount1 * 0.25) + (mount2 * 0.125) + (mount3 * 0.0625);
 
 			int thisHeight = (0.1 + (region * 0.5) + (mountain * 0.25)) * MAX_HEIGHT;
 			//set counter to zero
@@ -315,9 +307,9 @@ namespace tickerable
 
 
 			//check if terrain is above the sea level
-			if (thisHeight < 50) 
+			if (thisHeight < 75) 
 			{
-				info[counter++] = std::make_tuple(thisHeight, 50, game::config::blocks::BedrockBlock());
+				info[counter++] = std::make_tuple(thisHeight, 75, game::config::blocks::WaterBlock());
 			}
 		
 		}
@@ -377,7 +369,7 @@ namespace tickerable
 					{
 						if (BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible != BlockMesh::INVISIBLE) 
 						{
-							//either visible or transparnt
+							//either visible , transparnt , reflect
 							chunk->blockVisible[h][w][l] = true;
 						}
 						else 
@@ -471,19 +463,47 @@ namespace tickerable
 							left = &chunk->blocks[h][w - 1][l];
 						}
 
-						//if surrounding blocks are not transparent or invisible, then hide self
-						if ((BlockMeshIDs::IDList[chunk->blocks[h + 1][w][l].blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[chunk->blocks[h - 1][w][l].blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[right->blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[left->blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[forward->blockID]->visible == BlockMesh::VISIBLE) &&
-							(BlockMeshIDs::IDList[backward->blockID]->visible == BlockMesh::VISIBLE))
+						auto blkAbove = BlockMeshIDs::IDList[chunk->blocks[h + 1][w][l].blockID]->visible;
+						auto blkBelow = BlockMeshIDs::IDList[chunk->blocks[h - 1][w][l].blockID]->visible;
+						auto blkRight = BlockMeshIDs::IDList[right->blockID]->visible;
+						auto blkLeft = BlockMeshIDs::IDList[left->blockID]->visible;
+						auto blkForward = BlockMeshIDs::IDList[forward->blockID]->visible;
+						auto blkBackward = BlockMeshIDs::IDList[backward->blockID]->visible;
+						auto blkThis = BlockMeshIDs::IDList[chunk->blocks[h][w][l].blockID]->visible;
+
+						if (blkThis != BlockMesh::RELFECT) 
 						{
-							chunk->blockVisible[h][w][l] = false;
+							//if surrounding blocks are not transparent or invisible, then hide self
+							if ((blkAbove == BlockMesh::VISIBLE) &&
+								(blkBelow == BlockMesh::VISIBLE) &&
+								(blkRight == BlockMesh::VISIBLE) &&
+								(blkLeft == BlockMesh::VISIBLE) &&
+								(blkForward == BlockMesh::VISIBLE) &&
+								(blkBackward == BlockMesh::VISIBLE))
+							{
+								chunk->blockVisible[h][w][l] = false;
+							}
+							else
+							{
+								chunk->blockCounter[chunk->blocks[h][w][l].blockID]++;
+							}
 						}
 						else 
 						{
-							chunk->blockCounter[chunk->blocks[h][w][l].blockID]++;
+							//if surrounding blocks are visible or reflect, then hide self
+							if (((blkAbove == BlockMesh::VISIBLE) || (blkAbove == BlockMesh::RELFECT))&&
+								((blkBelow == BlockMesh::VISIBLE) || (blkBelow == BlockMesh::RELFECT)) &&
+								((blkRight == BlockMesh::VISIBLE) || (blkRight == BlockMesh::RELFECT)) &&
+								((blkLeft == BlockMesh::VISIBLE) || (blkLeft == BlockMesh::RELFECT)) &&
+								((blkForward == BlockMesh::VISIBLE) || (blkForward == BlockMesh::RELFECT)) &&
+								((blkBackward == BlockMesh::VISIBLE) || (blkBackward == BlockMesh::RELFECT)))
+							{
+								chunk->blockVisible[h][w][l] = false;
+							}
+							else
+							{
+								chunk->blockCounter[chunk->blocks[h][w][l].blockID]++;
+							}
 						}
 					}
 				}
