@@ -4,12 +4,14 @@
 #include "GLSL_Code.hpp"
 #include "Render_Vertices.hpp"
 #include <iostream>
-#include "CFG_Resources.hpp"
+#include "GLB_Resources.hpp"
 #include "Renderer.hpp"
-#include "CFG_ControllerIDs.hpp"
+#include "GLB_ControllerIDs.hpp"
 #include "BitMapProcess.hpp"
 #include <string>
 #include <thread>
+
+using namespace global::resource;
 
 namespace renderer
 {
@@ -319,14 +321,10 @@ namespace renderer
 			//check if more textures need to be loaded
 			if (textureLoaderProgressI < CFG_TEXTURE_ID_LAST) 
 			{
-				auto[img, imgN, imgOS] = makeTexture(game::config::resource::TextureFileNameList::getName((CFG_TEXTURE_ID)textureLoaderProgressI).c_str());
-				game::config::resource::TextureIDs::blockTextureIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(img);
-				game::config::resource::TextureIDs::blockNormalIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgN);
-				game::config::resource::TextureIDs::blockOSIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgOS);
-
-				//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-				//std::cout << textureLoaderProgressI << std::endl;
-				//wrapperGL::GLWrapper::activateTexture(shader, game::config::resource::TextureIDs::blockNormalIDList[textureLoaderProgressI].id, "fTexture", GL_TEXTURE0);
+				auto[img, imgN, imgOS] = makeTexture(TextureFileNameList::getName((CFG_TEXTURE_ID)textureLoaderProgressI).c_str());
+				TextureIDs::blockTextureIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(img);
+				TextureIDs::blockNormalIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgN);
+				TextureIDs::blockOSIDList[textureLoaderProgressI] = wrapperGL::GLWrapper::loadTexture(imgOS);
 				
 				//free imgObj
 				delete img;
@@ -346,7 +344,7 @@ namespace renderer
 			if (textureLoaderProgress < 1.0) return;
 
 			//load all vertices
-			game::config::resource::VAOObjectList::load();
+			VAOObjectList::load();
 
 			verticesLoaderProgress = 1.0;
 		}
@@ -357,7 +355,7 @@ namespace renderer
 			if (verticesLoaderProgress < 1.0) return;
 			
 			//load all meshes
-			game::config::resource::BlockMeshIDs::load();
+			BlockMeshIDs::load();
 
 			meshBlockLoaderProgress = 1.0;
 			
@@ -381,10 +379,10 @@ namespace renderer
 			shader->setFloat("progress", progress);
 			wrapperGL::GLWrapper::draw(backgroundVID);
 
-			//check if all tasks are loaded, if yes then switch controller
+			//check if all tasks are loaded, if yes then switch to game controller
 			if (progress >= 1.0) 
 			{
-				renderer::Easy3D::setContorller(game::config::ControllerIDs::World3D);
+				renderer::Easy3D::setContorller(global::Controllers::World3D);
 			}
 		}
 

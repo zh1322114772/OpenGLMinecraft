@@ -1,9 +1,8 @@
 #pragma once
-#include "CFG_BLOCKS.hpp"
 #include "TickClock_Types.hpp"
+#include "GLB_Resources.hpp"
 #include <queue>
 #include <limits>
-#include "CFG_Resources.hpp"
 
 #define MAX_RADIUS 64
 
@@ -23,14 +22,9 @@ namespace tickerable
 				bool isActive = false;
 
 				/// <summary>
-				/// chunk generation time
+				/// last change time
 				/// </summary>
-				long long timeStamp = 0;
-
-				/// <summary>
-				/// chunk ID
-				/// </summary>
-				unsigned int chunkID = 0;
+				long long updateTime = 0;
 
 				/// <summary>
 				/// chunk world location
@@ -40,17 +34,25 @@ namespace tickerable
 				/// <summary>
 				/// chunk data y, x, z
 				/// </summary>
-				game::config::blocks::Block blocks[256][16][16] = {game::config::blocks::AirBlock()};
+				global::resource::blocks::Block blocks[256][16][16] = {global::resource::blocks::AirBlock()};
 
 				/// <summary>
 				/// visible states for every block in a chunk
+				/// use first 6 bits to represents the visible state for 6 faces 
+				/// 0 = visible
+				/// 1 = invisible
 				/// </summary>
-				bool blockVisible[256][16][16] = { false };
+				unsigned char blockVisibleState[256][16][16] = { 0b111111 };
 
 				/// <summary>
 				/// count how many of each different types of block in a chunk
 				/// </summary>
 				unsigned short int blockCounter[CFG_BLOCKMESH_ID_LAST];
+
+				/// <summary>
+				/// true if current chunk is located on the edge
+				/// </summary>
+				bool edge = false;
 			};
 
 		}
@@ -86,14 +88,14 @@ namespace tickerable
 			bool chunkRegionMap[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
 
 			/// <summary>
-			/// shows which region is loaded
+			/// map loaded chunks to corresponding index
 			/// </summary>
-			bool chunkLoadingMap[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
-			
+			chunkLoaderTypes::Chunk* chunkLoadingMap[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
+
 			/// <summary>
-			/// shows where the loaded chunks are located at
+			/// chunks located on the edge
 			/// </summary>
-			chunkLoaderTypes::Chunk* chunkPositionMap[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
+			std::vector<chunkLoaderTypes::Chunk*> edgeList;
 
 			/// <summary>
 			/// boundaries of chunkLoadRegion template
@@ -154,7 +156,7 @@ namespace tickerable
 			/// <param name="chunkY">current chunk y</param>
 			/// <param name="x">x position in the chunk</param>
 			/// <param name="z">z position in the chunk</param>
-			inline void verticalInfoGenerator(std::tuple<int, int, game::config::blocks::Block>* info, int& counter, long long chunkX, long long chunkY, int x, int z);
+			inline void verticalInfoGenerator(std::tuple<int, int, global::resource::blocks::Block>* info, int& counter, long long chunkX, long long chunkY, int x, int z);
 
 		public:
 			/// <summary>

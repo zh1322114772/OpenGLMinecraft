@@ -150,11 +150,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BitMapProcess.cpp" />
-    <ClCompile Include="CFG_ControllerIDs.cpp" />
-    <ClCompile Include="CFG_GlobalVars.cpp" />
-    <ClCompile Include="CFG_Resources.cpp" />
+    <ClCompile Include="GLB_ControllerIDs.cpp" />
+    <ClCompile Include="GLB_GlobalVars.cpp" />
+    <ClCompile Include="GLB_Resources.cpp" />
     <ClCompile Include="CLR_Loading.cpp" />
-    <ClCompile Include="CLR_World3D_Types.cpp" />
     <ClCompile Include="GLSL_Code.cpp" />
     <ClCompile Include="GLW_Types.cpp" />
     <ClCompile Include="Other.cpp" />
@@ -167,7 +166,6 @@
     <ClCompile Include="GLW_Types.hpp" />
     <ClCompile Include="CLR_World3D.cpp" />
     <ClCompile Include="TickClock.cpp" />
-    <ClCompile Include="TickClock_Types.cpp" />
     <ClCompile Include="TKB_ChunkLoader.cpp" />
     <ClCompile Include="TKB_InputGetter.cpp" />
     <ClCompile Include="TKB_OutputGetter.cpp" />
@@ -175,10 +173,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BitMapProcess.hpp" />
-    <ClInclude Include="CFG_Blocks.hpp" />
-    <ClInclude Include="CFG_ControllerIDs.hpp" />
-    <ClInclude Include="CFG_GlobalVars.hpp" />
-    <ClInclude Include="CFG_Resources.hpp" />
+    <ClInclude Include="BitMask.hpp" />
+    <ClInclude Include="CLR_World3DTypes.hpp" />
+    <ClInclude Include="GLB_ControllerIDs.hpp" />
+    <ClInclude Include="GLB_GlobalVars.hpp" />
+    <ClInclude Include="GLB_Resources.hpp" />
     <ClInclude Include="GLSL_Code.hpp" />
     <ClInclude Include="GLW_GLHeaders.hpp" />
     <ClInclude Include="CLR_Loading.hpp" />
@@ -190,7 +189,6 @@
     <ClInclude Include="GLW_GLShader.hpp" />
     <ClInclude Include="Render_Types.hpp" />
     <ClInclude Include="CLR_World3D.hpp" />
-    <ClInclude Include="CLR_World3D_Types.hpp" />
     <ClInclude Include="TickClock.hpp" />
     <ClInclude Include="TickClock_Types.hpp" />
     <ClInclude Include="TKB_ChunkLoader.hpp" />

@@ -27,9 +27,6 @@
     <Filter Include="Header Files\Render\GLSL">
       <UniqueIdentifier>{45055450-213e-43b1-9d33-0bcf269c85f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Game\Config">
-      <UniqueIdentifier>{aceb06a2-6fa2-45ba-931e-09161e9b0064}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\3rd">
       <UniqueIdentifier>{ad74e688-b888-452e-82d0-4ac20c07f628}</UniqueIdentifier>
     </Filter>
@@ -70,6 +67,9 @@
     <Filter Include="Header Files\Tickerable\Tasks">
       <UniqueIdentifier>{f1b22d8c-96d0-424d-aa45-078bee22b13b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game\Global">
+      <UniqueIdentifier>{aceb06a2-6fa2-45ba-931e-09161e9b0064}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -99,25 +99,10 @@
     <ClCompile Include="CLR_Loading.cpp">
       <Filter>Source Files\Render\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="CFG_ControllerIDs.cpp">
-      <Filter>Source Files\Game\Config</Filter>
-    </ClCompile>
-    <ClCompile Include="CFG_GlobalVars.cpp">
-      <Filter>Source Files\Game\Config</Filter>
-    </ClCompile>
-    <ClCompile Include="CFG_Resources.cpp">
-      <Filter>Source Files\Game\Config</Filter>
-    </ClCompile>
-    <ClCompile Include="CLR_World3D_Types.cpp">
-      <Filter>Source Files\Render\Controllers</Filter>
-    </ClCompile>
     <ClCompile Include="GLW_Types.cpp">
       <Filter>Source Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
     <ClCompile Include="TickClock.cpp">
-      <Filter>Source Files\Tickerable</Filter>
-    </ClCompile>
-    <ClCompile Include="TickClock_Types.cpp">
       <Filter>Source Files\Tickerable</Filter>
     </ClCompile>
     <ClCompile Include="TKB_InputGetter.cpp">
@@ -140,6 +125,15 @@
     </ClCompile>
     <ClCompile Include="GLSL_Code.cpp">
       <Filter>Source Files\Render\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GLB_Resources.cpp">
+      <Filter>Source Files\Game\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="GLB_GlobalVars.cpp">
+      <Filter>Source Files\Game\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="GLB_ControllerIDs.cpp">
+      <Filter>Source Files\Game\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,23 +158,11 @@
     <ClInclude Include="GLW_GLHeaders.hpp">
       <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClInclude>
-    <ClInclude Include="CFG_GlobalVars.hpp">
-      <Filter>Header Files\Game\Config</Filter>
-    </ClInclude>
     <ClInclude Include="CLR_Loading.hpp">
       <Filter>Header Files\Render\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="CLR_World3D.hpp">
       <Filter>Header Files\Render\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="CLR_World3D_Types.hpp">
-      <Filter>Header Files\Render\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="CFG_ControllerIDs.hpp">
-      <Filter>Header Files\Game\Config</Filter>
-    </ClInclude>
-    <ClInclude Include="CFG_Resources.hpp">
-      <Filter>Header Files\Game\Config</Filter>
     </ClInclude>
     <ClInclude Include="GLW_GlmHeaders.hpp">
       <Filter>Header Files\Render\OpenGLWrapper</Filter>
@@ -200,9 +182,6 @@
     <ClInclude Include="TKB_ChunkLoader.hpp">
       <Filter>Header Files\Tickerable\Tasks</Filter>
     </ClInclude>
-    <ClInclude Include="CFG_Blocks.hpp">
-      <Filter>Header Files\Game\Config</Filter>
-    </ClInclude>
     <ClInclude Include="BitMapProcess.hpp">
       <Filter>Header Files\3rd</Filter>
     </ClInclude>
@@ -210,6 +189,21 @@
       <Filter>Header Files\Tickerable\Tasks</Filter>
     </ClInclude>
     <ClInclude Include="Other.hpp">
+      <Filter>Header Files\3rd</Filter>
+    </ClInclude>
+    <ClInclude Include="GLB_Resources.hpp">
+      <Filter>Header Files\Game\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="GLB_GlobalVars.hpp">
+      <Filter>Header Files\Game\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="GLB_ControllerIDs.hpp">
+      <Filter>Header Files\Game\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="CLR_World3DTypes.hpp">
+      <Filter>Header Files\Render\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="BitMask.hpp">
       <Filter>Header Files\3rd</Filter>
     </ClInclude>
   </ItemGroup>

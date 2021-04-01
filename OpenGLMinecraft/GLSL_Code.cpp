@@ -46,7 +46,7 @@ namespace renderer
 		"out vec3 fPos;\n"
 		"out vec3 fNorm;\n"
 		"out vec2 fTex;\n"
-		"out float fFace;\n"
+		"out int fFace;\n"
 
 		"uniform uint blockPosition[256];\n"
 		"uniform int blockCount;\n"
@@ -58,6 +58,7 @@ namespace renderer
 		"void main()\n"
 		"{\n"
 		"	int vBlock = int(vBlockf);\n"
+		"	int iFace = int(vFace);\n"
 
 		"	if(!(vBlock < blockCount))\n"
 		"	{\n"
@@ -66,15 +67,32 @@ namespace renderer
 		"	}\n"
 
 		"	uint blockPos = blockPosition[vBlock];\n"
-		"	vec3 blockWorldPos = vec3(float((blockPos & 255) >> 4) + chunkXPosition, float(blockPos >> 16), float(blockPos & 15) + chunkYPosition);\n"
+		"	float z = float(blockPos & 15);\n"
+		"	blockPos >>= 4;\n"
 
-		"	vec4 realPos = vec4(blockWorldPos + vPos, 1.0);\n"
+		"	float x = float(blockPos & 15);\n"
+		"	blockPos >>= 4;\n"
+
+		"	bool invisibleFace = bool(((blockPos & 255) >> iFace) & 1);\n"
+		"	blockPos >>= 8;\n"
+
+		"	float y = float(blockPos);\n"
+
+		"	if(invisibleFace)\n"
+		"	{\n"
+		"		gl_Position = vec4(-2.0, -2.0, -2.0, 1.0);\n"
+		"		return;\n"
+		"	}\n"
+
+		"	vec3 blockWorldPos = vec3(x + chunkXPosition, y, z + chunkYPosition);\n"
+
+		"	vec4 realPos = vec4((blockWorldPos + vPos), 1.0);\n"
 		"	gl_Position = projectionMat * viewMat * realPos;\n"
 
 		"	fPos = realPos.xyz;\n"
 		"	fNorm = normalize(vNorm);\n"
 		"	fTex = vTex;\n"
-		"	fFace = vFace;\n"
+		"	fFace = iFace;\n"
 		"}\n";
 
 	char GLSL::World3DBlockFragmentCode[] =
@@ -83,7 +101,7 @@ namespace renderer
 		"in vec3 fPos;\n"
 		"in vec3 fNorm;\n"
 		"in vec2 fTex;\n"
-		"in float fFace;\n"
+		"in flat int fFace;\n"
 
 		"struct GlobalLight\n"
 		"{\n"
@@ -105,6 +123,8 @@ namespace renderer
 		"uniform PointLight pointLight;\n"
 		"uniform vec3 cameraPosition;\n"
 		"uniform float secondCounter;\n"
+		"uniform float blockTransparent;\n"
+		"uniform float blockReflect;\n"
 
 		"out vec4 fragColor;\n"
 		
@@ -199,7 +219,7 @@ namespace renderer
 		"	float fragDistance = gl_FragCoord.z;\n"
 		"	vec3 globalColor = globalIllumination(globalLight, textureColor.xyz, SOColor.x, normalColor);\n"
 		"	vec3 pointColor = pointIllumination(pointLight, textureColor.xyz, SOColor.x, normalColor);\n"
-		"	fragColor = vec4(globalColor + pointColor, 1.0);\n"
+		"	fragColor = vec4(globalColor + pointColor, blockTransparent);\n"
 
 		"};\n";
 
@@ -209,7 +229,7 @@ namespace renderer
 			"in vec3 fPos;\n"
 			"in vec3 fNorm;\n"
 			"in vec2 fTex;\n"
-			"in float fFace;\n"
+			"in flat int fFace;\n"
 
 			"struct GlobalLight\n"
 			"{\n"
@@ -304,6 +324,11 @@ namespace renderer
 
 			"void main()\n"
 			"{\n"
+			"	if(fFace != 4)\n"
+			"	{\n"
+			"		discard;\n"
+			"	}\n"
+
 			"	vec2 texCoords = fTex;\n"
 			"	texCoords.y = getCurrentFrame(0, texCoords.y);\n"
 
@@ -320,11 +345,6 @@ namespace renderer
 			"	{\n"
 			"		SOColor.x = 0.5;\n"
 			"		SOColor.y = 0.0;\n"
-			"	}\n"
-
-			"	if(fFace != 5)\n"
-			"	{\n"
-			"		discard;\n"
 			"	}\n"
 
 			"	float fragDistance = gl_FragCoord.z;\n"

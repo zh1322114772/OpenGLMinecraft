@@ -1,7 +1,7 @@
 #pragma once
 #include "TickClock_Types.hpp"
 #include "TKB_ChunkLoader.hpp"
-#include "CFG_Resources.hpp"
+#include "GLB_Resources.hpp"
 #include <limits>
 
 namespace tickerable
@@ -15,7 +15,7 @@ namespace tickerable
 				struct PosData
 				{
 					unsigned char axisXZ;
-					unsigned char reserved;
+					unsigned char invisibleFaces;
 					unsigned short int axisY;
 
 				}posData;
@@ -30,7 +30,7 @@ namespace tickerable
 				/// every unsigned int stores block position info
 				/// bit 0 - 4: z axis
 				/// bit 4 - 8: x axis
-				/// bit 8 - 16: reserved
+				/// bit 8 - 16: invisible faces
 				/// bit 16 - 32: y axis
 				/// </summary>
 				BlockInfo blockSequence[65536] = { 0 };
@@ -46,14 +46,9 @@ namespace tickerable
 				long long locationX = LLONG_MAX, locationY = LLONG_MAX;
 
 				/// <summary>
-				/// chunk time stamp
+				/// chunk update time
 				/// </summary>
-				long long timeStamp = 0;
-
-				/// <summary>
-				/// chunbuffer chunk id
-				/// </summary>
-				unsigned int chunkID;
+				long long updateTime = 0;
 
 				/// <summary>
 				/// wether a chunk buffer should be rendered or not

@@ -2,12 +2,12 @@
 
 #include "Render_Types.hpp"
 #include "GLW_GLShader.hpp"
-#include "CLR_World3D_Types.hpp"
 #include "GLW_Types.hpp"
 #include <memory>
 #include <iostream>
 #include "WorldTickClock.hpp"
 #include "TKB_ChunkLoader.hpp"
+#include "CLR_World3DTypes.hpp"
 
 namespace renderer
 {
@@ -20,14 +20,16 @@ namespace renderer
 		private:
 			//shader programs
 			wrapperGL::ShaderProgram* shader;
-			wrapperGL::ShaderProgram* liquidShader;
 
 			double secondCounter = 0;
 			
+			//for terrain render
+			std::vector<std::tuple<unsigned int*, int, world3DTypes::BlockMesh*, float, float>> normalBlockList;
+			std::vector<std::tuple<unsigned int*, int, world3DTypes::BlockMesh*, float, float>> liquidBlockList;
 
 			//view
 			glm::mat4 projectionMatrix;
-			world3D::Camera camera;
+			world3DTypes::Camera camera;
 			glm::vec2 mousePos;
 			
 			//event updater
@@ -54,7 +56,7 @@ namespace renderer
 			/// set current camera
 			/// </summary>
 			/// <param name="cam">camera object</param>
-			void setCamera(world3D::Camera& cam);
+			void setCamera(world3DTypes::Camera& cam);
 
 			/// <summary>
 			/// set new projection matrix
@@ -69,7 +71,7 @@ namespace renderer
 			/// <param name="size">block sequence size</param>
 			/// <param name="m">the block to be drawn</param>
 			/// <param name="s">shader program</param>
-			inline void blockDrawer(unsigned int* infoArr, int size, world3D::BlockMesh* m, wrapperGL::ShaderProgram* s);
+			inline void blockDrawer(unsigned int* infoArr, int size, world3DTypes::BlockMesh* m, wrapperGL::ShaderProgram* s);
 
 
 			//inherited from Controller

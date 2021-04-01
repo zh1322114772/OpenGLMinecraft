@@ -1,7 +1,7 @@
 #include "Renderer.hpp"
 #include "CLR_World3D.hpp"
 #include "CLR_Loading.hpp"
-#include "CFG_ControllerIDs.hpp"
+#include "GLB_ControllerIDs.hpp"
 #include <iostream>
 #include <stdexcept>
 #include "WorldTickClock.hpp"
@@ -18,11 +18,11 @@ int main(void)
 
 
 		//init controllers
-		game::config::ControllerIDs::Loading = renderer::Easy3D::addController(new renderer::controllers::Loading());
-		game::config::ControllerIDs::World3D = renderer::Easy3D::addController(new renderer::controllers::World3D(&clock));
+		global::Controllers::Loading = renderer::Easy3D::addController(new renderer::controllers::Loading());
+		global::Controllers::World3D = renderer::Easy3D::addController(new renderer::controllers::World3D(&clock));
 
 		//set init controller
-		renderer::Easy3D::setContorller(game::config::ControllerIDs::Loading);
+		renderer::Easy3D::setContorller(global::Controllers::Loading);
 
 		//start!! :)
 		renderer::Easy3D::showFPS(true);

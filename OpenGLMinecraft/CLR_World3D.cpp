@@ -3,7 +3,8 @@
 #include "GLSL_Code.hpp"
 #include "GLW_GLWrapper.hpp"
 #include "Renderer.hpp"
-#include "CFG_Resources.hpp"
+#include "GLB_Resources.hpp"
+
 #define MAX_BLOCK_DRAWN 256
 #include <math.h>
 
@@ -11,6 +12,7 @@ namespace renderer
 {
 	namespace controllers
 	{
+
 		World3D::World3D(tickerable::WorldTickClock* clock)
 		{
 			tickClock = clock;
@@ -20,13 +22,17 @@ namespace renderer
 		void World3D::onStart()
 		{
 			shader = new wrapperGL::ShaderProgram(GLSL::World3DBlockVertexShaderCode, GLSL::World3DBlockFragmentCode);
-			liquidShader = new wrapperGL::ShaderProgram(GLSL::World3DBlockVertexShaderCode, GLSL::World3DLiquidBlockFragmentCode);
+			for (int i = 0; i < 3; i++)
+			{
+				shader->use();
+				shader->setInt("fTexture[" + std::to_string(i) + "]", i);
+			}
 
 			//set camera and projection matrix
 			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.7f, 1000.f);
 			renderer::Easy3D::setMouseCenter(true);
 			
-			camera = world3D::Camera(glm::vec3(0.0, 150.0, 0.0));
+			camera = world3DTypes::Camera(glm::vec3(0.0, 150.0, 0.0));
 
 			mousePos.x = -1.57;
 			mousePos.y = 0.0;
@@ -43,7 +49,7 @@ namespace renderer
 
 
 
-		void World3D::setCamera(world3D::Camera& cam) 
+		void World3D::setCamera(world3DTypes::Camera& cam)
 		{
 			camera = cam;
 		}
@@ -74,7 +80,7 @@ namespace renderer
 			tickClock->pause();
 		}
 
-		void World3D::blockDrawer(unsigned int* infoArr, int size, world3D::BlockMesh* m, wrapperGL::ShaderProgram* s)
+		void World3D::blockDrawer(unsigned int* infoArr, int size, world3DTypes::BlockMesh* m, wrapperGL::ShaderProgram* s)
 		{
 			
 			//bind texture, normal, specular and occlusion maps
@@ -99,7 +105,7 @@ namespace renderer
 					s->setInt("blockCount", size);
 					s->setUInt("blockPosition", infoArr, size);
 				}
-				wrapperGL::GLWrapper::draw(game::config::resource::VAOObjectList::cubes);
+				wrapperGL::GLWrapper::draw(global::resource::VAOObjectList::cubes);
 
 				infoArr += MAX_BLOCK_DRAWN;
 				size -= MAX_BLOCK_DRAWN;
@@ -124,33 +130,14 @@ namespace renderer
 			//set view and projection matrices to vertex shader
 			glm::mat4 lookAtMatrix = glm::lookAt(camera.Pos, camera.Pos + camera.lookAt, camera.up);
 
-
-
-			//render blocks
-			shader->use();
-			shader->setFloat("secondCounter", secondCounter);
-			shader->setVec3("globalLight.lightDirection", lightDirection);
-			shader->setVec3("globalLight.lightColorA", sunShadeColor);
-			shader->setVec3("globalLight.lightColorD", sunColor);
-			shader->setVec3("globalLight.lightColorS", sunSpecular);
-			shader->setVec3("cameraPosition", camera.Pos);
-			shader->setVec3("pointLight.lightPosition", camera.Pos);
-			shader->setVec3("pointLight.lightColorD", pColor);
-			shader->setVec3("pointLight.lightColorS", pSColor);
-			shader->setMat4("viewMat", lookAtMatrix);
-			shader->setMat4("projectionMat", projectionMatrix);
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CW);
-			//set textures
-			for (int i = 0; i < 3; i++) 
-			{
-				shader->setInt("fTexture["+std::to_string(i)+"]", i);
-			}
-
 			auto chunkList = tickClock->getOutputGetter()->getChunkBuffers();
 			auto chunkListSize = tickClock->getOutputGetter()->getChunkBufferSize();
-			std::queue<std::tuple<unsigned int*, int, world3D::BlockMesh*, float, float>> reflectBlockList;
+			normalBlockList.clear();
+			liquidBlockList.clear();
+
+			//camera position
+			glm::vec3 camLookAt3D = glm::normalize(camera.lookAt);
+			glm::vec3 camPosition = camera.Pos - (camLookAt3D * 128.0f);
 
 			//iterate through all active chunks
 			for (int i = 0; i < chunkListSize; i++) 
@@ -168,62 +155,65 @@ namespace renderer
 					{
 						float chunkX = (float)thisChunk->locationX * 16;
 						float chunkY = (float)thisChunk->locationY * 16;
+						glm::vec3 chunkPos = glm::vec3(chunkX - camPosition.x, -camPosition.y, chunkY - camPosition.z);
+						float cosRadian = glm::dot(glm::normalize(chunkPos), camLookAt3D);
 
-						//render liquid separately
-						if (game::config::resource::BlockMeshIDs::IDList[j]->visible == world3D::BlockMesh::RELFECT)
+						if (cosRadian > 0.7) 
 						{
-							reflectBlockList.push(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], game::config::resource::BlockMeshIDs::IDList[j], chunkX, chunkY));
-							continue;
+							if ((global::resource::BlockMeshIDs::IDList[j]->properties & 0b1) == world3DTypes::BlockMesh::TYPE_LIQUID)
+							{
+								liquidBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockMeshIDs::IDList[j], chunkX, chunkY));
+							}
+							else
+							{
+								normalBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockMeshIDs::IDList[j], chunkX, chunkY));
+							}
 						}
 
-						//send chunk position to shader
-						shader->setFloat("chunkXPosition", chunkX);
-						shader->setFloat("chunkYPosition", chunkY);
-
-						//draw
-						blockDrawer((unsigned int*)sequence, thisChunk->blockCounter[j], game::config::resource::BlockMeshIDs::IDList[j], shader);
 						sequence += thisChunk->blockCounter[j];
 					}
 				}
 
 			}
-			glDisable(GL_CULL_FACE);
 
-			
-			//render liquid
-			liquidShader->use();
-			liquidShader->setFloat("secondCounter", secondCounter);
-			liquidShader->setVec3("globalLight.lightDirection", lightDirection);
-			liquidShader->setVec3("globalLight.lightColorA", sunShadeColor);
-			liquidShader->setVec3("globalLight.lightColorD", sunColor);
-			liquidShader->setVec3("globalLight.lightColorS", sunSpecular);
-			liquidShader->setVec3("cameraPosition", camera.Pos);
-			liquidShader->setVec3("pointLight.lightPosition", camera.Pos);
-			liquidShader->setVec3("pointLight.lightColorD", pColor);
-			liquidShader->setVec3("pointLight.lightColorS", pSColor);
-			liquidShader->setMat4("viewMat", lookAtMatrix);
-			liquidShader->setMat4("projectionMat", projectionMatrix);
+			shader->use();
+			shader->setFloat("secondCounter", secondCounter);
+			shader->setVec3("globalLight.lightDirection", lightDirection);
+			shader->setVec3("globalLight.lightColorA", sunShadeColor);
+			shader->setVec3("globalLight.lightColorD", sunColor);
+			shader->setVec3("globalLight.lightColorS", sunSpecular);
+			shader->setVec3("cameraPosition", camera.Pos);
+			shader->setVec3("pointLight.lightPosition", camera.Pos);
+			shader->setVec3("pointLight.lightColorD", pColor);
+			shader->setVec3("pointLight.lightColorS", pSColor);
+			shader->setMat4("viewMat", lookAtMatrix);
+			shader->setMat4("projectionMat", projectionMatrix);
 
-			//set textures
-			for (int i = 0; i < 3; i++)
-			{
-				liquidShader->setInt("fTexture[" + std::to_string(i) + "]", i);
-			}
+			shader->setFloat("blockTransparent", 1.0);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			while (!reflectBlockList.empty()) 
+			//render blocks
+			for (int j = 0; j < normalBlockList.size(); j++)
 			{
-				auto [arr, i, m, chunkX, chunkY] = reflectBlockList.front();
-				reflectBlockList.pop();
-
+				auto [arr, i, m, chunkX, chunkY] = normalBlockList[j];
 				shader->setFloat("chunkXPosition", chunkX);
 				shader->setFloat("chunkYPosition", chunkY);
 
-				blockDrawer(arr, i, m, liquidShader);
+				blockDrawer(arr, i, m, shader);
+			}
+			
+			//render liquid
+			shader->setFloat("blockTransparent", 0.7);
+			for (int j = 0; j < liquidBlockList.size(); j++) 
+			{
+				auto [arr, i, m, chunkX, chunkY] = liquidBlockList[j];
+				shader->setFloat("chunkXPosition", chunkX);
+				shader->setFloat("chunkYPosition", chunkY);
+				blockDrawer(arr, i, m, shader);
 			}
 			glDisable(GL_BLEND);
 		}
-
+		
 		void World3D::onDraw(const double& delta_t)
 		{
 			secondCounter += delta_t;
@@ -242,7 +232,7 @@ namespace renderer
 
 		void  World3D::renderAreaChangedCallback(const int& newWidth, const int& newHeight)
 		{
-
+			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.7f, 1000.f);
 		}
 
 		void  World3D::inputProcess(const KeyboardEvent& keyboardEvent, const MouseEvent& mouseEvent, const double& delta_t)
@@ -270,22 +260,22 @@ namespace renderer
 			//change position
 			if (keyboardEvent.keyPressed[GLFW_KEY_W]) 
 			{
-				camera.Pos += camera.lookAt * 5.0f * (float)delta_t * 25.0f;
+				camera.Pos += camera.lookAt * 5.0f * (float)delta_t * 5.0f;
 			}
 			
 			if (keyboardEvent.keyPressed[GLFW_KEY_S]) 
 			{
-				camera.Pos -= camera.lookAt * 5.0f * (float)delta_t * 25.0f;
+				camera.Pos -= camera.lookAt * 5.0f * (float)delta_t * 5.0f;
 			}
 
 			if (keyboardEvent.keyPressed[GLFW_KEY_A]) 
 			{
-				camera.Pos -= glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 25.0f;
+				camera.Pos -= glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 5.0f;
 			}
 
 			if (keyboardEvent.keyPressed[GLFW_KEY_D]) 
 			{
-				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 25.0f;
+				camera.Pos += glm::cross(camera.lookAt, camera.up) * 5.0f * (float)delta_t * 5.0f;
 			}
 
 			//std::cout << camera.Pos.x << " " << camera.Pos.y << " " << camera.Pos.z << std::endl;

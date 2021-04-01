@@ -1,6 +1,6 @@
 #include "TKB_OutputGetter.hpp"
 #include "TKB_ChunkLoader.hpp"
-#include "CLR_World3D_Types.hpp"
+#include "CLR_World3DTypes.hpp"
 #include <iostream>
 #include <math.h>
 #define PI 3.1415926
@@ -26,7 +26,6 @@ namespace tickerable
 			for (int i = 0; i < chunkBufferSize; i++) 
 			{
 				chunkBuffers[i] = new outputGetterTypes::ChunkBuffer;
-				chunkBuffers[i]->chunkID = i;
 			}
 
 		}
@@ -64,7 +63,7 @@ namespace tickerable
 		{
 			chunkBuffer->locationX = chunkData->locationX;
 			chunkBuffer->locationY = chunkData->locationY;
-			chunkBuffer->timeStamp = chunkData->timeStamp;
+			chunkBuffer->updateTime = chunkData->updateTime;
 			unsigned short int endIndex[CFG_BLOCKMESH_ID_LAST];
 
 
@@ -87,12 +86,12 @@ namespace tickerable
 					for (unsigned char z = 0; z < 16; z++) 
 					{
 						//if block is visible, then add it to block sequence
-						if (chunkData->blockVisible[y][x][z])
+						if (chunkData->blockVisibleState[y][x][z] != 0b111111)
 						{
 							outputGetterTypes::BlockInfo data;
 							data.posData.axisXZ = (x << 4) + z;
 							data.posData.axisY = y;
-							data.posData.reserved = 0;
+							data.posData.invisibleFaces = chunkData->blockVisibleState[y][x][z];
 
 							chunkBuffer->blockSequence[endIndex[chunkData->blocks[y][x][z].blockID]] = data;
 							endIndex[chunkData->blocks[y][x][z].blockID]--;
@@ -102,7 +101,6 @@ namespace tickerable
 			}
 
 			chunkBuffer->isActive = chunkData->isActive;
-		
 		}
 
 		void OutputGetter::Tick(const double& delta_t, const std::vector<Task*>& taskList) 
@@ -114,7 +112,7 @@ namespace tickerable
 			for (int i = 0; i < chunkBufferSize; i++)
 			{
 
-				if ((chunkBuffers[i]->timeStamp != chunkList[i]->timeStamp))
+				if ((chunkBuffers[i]->updateTime != chunkList[i]->updateTime))
 				{
 					if (chunkList[i]->isActive) 
 					{
