@@ -355,7 +355,7 @@ namespace renderer
 			if (verticesLoaderProgress < 1.0) return;
 			
 			//load all meshes
-			BlockMeshIDs::load();
+			BlockRenderableInfoIDs::load();
 
 			meshBlockLoaderProgress = 1.0;
 			

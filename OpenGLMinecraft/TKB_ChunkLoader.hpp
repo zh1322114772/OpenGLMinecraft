@@ -60,6 +60,10 @@ namespace tickerable
 		class ChunkLoader : public Task
 		{
 		private:
+			
+			//current center
+			long long centerChunkX;
+			long long centerChunkY;
 
 			const int viewDistance;
 			/// <summary>
@@ -90,7 +94,10 @@ namespace tickerable
 			/// <summary>
 			/// map loaded chunks to corresponding index
 			/// </summary>
-			chunkLoaderTypes::Chunk* chunkLoadingMap[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
+			struct RegionMap
+			{
+				chunkLoaderTypes::Chunk* map[(MAX_RADIUS * 2) + 1][(MAX_RADIUS * 2) + 1];
+			}* chunkLoadingMap;
 
 			/// <summary>
 			/// chunks located on the edge
@@ -121,8 +128,17 @@ namespace tickerable
 			/// <param name="y">position map y location</param>
 			void hideBlocks(chunkLoaderTypes::Chunk* chunk, long long x, long long y);
 
-
-
+			/// <summary>
+			/// hide single block
+			/// </summary>
+			/// <param name="chunk">current chunk</param>
+			/// <param name="mX">chunk offset x from loading map</param>
+			/// <param name="mY">chunk offset y from loading map</param>
+			/// <param name="blkX">block position x in the chunk</param>
+			/// <param name="blkY">block position y in the chunk</param>
+			/// <param name="blkZ">block position z in the chunk</param>
+			/// <returns>invisible faces</returns> 
+			inline unsigned char hideBlock(chunkLoaderTypes::Chunk* chunk, long long mX, long long mY, unsigned char blkX, unsigned char blkY, unsigned char blkZ);
 
 			/// <summary>
 			/// convert two values into one
@@ -180,6 +196,31 @@ namespace tickerable
 			/// </summary>
 			/// <returns></returns>
 			int getChunkListSize();
+
+			/// <summary>
+			/// return loading map
+			/// </summary>
+			/// <returns></returns>
+			ChunkLoader::RegionMap* getMappedRegions();
+
+			/// <summary>
+			/// get block at particular x y z position
+			/// </summary>
+			/// <param name="x">x position</param>
+			/// <param name="y">y position</param>
+			/// <param name="z">z position</param>
+			/// <returns>return nullptr if provided location is non-mapped, otherwise, return current chunk pointer and x y z offsets</returns>
+			std::tuple<chunkLoaderTypes::Chunk*, unsigned char, unsigned char, unsigned char> getBlock(long long x, unsigned char y, long long z);
+
+			/// <summary>
+			/// set block at particular x y z position
+			/// </summary>
+			/// <param name="x">x position</param>
+			/// <param name="y">y position</param>
+			/// <param name="z">z position</param>
+			/// <param name="b">block </param>
+			/// <returns>return true if block is successfully placed</returns>
+			bool setBlock(long long x, long long y, long long z, global::resource::blocks::Block b);
 
 			/// <summary>
 			/// get active chunk list

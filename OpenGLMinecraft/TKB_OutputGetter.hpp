@@ -3,6 +3,7 @@
 #include "TKB_ChunkLoader.hpp"
 #include "GLB_Resources.hpp"
 #include <limits>
+#include <atomic>
 
 namespace tickerable
 {
@@ -14,9 +15,10 @@ namespace tickerable
 			{
 				struct PosData
 				{
-					unsigned char axisXZ;
+					unsigned char axisZ;
+					unsigned char axisX;
+					unsigned char axisY;
 					unsigned char invisibleFaces;
-					unsigned short int axisY;
 
 				}posData;
 
@@ -28,10 +30,10 @@ namespace tickerable
 				
 				/// <summary>
 				/// every unsigned int stores block position info
-				/// bit 0 - 4: z axis
-				/// bit 4 - 8: x axis
-				/// bit 8 - 16: invisible faces
-				/// bit 16 - 32: y axis
+				/// bit 0 - 8: z axis
+				/// bit 8 - 16: x axis
+				/// bit 16 - 24: y axis
+				/// bit 24 - 32: invisible faces
 				/// </summary>
 				BlockInfo blockSequence[65536] = { 0 };
 
@@ -53,7 +55,7 @@ namespace tickerable
 				/// <summary>
 				/// wether a chunk buffer should be rendered or not
 				/// </summary>
-				bool isActive = false;
+				std::atomic<bool> isActive = false;
 
 			};
 

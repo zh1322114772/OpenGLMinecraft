@@ -24,8 +24,8 @@ namespace renderer
 			double secondCounter = 0;
 			
 			//for terrain render
-			std::vector<std::tuple<unsigned int*, int, world3DTypes::BlockMesh*, float, float>> normalBlockList;
-			std::vector<std::tuple<unsigned int*, int, world3DTypes::BlockMesh*, float, float>> liquidBlockList;
+			std::vector<std::tuple<unsigned int*, int, global::resource::blocks::BlockRenderableProperties*, float, float>> normalBlockList;
+			std::vector<std::tuple<unsigned int*, int, global::resource::blocks::BlockRenderableProperties*, float, float>> liquidBlockList;
 
 			//view
 			glm::mat4 projectionMatrix;
@@ -71,7 +71,7 @@ namespace renderer
 			/// <param name="size">block sequence size</param>
 			/// <param name="m">the block to be drawn</param>
 			/// <param name="s">shader program</param>
-			inline void blockDrawer(unsigned int* infoArr, int size, world3DTypes::BlockMesh* m, wrapperGL::ShaderProgram* s);
+			inline void blockDrawer(unsigned int* infoArr, int size, global::resource::blocks::BlockRenderableProperties* m, wrapperGL::ShaderProgram* s);
 
 
 			//inherited from Controller

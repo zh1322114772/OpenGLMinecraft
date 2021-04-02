@@ -135,6 +135,12 @@
     <ClCompile Include="GLB_ControllerIDs.cpp">
       <Filter>Source Files\Game\Config</Filter>
     </ClCompile>
+    <ClCompile Include="TKB_PhysicsEngine.cpp">
+      <Filter>Source Files\Tickerable\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="TKB_Logic.cpp">
+      <Filter>Source Files\Tickerable\Tasks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLW_GLWrapper.hpp">
@@ -205,6 +211,12 @@
     </ClInclude>
     <ClInclude Include="BitMask.hpp">
       <Filter>Header Files\3rd</Filter>
+    </ClInclude>
+    <ClInclude Include="TKB_PhysicsEngine.hpp">
+      <Filter>Header Files\Tickerable\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="TKB_Logic.hpp">
+      <Filter>Header Files\Tickerable\Tasks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

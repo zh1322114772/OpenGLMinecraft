@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include "GLW_Types.hpp"
-#include "CLR_World3DTypes.hpp"
 
 //texture ids
 enum CFG_TEXTURE_ID
@@ -54,6 +53,227 @@ namespace global
 
 	namespace resource 
 	{
+		//define all blocks in the game
+		namespace blocks
+		{
+			/// <summary>
+			/// block render infos
+			/// </summary>
+			struct BlockRenderableProperties
+			{
+				static const unsigned short int TYPE_BLOCK = 0b0;
+				static const unsigned short int TYPE_LIQUID = 0b1;
+
+				static const unsigned short int ATTACHMENT_INVISIBLE = 0b00;
+				static const unsigned short int ATTACHMENT_VISIBLE = 0b10;
+				static const unsigned short int ATTACHMENT_TRANSPARENT = 0b100;
+				static const unsigned short int ATTACHMENT_RELFECT = 0b1000;
+
+				/// <summary>
+				/// texture id
+				/// </summary>
+				unsigned int textureID;
+
+				/// <summary>
+				/// normal map id
+				/// </summary>
+				unsigned int normalID;
+
+				/// <summary>
+				/// specular and occlusion map id
+				/// </summary>
+				unsigned int OSID;
+
+				/// <summary>
+				/// additional properties to the block
+				/// </summary>
+				unsigned short int properties = TYPE_BLOCK | ATTACHMENT_VISIBLE;
+
+				/// <summary>
+				/// constructor
+				/// </summary>
+				/// <param name="tid">texture id</param>
+				/// <param name="nid">normal id</param>
+				/// <param name="osid">occlusion&specular id</param>
+				/// <returns></returns>
+				BlockRenderableProperties(unsigned int tid, unsigned int nid, unsigned short int osid) :textureID(tid), normalID(nid), OSID(osid)
+				{
+
+				}
+
+				/// <summary>
+				/// constructor
+				/// </summary>
+				/// <param name="tid">texture id</param>
+				/// <param name="nid">normal id</param>
+				/// <param name="osid">occlusion&specular id</param>
+				/// <param name="t">if texture is transparent</param>
+				/// <returns></returns>
+				BlockRenderableProperties(unsigned int tid, unsigned int nid, unsigned int osid, unsigned short int t) : properties(t), textureID(tid), normalID(nid), OSID(osid)
+				{
+
+				}
+			};
+
+
+
+			//block base struct
+			struct Block
+			{
+				CFG_BLCOKMESH_ID blockID;
+
+				//if block is able to pass through
+				bool passThrough;
+
+				Block(CFG_BLCOKMESH_ID id, bool pt) : blockID(id), passThrough(pt)
+				{
+
+				}
+
+				Block()
+				{
+					blockID = CFG_BLOCKMESH_ID_STONE;
+				}
+			};
+
+
+
+
+			//other blocks
+			struct AirBlock : public Block
+			{
+				AirBlock() :Block(CFG_BLOCKMESH_ID_AIR, true)
+				{
+
+				}
+			};
+
+
+			struct DirtBlock : public Block
+			{
+				DirtBlock() :Block(CFG_BLOCKMESH_ID_DIRT, false)
+				{
+
+				}
+			};
+
+			struct StoneBlock : public Block
+			{
+				StoneBlock() :Block(CFG_BLOCKMESH_ID_STONE, false)
+				{
+
+				}
+			};
+
+			struct CobbleStoneBlock : public Block
+			{
+				CobbleStoneBlock() :Block(CFG_BLOCKMESH_ID_COBBLESTONE, false)
+				{
+
+				}
+			};
+
+			struct OakPlankBlock : public Block
+			{
+				OakPlankBlock() :Block(CFG_BLOCKMESH_ID_OAK_PLANKS, false)
+				{
+
+				}
+			};
+
+			struct SprucePlankBlock : public Block
+			{
+				SprucePlankBlock() :Block(CFG_BLOCKMESH_ID_SPRUCE_PLANKS, false)
+				{
+
+				}
+			};
+
+			struct BrichPlankBlock : public Block
+			{
+				BrichPlankBlock() :Block(CFG_BLOCKMESH_ID_BRICH_PLANKS, false)
+				{
+
+				}
+			};
+
+			struct JunglePlankBlock : public Block
+			{
+				JunglePlankBlock() :Block(CFG_BLOCKMESH_ID_JUNGLE_PLANKS, false)
+				{
+
+				}
+			};
+
+			struct AcaciaPlankBlock : public Block
+			{
+				AcaciaPlankBlock() :Block(CFG_BLOCKMESH_ID_ACACIA_PLANKS, false)
+				{
+
+				}
+			};
+
+			struct DarkOakPlankBlock : public Block
+			{
+				DarkOakPlankBlock() :Block(CFG_BLOCKMESH_ID_DARK_OAK_PLANKS, false)
+				{
+
+				}
+			};
+
+			struct BedrockBlock : public Block
+			{
+				BedrockBlock() :Block(CFG_BLOCKMESH_ID_BEDROCK, false)
+				{
+
+				}
+			};
+
+			struct SandBlock : public Block
+			{
+				SandBlock() :Block(CFG_BLOCKMESH_ID_SAND, false)
+				{
+
+				}
+			};
+
+			struct GrassBlock : public Block
+			{
+				GrassBlock() :Block(CFG_BLOCKMESH_ID_GRASS, false)
+				{
+
+				}
+			};
+
+			struct CobbleStoneMossyBlock : public Block
+			{
+				CobbleStoneMossyBlock() : Block(CFG_BLOCKMESH_ID_COBBLESTONE_MOSSY, false)
+				{
+
+				}
+			};
+
+			struct WaterBlock : public Block
+			{
+				WaterBlock() : Block(CFG_BLOCKMESH_ID_WATER, true)
+				{
+
+				}
+			};
+		}
+
+		//define all entites in the game
+		namespace entities
+		{
+			class Entity
+			{
+
+
+			};
+
+		}
+
+
 		struct VAOObjectList 
 		{
 			static wrapperGL::VAOID cube;
@@ -68,9 +288,9 @@ namespace global
 		/// <summary>
 		/// blockMsh id list
 		/// </summary>
-		struct BlockMeshIDs 
+		struct BlockRenderableInfoIDs 
 		{
-			static renderer::controllers::world3DTypes::BlockMesh* IDList[CFG_BLOCKMESH_ID_LAST];
+			static blocks::BlockRenderableProperties* IDList[CFG_BLOCKMESH_ID_LAST];
 
 			/// <summary>
 			/// load all block meshes
@@ -109,153 +329,6 @@ namespace global
 			/// <returns>string file name</returns>
 			static std::string getName(CFG_TEXTURE_ID id);
 		};
-
-		//define all blocks in the game
-		namespace blocks 
-		{
-			//block base struct
-			struct Block
-			{
-				CFG_BLCOKMESH_ID blockID;
-
-				Block(CFG_BLCOKMESH_ID id) : blockID(id)
-				{
-
-				}
-
-				Block()
-				{
-					blockID = CFG_BLOCKMESH_ID_STONE;
-				}
-			};
-
-
-
-
-			//other blocks
-			struct AirBlock : public Block
-			{
-				AirBlock() :Block(CFG_BLOCKMESH_ID_AIR)
-				{
-
-				}
-			};
-
-
-			struct DirtBlock : public Block
-			{
-				DirtBlock() :Block(CFG_BLOCKMESH_ID_DIRT)
-				{
-
-				}
-			};
-
-			struct StoneBlock : public Block
-			{
-				StoneBlock() :Block(CFG_BLOCKMESH_ID_STONE)
-				{
-
-				}
-			};
-
-			struct CobbleStoneBlock : public Block
-			{
-				CobbleStoneBlock() :Block(CFG_BLOCKMESH_ID_COBBLESTONE)
-				{
-
-				}
-			};
-
-			struct OakPlankBlock : public Block
-			{
-				OakPlankBlock() :Block(CFG_BLOCKMESH_ID_OAK_PLANKS)
-				{
-
-				}
-			};
-
-			struct SprucePlankBlock : public Block
-			{
-				SprucePlankBlock() :Block(CFG_BLOCKMESH_ID_SPRUCE_PLANKS)
-				{
-
-				}
-			};
-
-			struct BrichPlankBlock : public Block
-			{
-				BrichPlankBlock() :Block(CFG_BLOCKMESH_ID_BRICH_PLANKS)
-				{
-
-				}
-			};
-
-			struct JunglePlankBlock : public Block
-			{
-				JunglePlankBlock() :Block(CFG_BLOCKMESH_ID_JUNGLE_PLANKS)
-				{
-
-				}
-			};
-
-			struct AcaciaPlankBlock : public Block
-			{
-				AcaciaPlankBlock() :Block(CFG_BLOCKMESH_ID_ACACIA_PLANKS)
-				{
-
-				}
-			};
-
-			struct DarkOakPlankBlock : public Block
-			{
-				DarkOakPlankBlock() :Block(CFG_BLOCKMESH_ID_DARK_OAK_PLANKS)
-				{
-
-				}
-			};
-
-			struct BedrockBlock : public Block
-			{
-				BedrockBlock() :Block(CFG_BLOCKMESH_ID_BEDROCK)
-				{
-
-				}
-			};
-
-			struct SandBlock : public Block
-			{
-				SandBlock() :Block(CFG_BLOCKMESH_ID_SAND)
-				{
-
-				}
-			};
-
-			struct GrassBlock : public Block
-			{
-				GrassBlock() :Block(CFG_BLOCKMESH_ID_GRASS)
-				{
-
-				}
-			};
-
-			struct CobbleStoneMossyBlock : public Block
-			{
-				CobbleStoneMossyBlock() : Block(CFG_BLOCKMESH_ID_COBBLESTONE_MOSSY)
-				{
-
-				}
-			};
-
-			struct WaterBlock : public Block
-			{
-				WaterBlock() : Block(CFG_BLOCKMESH_ID_WATER)
-				{
-
-				}
-			};
-		}
-
-
 	}
 	
 }

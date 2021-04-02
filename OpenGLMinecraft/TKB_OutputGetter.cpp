@@ -89,7 +89,8 @@ namespace tickerable
 						if (chunkData->blockVisibleState[y][x][z] != 0b111111)
 						{
 							outputGetterTypes::BlockInfo data;
-							data.posData.axisXZ = (x << 4) + z;
+							data.posData.axisX = x;
+							data.posData.axisZ = z;
 							data.posData.axisY = y;
 							data.posData.invisibleFaces = chunkData->blockVisibleState[y][x][z];
 

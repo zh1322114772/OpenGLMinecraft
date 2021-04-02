@@ -11,6 +11,12 @@ namespace tickerable
 		chunkLoader = new tasks::ChunkLoader(32, 12344321);
 		addTask(chunkLoader);
 
+		gameLogic = new tasks::GameLogic();
+		addTask(gameLogic);
+
+		physicsEngine = new tasks::PhysicsEngine(32, interval);
+		addTask(physicsEngine);
+
 		outputGetter = new tasks::OutputGetter(32);
 		addTask(outputGetter);
 	}
@@ -29,6 +35,17 @@ namespace tickerable
 	{
 		return outputGetter;
 	}
+
+	tasks::PhysicsEngine* WorldTickClock::getPhysicsEngine() 
+	{
+		return physicsEngine;
+	}
+
+	tasks::GameLogic* WorldTickClock::getLogic() 
+	{
+		return gameLogic;
+	}
+
 
 	WorldTickClock::~WorldTickClock() 
 	{

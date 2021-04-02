@@ -3,7 +3,8 @@
 #include "TKB_InputGetter.hpp"
 #include "TKB_ChunkLoader.hpp"
 #include "TKB_OutputGetter.hpp"
-
+#include "TKB_PhysicsEngine.hpp"
+#include "TKB_Logic.hpp"
 namespace tickerable
 {
 	/// <summary>
@@ -21,6 +22,16 @@ namespace tickerable
 		/// chunk loader that load chunks
 		/// </summary>
 		tasks::ChunkLoader* chunkLoader;
+
+		/// <summary>
+		/// game physics engine
+		/// </summary>
+		tasks::PhysicsEngine* physicsEngine;
+
+		/// <summary>
+		/// process game logic
+		/// </summary>
+		tasks::GameLogic* gameLogic;
 
 		/// <summary>
 		/// deliver outputs to render thread
@@ -55,6 +66,18 @@ namespace tickerable
 		/// </summary>
 		/// <returns></returns>
 		tasks::OutputGetter* getOutputGetter();
+
+		/// <summary>
+		/// get physics engine
+		/// </summary>
+		/// <returns></returns>
+		tasks::PhysicsEngine* getPhysicsEngine();
+
+		/// <summary>
+		/// get game logic class
+		/// </summary>
+		/// <returns></returns>
+		tasks::GameLogic* getLogic();
 	};
 
 

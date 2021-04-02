@@ -46,7 +46,7 @@ namespace renderer
 		"out vec3 fPos;\n"
 		"out vec3 fNorm;\n"
 		"out vec2 fTex;\n"
-		"out int fFace;\n"
+		"out float fFace;\n"
 
 		"uniform uint blockPosition[256];\n"
 		"uniform int blockCount;\n"
@@ -58,7 +58,6 @@ namespace renderer
 		"void main()\n"
 		"{\n"
 		"	int vBlock = int(vBlockf);\n"
-		"	int iFace = int(vFace);\n"
 
 		"	if(!(vBlock < blockCount))\n"
 		"	{\n"
@@ -67,16 +66,16 @@ namespace renderer
 		"	}\n"
 
 		"	uint blockPos = blockPosition[vBlock];\n"
-		"	float z = float(blockPos & 15);\n"
-		"	blockPos >>= 4;\n"
-
-		"	float x = float(blockPos & 15);\n"
-		"	blockPos >>= 4;\n"
-
-		"	bool invisibleFace = bool(((blockPos & 255) >> iFace) & 1);\n"
+		"	float z = float(blockPos & 255u);\n"
 		"	blockPos >>= 8;\n"
 
-		"	float y = float(blockPos);\n"
+		"	float x = float(blockPos & 255u);\n"
+		"	blockPos >>= 8;\n"
+
+		"	float y = float(blockPos & 255u);\n"
+		"	blockPos >>= 8;"
+
+		"	bool invisibleFace = bool((blockPos >> int(vFace)) & 1u);\n"
 
 		"	if(invisibleFace)\n"
 		"	{\n"
@@ -92,7 +91,7 @@ namespace renderer
 		"	fPos = realPos.xyz;\n"
 		"	fNorm = normalize(vNorm);\n"
 		"	fTex = vTex;\n"
-		"	fFace = iFace;\n"
+		"	fFace = vFace;\n"
 		"}\n";
 
 	char GLSL::World3DBlockFragmentCode[] =
@@ -101,7 +100,7 @@ namespace renderer
 		"in vec3 fPos;\n"
 		"in vec3 fNorm;\n"
 		"in vec2 fTex;\n"
-		"in flat int fFace;\n"
+		"in float fFace;\n"
 
 		"struct GlobalLight\n"
 		"{\n"

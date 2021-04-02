@@ -80,7 +80,7 @@ namespace renderer
 			tickClock->pause();
 		}
 
-		void World3D::blockDrawer(unsigned int* infoArr, int size, world3DTypes::BlockMesh* m, wrapperGL::ShaderProgram* s)
+		void World3D::blockDrawer(unsigned int* infoArr, int size, global::resource::blocks::BlockRenderableProperties* m, wrapperGL::ShaderProgram* s)
 		{
 			
 			//bind texture, normal, specular and occlusion maps
@@ -92,6 +92,7 @@ namespace renderer
 
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, m->OSID);
+
 
 			while (size > 0) 
 			{
@@ -160,13 +161,13 @@ namespace renderer
 
 						if (cosRadian > 0.7) 
 						{
-							if ((global::resource::BlockMeshIDs::IDList[j]->properties & 0b1) == world3DTypes::BlockMesh::TYPE_LIQUID)
+							if ((global::resource::BlockRenderableInfoIDs::IDList[j]->properties & 0b1) == global::resource::blocks::BlockRenderableProperties::TYPE_LIQUID)
 							{
-								liquidBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockMeshIDs::IDList[j], chunkX, chunkY));
+								liquidBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockRenderableInfoIDs::IDList[j], chunkX, chunkY));
 							}
 							else
 							{
-								normalBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockMeshIDs::IDList[j], chunkX, chunkY));
+								normalBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockRenderableInfoIDs::IDList[j], chunkX, chunkY));
 							}
 						}
 

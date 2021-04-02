@@ -14,7 +14,7 @@ namespace global
 		wrapperGL::VAOID VAOObjectList::cube;
 		wrapperGL::VAOID VAOObjectList::cubes;
 
-		renderer::controllers::world3DTypes::BlockMesh* BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_LAST];
+		blocks::BlockRenderableProperties* BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_LAST];
 			
 		/// <summary>
 		/// list of all texture file names
@@ -57,61 +57,61 @@ namespace global
 		}
 			
 		/// <summary>
-		/// load all block meshes
+		/// load all block render infos
 		/// </summary>
-		void BlockMeshIDs::load() 
+		void BlockRenderableInfoIDs::load() 
 		{
-			using namespace renderer::controllers::world3DTypes;
+			using namespace blocks;
 			using namespace global::resource;
 
 			//air
 			// set air block to invisible
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_AIR] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_STONE), BlockMesh::TYPE_BLOCK | BlockMesh::ATTACHMENT_INVISIBLE);
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_AIR] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_STONE), BlockRenderableProperties::TYPE_BLOCK | BlockRenderableProperties::ATTACHMENT_INVISIBLE);
 
 			//stone
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_STONE] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_STONE));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_STONE] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_STONE));
 
 			//dirt
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_DIRT] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_DIRT));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_DIRT] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_DIRT));
 
 			//cobble stone
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_COBBLESTONE] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_COBBLESTONE));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_COBBLESTONE] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_COBBLESTONE));
 
 			//oak planks
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_OAK_PLANKS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_OAK_PLANKS));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_OAK_PLANKS] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_OAK_PLANKS));
 
 			//SPRUCE_PLANK
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_SPRUCE_PLANKS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_SPRUCE_PLANKS));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_SPRUCE_PLANKS] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_SPRUCE_PLANKS));
 
 			//BRICH_PLANK
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_BRICH_PLANKS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_BRICH_PLANKS));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_BRICH_PLANKS] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_BRICH_PLANKS));
 
 			//JUNGLE_PLANK
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_JUNGLE_PLANKS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_JUNGLE_PLANKS));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_JUNGLE_PLANKS] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_JUNGLE_PLANKS));
 
 			//ACACIA_PLANK
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_ACACIA_PLANKS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_ACACIA_PLANKS));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_ACACIA_PLANKS] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_ACACIA_PLANKS));
 
 			//DARK_OAK_PLANK
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_DARK_OAK_PLANKS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_DARK_OAK_PLANKS));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_DARK_OAK_PLANKS] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_DARK_OAK_PLANKS));
 
 			//BEDROCK
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_BEDROCK] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_BEDROCK));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_BEDROCK] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_BEDROCK));
 
 			//BEDROCK
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_BEDROCK] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_BEDROCK));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_BEDROCK] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_BEDROCK));
 
 			//SAND
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_SAND] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_SAND));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_SAND] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_SAND));
 
 			//GRASS
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_GRASS] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_GRASS));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_GRASS] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_GRASS));
 
 			//COBBLE STONE MOSSY
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_COBBLESTONE_MOSSY] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_COBBLESTONE_MOSSY));
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_COBBLESTONE_MOSSY] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_COBBLESTONE_MOSSY));
 
 			//WATER
-			BlockMeshIDs::IDList[CFG_BLOCKMESH_ID_WATER] = new BlockMesh(TEX_PARA(CFG_TEXTURE_ID_WATER), BlockMesh::ATTACHMENT_VISIBLE | BlockMesh::TYPE_LIQUID);
+			BlockRenderableInfoIDs::IDList[CFG_BLOCKMESH_ID_WATER] = new BlockRenderableProperties(TEX_PARA(CFG_TEXTURE_ID_WATER), BlockRenderableProperties::ATTACHMENT_VISIBLE | BlockRenderableProperties::TYPE_LIQUID);
 		}
 		
 	}
