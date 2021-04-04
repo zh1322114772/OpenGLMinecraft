@@ -6,6 +6,10 @@ namespace tickerable
 	{
 		class GameLogic : public Task 
 		{
+		private:
+
+
+		public:
 			void onEnable() override;
 
 			void onDisable() override;

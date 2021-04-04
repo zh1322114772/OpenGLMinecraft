@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include "GLW_Types.hpp"
+#include <unordered_map>
+#include <tuple>
 
 //texture ids
 enum CFG_TEXTURE_ID
@@ -261,18 +263,6 @@ namespace global
 				}
 			};
 		}
-
-		//define all entites in the game
-		namespace entities
-		{
-			class Entity
-			{
-
-
-			};
-
-		}
-
 
 		struct VAOObjectList 
 		{

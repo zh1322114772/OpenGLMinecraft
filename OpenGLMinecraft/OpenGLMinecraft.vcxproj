@@ -150,10 +150,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BitMapProcess.cpp" />
+    <ClCompile Include="GLB_Block.cpp" />
     <ClCompile Include="GLB_ControllerIDs.cpp" />
+    <ClCompile Include="GLB_Entity.cpp" />
     <ClCompile Include="GLB_GlobalVars.cpp" />
     <ClCompile Include="GLB_Resources.cpp" />
     <ClCompile Include="CLR_Loading.cpp" />
+    <ClCompile Include="GLB_Texture.cpp" />
     <ClCompile Include="GLSL_Code.cpp" />
     <ClCompile Include="GLW_Types.cpp" />
     <ClCompile Include="Other.cpp" />
@@ -177,9 +180,12 @@
     <ClInclude Include="BitMapProcess.hpp" />
     <ClInclude Include="BitMask.hpp" />
     <ClInclude Include="CLR_World3DTypes.hpp" />
+    <ClInclude Include="GLB_Block.hpp" />
+    <ClInclude Include="GLB_Entity.hpp" />
     <ClInclude Include="GLB_ControllerIDs.hpp" />
     <ClInclude Include="GLB_GlobalVars.hpp" />
     <ClInclude Include="GLB_Resources.hpp" />
+    <ClInclude Include="GLB_Texture.hpp" />
     <ClInclude Include="GLSL_Code.hpp" />
     <ClInclude Include="GLW_GLHeaders.hpp" />
     <ClInclude Include="CLR_Loading.hpp" />

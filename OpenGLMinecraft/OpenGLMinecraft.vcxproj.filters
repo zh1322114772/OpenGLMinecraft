@@ -70,6 +70,12 @@
     <Filter Include="Header Files\Game\Global">
       <UniqueIdentifier>{aceb06a2-6fa2-45ba-931e-09161e9b0064}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game\Global\resource">
+      <UniqueIdentifier>{0a985c07-528e-4873-a53b-158866f73c0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Config\resource">
+      <UniqueIdentifier>{919c1ed7-8381-4165-a564-13472da5d665}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -140,6 +146,15 @@
     </ClCompile>
     <ClCompile Include="TKB_Logic.cpp">
       <Filter>Source Files\Tickerable\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="GLB_Block.cpp">
+      <Filter>Source Files\Game\Config\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GLB_Entity.cpp">
+      <Filter>Source Files\Game\Config\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GLB_Texture.cpp">
+      <Filter>Source Files\Game\Config\resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +232,15 @@
     </ClInclude>
     <ClInclude Include="TKB_Logic.hpp">
       <Filter>Header Files\Tickerable\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="GLB_Block.hpp">
+      <Filter>Header Files\Game\Global\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GLB_Entity.hpp">
+      <Filter>Header Files\Game\Global\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GLB_Texture.hpp">
+      <Filter>Header Files\Game\Global\resource</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
