@@ -6,6 +6,7 @@
 #include "GLB_Resources.hpp"
 
 #define MAX_BLOCK_DRAWN 256
+#include "BitMask.hpp"
 #include <math.h>
 
 namespace renderer
@@ -80,18 +81,18 @@ namespace renderer
 			tickClock->pause();
 		}
 
-		void World3D::blockDrawer(unsigned int* infoArr, int size, global::resource::blocks::BlockRenderableProperties* m, wrapperGL::ShaderProgram* s)
+		void World3D::blockDrawer(unsigned int* infoArr, int size, global::resource::block::BlockRenderInfo* m, wrapperGL::ShaderProgram* s)
 		{
 			
 			//bind texture, normal, specular and occlusion maps
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, m->textureID);
+			glBindTexture(GL_TEXTURE_2D, m->getTextureID());
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, m->normalID);
+			glBindTexture(GL_TEXTURE_2D, m->getNormalID());
 
 			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, m->OSID);
+			glBindTexture(GL_TEXTURE_2D, m->getOSID());
 
 
 			while (size > 0) 
@@ -116,7 +117,9 @@ namespace renderer
 
 		void World3D::terrainDrawer() 
 		{
-		
+			using namespace global::resource::block;
+			using blockType = BlockRenderInfoMaker::BlockType;
+
 			//test global light
 			glm::vec3 lightDirection(0.5, -0.2, 0.5);
 			lightDirection = glm::normalize(lightDirection);
@@ -149,7 +152,7 @@ namespace renderer
 
 				//draw block sequence
 				auto sequence = thisChunk->blockSequence;
-				for (int j = 0; j < CFG_BLOCKMESH_ID_LAST; j++) 
+				for (int j = 0; j < static_cast<int>(blockType::LAST); j++)
 				{
 					
 					if (thisChunk->blockCounter[j] > 0) 
@@ -161,13 +164,13 @@ namespace renderer
 
 						if (cosRadian > 0.7) 
 						{
-							if ((global::resource::BlockRenderableInfoIDs::IDList[j]->properties & 0b1) == global::resource::blocks::BlockRenderableProperties::TYPE_LIQUID)
+							if ((BlockRenderInfoMaker::getBlockRenderInfo(static_cast<blockType>(j))->getProperties() & 0b1) == BlockRenderInfo::TYPE_LIQUID)
 							{
-								liquidBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockRenderableInfoIDs::IDList[j], chunkX, chunkY));
+								liquidBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], BlockRenderInfoMaker::getBlockRenderInfo(static_cast<blockType>(j)), chunkX, chunkY));
 							}
 							else
 							{
-								normalBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], global::resource::BlockRenderableInfoIDs::IDList[j], chunkX, chunkY));
+								normalBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], BlockRenderInfoMaker::getBlockRenderInfo(static_cast<blockType>(j)), chunkX, chunkY));
 							}
 						}
 

@@ -60,26 +60,14 @@ namespace renderer
 			inline void textureLoader();
 			
 			/// <summary>
-			/// load texture, normal, specular and occlusion maps
-			/// </summary>
-			/// <param name="fileName">texture file name</param>
-			/// <returns>return nullptr if bitmap does not exists</returns>
-			inline std::tuple<wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*> loadBitMaps(const char* fileName);
-
-			/// <summary>
-			/// make game texture
-			/// </summary>
-			inline std::tuple<wrapperGL::ImageObject*, wrapperGL::ImageObject*, wrapperGL::ImageObject*> makeTexture(const char* fileName);
-
-			/// <summary>
 			/// current meshblock loading progress adjusted to 0-1
 			/// </summary>
 			float meshBlockLoaderProgress;
 
 			/// <summary>
-			/// load meshblocks
+			/// load blocks
 			/// </summary>
-			inline void meshBlockLoader();
+			inline void blockLoader();
 
 			/// <summary>
 			/// current vertices loading progress adjusted to 0-1

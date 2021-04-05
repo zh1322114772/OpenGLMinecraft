@@ -9,6 +9,8 @@
 #include "TKB_ChunkLoader.hpp"
 #include "CLR_World3DTypes.hpp"
 
+#include "GLB_Block.hpp"
+
 namespace renderer
 {
 
@@ -24,8 +26,8 @@ namespace renderer
 			double secondCounter = 0;
 			
 			//for terrain render
-			std::vector<std::tuple<unsigned int*, int, global::resource::blocks::BlockRenderableProperties*, float, float>> normalBlockList;
-			std::vector<std::tuple<unsigned int*, int, global::resource::blocks::BlockRenderableProperties*, float, float>> liquidBlockList;
+			std::vector<std::tuple<unsigned int*, int, global::resource::block::BlockRenderInfo*, float, float>> normalBlockList;
+			std::vector<std::tuple<unsigned int*, int, global::resource::block::BlockRenderInfo*, float, float>> liquidBlockList;
 
 			//view
 			glm::mat4 projectionMatrix;
@@ -71,7 +73,7 @@ namespace renderer
 			/// <param name="size">block sequence size</param>
 			/// <param name="m">the block to be drawn</param>
 			/// <param name="s">shader program</param>
-			inline void blockDrawer(unsigned int* infoArr, int size, global::resource::blocks::BlockRenderableProperties* m, wrapperGL::ShaderProgram* s);
+			inline void blockDrawer(unsigned int* infoArr, int size, global::resource::block::BlockRenderInfo* m, wrapperGL::ShaderProgram* s);
 
 
 			//inherited from Controller
