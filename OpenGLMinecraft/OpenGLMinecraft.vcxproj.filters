@@ -132,9 +132,6 @@
     <ClCompile Include="GLSL_Code.cpp">
       <Filter>Source Files\Render\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="GLB_Resources.cpp">
-      <Filter>Source Files\Game\Config</Filter>
-    </ClCompile>
     <ClCompile Include="GLB_GlobalVars.cpp">
       <Filter>Source Files\Game\Config</Filter>
     </ClCompile>
@@ -154,6 +151,9 @@
       <Filter>Source Files\Game\Config\resource</Filter>
     </ClCompile>
     <ClCompile Include="GLB_Texture.cpp">
+      <Filter>Source Files\Game\Config\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GLB_Mesh.cpp">
       <Filter>Source Files\Game\Config\resource</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,9 +212,6 @@
     <ClInclude Include="Other.hpp">
       <Filter>Header Files\3rd</Filter>
     </ClInclude>
-    <ClInclude Include="GLB_Resources.hpp">
-      <Filter>Header Files\Game\Global</Filter>
-    </ClInclude>
     <ClInclude Include="GLB_GlobalVars.hpp">
       <Filter>Header Files\Game\Global</Filter>
     </ClInclude>
@@ -240,6 +237,9 @@
       <Filter>Header Files\Game\Global\resource</Filter>
     </ClInclude>
     <ClInclude Include="GLB_Texture.hpp">
+      <Filter>Header Files\Game\Global\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GLB_Mesh.hpp">
       <Filter>Header Files\Game\Global\resource</Filter>
     </ClInclude>
   </ItemGroup>

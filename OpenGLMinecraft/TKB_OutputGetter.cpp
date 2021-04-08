@@ -64,16 +64,16 @@ namespace tickerable
 			chunkBuffer->locationX = chunkData->locationX;
 			chunkBuffer->locationY = chunkData->locationY;
 			chunkBuffer->updateTime = chunkData->updateTime;
-			unsigned short int endIndex[CFG_BLOCKMESH_ID_LAST];
+			unsigned short int endIndex[BLK_LAST];
 
 
 			//set end index
-			memcpy(endIndex, chunkData->blockCounter, sizeof(unsigned short int) * CFG_BLOCKMESH_ID_LAST);
-			memcpy(chunkBuffer->blockCounter, chunkData->blockCounter, sizeof(unsigned short int) * CFG_BLOCKMESH_ID_LAST);
+			memcpy(endIndex, chunkData->blockCounter, sizeof(unsigned short int) * BLK_LAST);
+			memcpy(chunkBuffer->blockCounter, chunkData->blockCounter, sizeof(unsigned short int) * BLK_LAST);
 			
 			endIndex[0] -= 1;
 
-			for (int i = 1; i < CFG_BLOCKMESH_ID_LAST; i++)
+			for (int i = 1; i < BLK_LAST; i++)
 			{
 				endIndex[i] = endIndex[i] + endIndex[i - 1];
 			}
@@ -94,8 +94,8 @@ namespace tickerable
 							data.posData.axisY = y;
 							data.posData.invisibleFaces = chunkData->blockVisibleState[y][x][z];
 
-							chunkBuffer->blockSequence[endIndex[chunkData->blocks[y][x][z].blockID]] = data;
-							endIndex[chunkData->blocks[y][x][z].blockID]--;
+							chunkBuffer->blockSequence[endIndex[chunkData->blocks[y][x][z].renderInfo->getTypeID()]] = data;
+							endIndex[chunkData->blocks[y][x][z].renderInfo->getTypeID()]--;
 						}
 					}
 				}

@@ -3,7 +3,6 @@
 #include "GLSL_Code.hpp"
 #include "GLW_GLWrapper.hpp"
 #include "Renderer.hpp"
-#include "GLB_Resources.hpp"
 
 #define MAX_BLOCK_DRAWN 256
 #include "BitMask.hpp"
@@ -107,7 +106,7 @@ namespace renderer
 					s->setInt("blockCount", size);
 					s->setUInt("blockPosition", infoArr, size);
 				}
-				wrapperGL::GLWrapper::draw(global::resource::VAOObjectList::cubes);
+				wrapperGL::GLWrapper::draw(*m->getMeshID());
 
 				infoArr += MAX_BLOCK_DRAWN;
 				size -= MAX_BLOCK_DRAWN;
@@ -141,7 +140,7 @@ namespace renderer
 
 			//camera position
 			glm::vec3 camLookAt3D = glm::normalize(camera.lookAt);
-			glm::vec3 camPosition = camera.Pos - (camLookAt3D * 128.0f);
+			glm::vec3 camPosition = camera.Pos - (camLookAt3D * 64.0f);
 
 			//iterate through all active chunks
 			for (int i = 0; i < chunkListSize; i++) 
@@ -157,20 +156,23 @@ namespace renderer
 					
 					if (thisChunk->blockCounter[j] > 0) 
 					{
+						auto thisBlock = BlockRenderInfoMaker::getBlockRenderInfo(static_cast<blockType>(j));
 						float chunkX = (float)thisChunk->locationX * 16;
 						float chunkY = (float)thisChunk->locationY * 16;
-						glm::vec3 chunkPos = glm::vec3(chunkX - camPosition.x, -camPosition.y, chunkY - camPosition.z);
-						float cosRadian = glm::dot(glm::normalize(chunkPos), camLookAt3D);
+						glm::vec3 chunkPos = glm::normalize(glm::vec3(chunkX - camPosition.x, 0.0, chunkY - camPosition.z));
+						chunkPos.y = camera.lookAt.y;
 
-						if (cosRadian > 0.7) 
+						float cosRadian = glm::dot(chunkPos, camLookAt3D);
+
+						if (cosRadian > 0.785398)
 						{
-							if ((BlockRenderInfoMaker::getBlockRenderInfo(static_cast<blockType>(j))->getProperties() & 0b1) == BlockRenderInfo::TYPE_LIQUID)
+							if ((thisBlock->getProperties() & 0b1) == BlockRenderInfo::TYPE_LIQUID)
 							{
-								liquidBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], BlockRenderInfoMaker::getBlockRenderInfo(static_cast<blockType>(j)), chunkX, chunkY));
+								liquidBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], thisBlock, chunkX, chunkY));
 							}
 							else
 							{
-								normalBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], BlockRenderInfoMaker::getBlockRenderInfo(static_cast<blockType>(j)), chunkX, chunkY));
+								normalBlockList.push_back(std::make_tuple((unsigned int*)sequence, thisChunk->blockCounter[j], thisBlock, chunkX, chunkY));
 							}
 						}
 
@@ -205,7 +207,7 @@ namespace renderer
 
 				blockDrawer(arr, i, m, shader);
 			}
-			
+
 			//render liquid
 			shader->setFloat("blockTransparent", 0.7);
 			for (int j = 0; j < liquidBlockList.size(); j++) 

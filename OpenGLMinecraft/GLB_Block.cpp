@@ -1,17 +1,21 @@
 #include "GLB_BLock.hpp"
 #include "GLW_GLWrapper.hpp"
 #include "GLB_Texture.hpp"
-//#define TEX_PARA(arg) TextureIDs::blockTextureIDList[arg].id, TextureIDs::blockNormalIDList[arg].id, TextureIDs::blockOSIDList[arg].id
-using namespace global::resource::texture;
 
-#define LINK_INFO1(blockType, texture, textureN, textureOS, attachment) list[static_cast<unsigned int>(blockType)] = new BlockRenderInfo(TextureMaker::getTexture(texture).id, TextureMaker::getTexture(textureN).id, TextureMaker::getTexture(textureOS).id, attachment);
-#define LINK_INFO(blockType, texture, textureN, textureOS) list[static_cast<unsigned int>(blockType)] = new BlockRenderInfo(TextureMaker::getTexture(texture).id, TextureMaker::getTexture(textureN).id, TextureMaker::getTexture(textureOS).id);
+
+using namespace global::resource::texture;
+#define LINK_INFO1(blockType, texture, textureN, textureOS, mid, attachment) list[static_cast<unsigned int>(blockType)] = new BlockRenderInfo(static_cast<unsigned int>(blockType) ,TextureMaker::getTexture(texture).id, TextureMaker::getTexture(textureN).id, TextureMaker::getTexture(textureOS).id, mesh::MeshMaker::getMesh(mid), attachment);
+#define LINK_INFO(blockType, texture, textureN, textureOS) list[static_cast<unsigned int>(blockType)] = new BlockRenderInfo(static_cast<unsigned int>(blockType) ,TextureMaker::getTexture(texture).id, TextureMaker::getTexture(textureN).id, TextureMaker::getTexture(textureOS).id);
 namespace global
 {
 	namespace resource
 	{
 		namespace block
 		{
+			const VAOID* BlockRenderInfo::getMeshID() 
+			{
+				return meshID;
+			}
 
 			const unsigned int& BlockRenderInfo::getTextureID()
 			{
@@ -31,6 +35,11 @@ namespace global
 			const unsigned short int& BlockRenderInfo::getProperties() 
 			{
 				return properties;
+			}
+
+			const unsigned int& BlockRenderInfo::getTypeID() 
+			{
+				return typeID;
 			}
 
 			BlockRenderInfo* BlockRenderInfoMaker::list[static_cast<unsigned int>(BlockType::LAST)];
@@ -53,13 +62,14 @@ namespace global
 				using tx = TextureMaker::TextureName;
 				using blk = BlockType;
 				using info = BlockRenderInfo;
+				using midInfo = mesh::MeshMaker::MeshType;
 
 				//air renderable info
-				LINK_INFO1(blk::AIR, tx::STONE, tx::STONE_N, tx::STONE_OS, info::TYPE_BLOCK | info::ATTACHMENT_INVISIBLE);
+				LINK_INFO1(blk::AIR, tx::STONE, tx::STONE_N, tx::STONE_OS, midInfo::CUBES, info::TYPE_BLOCK | info::ATTACHMENT_INVISIBLE);
 				currentProgress++;
 
 				//stone 
-				LINK_INFO(blk::AIR, tx::STONE, tx::STONE_N, tx::STONE_OS);
+				LINK_INFO(blk::STONE, tx::STONE, tx::STONE_N, tx::STONE_OS);
 				currentProgress++;
 
 				//dirt 
@@ -111,7 +121,11 @@ namespace global
 				currentProgress++;
 
 				//still water
-				LINK_INFO1(blk::WATER, tx::WATER, tx::WATER_N, tx::WATER_OS, info::TYPE_LIQUID | info::ATTACHMENT_VISIBLE);
+				LINK_INFO1(blk::WATER, tx::WATER, tx::WATER_N, tx::WATER_OS, midInfo::CUBES, info::TYPE_LIQUID | info::ATTACHMENT_VISIBLE);
+				currentProgress++;
+
+				//still water top
+				LINK_INFO1(blk::WATER_TOP, tx::WATER, tx::WATER_N, tx::WATER_OS, midInfo::WATER_TOP_CUBES, info::TYPE_LIQUID | info::ATTACHMENT_VISIBLE);
 				currentProgress++;
 				
 			}

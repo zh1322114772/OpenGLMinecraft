@@ -154,7 +154,7 @@
     <ClCompile Include="GLB_ControllerIDs.cpp" />
     <ClCompile Include="GLB_Entity.cpp" />
     <ClCompile Include="GLB_GlobalVars.cpp" />
-    <ClCompile Include="GLB_Resources.cpp" />
+    <ClCompile Include="GLB_Mesh.cpp" />
     <ClCompile Include="CLR_Loading.cpp" />
     <ClCompile Include="GLB_Texture.cpp" />
     <ClCompile Include="GLSL_Code.cpp" />
@@ -184,7 +184,7 @@
     <ClInclude Include="GLB_Entity.hpp" />
     <ClInclude Include="GLB_ControllerIDs.hpp" />
     <ClInclude Include="GLB_GlobalVars.hpp" />
-    <ClInclude Include="GLB_Resources.hpp" />
+    <ClInclude Include="GLB_Mesh.hpp" />
     <ClInclude Include="GLB_Texture.hpp" />
     <ClInclude Include="GLSL_Code.hpp" />
     <ClInclude Include="GLW_GLHeaders.hpp" />

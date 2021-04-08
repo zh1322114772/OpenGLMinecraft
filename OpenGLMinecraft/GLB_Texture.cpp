@@ -3,6 +3,7 @@
 #include "GLW_GLWrapper.hpp"
 #include <string>
 #include <stdexcept>
+
 using namespace wrapperGL;
 
 #define BLOCK_PATH "data\\textures\\blocks\\"

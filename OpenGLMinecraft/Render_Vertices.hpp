@@ -55,8 +55,9 @@ namespace renderer
 		/// </summary>
 		/// <param name="x">number of x cubes</param>
 		/// <param name="center">cube offsets</param>
+		/// <param name="center">scale block</param>
 		/// <returns></returns>
-		static wrapperGL::VAOList* cubesGenerator(int x , glm::vec3 center);
+		static wrapperGL::VAOList* cubesGenerator(int x , glm::vec3 center, glm::vec3 scale = glm::vec3(1.0));
 	};
 
 

@@ -87,7 +87,7 @@ namespace renderer
 		return objectGenerator(blockPrototypeVBO, blockPrototypeEBO, sizeof(blockPrototypeVBO), sizeof(blockPrototypeEBO),topLeft, bottomRight, center);
 	}
 
-	wrapperGL::VAOList* Vertices::cubesGenerator(int x, glm::vec3 center) 
+	wrapperGL::VAOList* Vertices::cubesGenerator(int x, glm::vec3 center, glm::vec3 scale) 
 	{
 		int blocks = x;
 		auto res = new wrapperGL::VAOList((sizeof(blockPrototypeVBO) * blocks) / sizeof(wrapperGL::VBO), (sizeof(blockPrototypeEBO) * blocks) / sizeof(unsigned int));
@@ -103,9 +103,9 @@ namespace renderer
 			for (int iv = 0; iv < 240; iv+=10) 
 			{
 				//update xyz position
-				currentvboPos[iv] = blockPrototypeVBO[iv] - center.x;
-				currentvboPos[iv + 1] = blockPrototypeVBO[iv + 1] - center.y;
-				currentvboPos[iv + 2] = blockPrototypeVBO[iv + 2] - center.z;
+				currentvboPos[iv] = (blockPrototypeVBO[iv] * scale.x) - center.x;
+				currentvboPos[iv + 1] = (blockPrototypeVBO[iv + 1] * scale.y) - center.y;
+				currentvboPos[iv + 2] = (blockPrototypeVBO[iv + 2] * scale.z) - center.z;
 		
 				//copy normal position
 				currentvboPos[iv + 3] = blockPrototypeVBO[iv + 3];

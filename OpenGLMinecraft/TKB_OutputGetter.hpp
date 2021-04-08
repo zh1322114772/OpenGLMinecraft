@@ -1,9 +1,11 @@
 #pragma once
 #include "TickClock_Types.hpp"
 #include "TKB_ChunkLoader.hpp"
-#include "GLB_Resources.hpp"
+#include "GLB_Block.hpp"
 #include <limits>
 #include <atomic>
+
+#define BLK_LAST static_cast<unsigned int>(global::resource::block::BlockRenderInfoMaker::BlockType::LAST)
 
 namespace tickerable
 {
@@ -40,7 +42,7 @@ namespace tickerable
 				/// <summary>
 				/// count how many of each different types of block in a chunk
 				/// </summary>
-				unsigned short int blockCounter[CFG_BLOCKMESH_ID_LAST] = { 0 };
+				unsigned short int blockCounter[BLK_LAST] = { 0 };
 
 				/// <summary>
 				/// chunk world location

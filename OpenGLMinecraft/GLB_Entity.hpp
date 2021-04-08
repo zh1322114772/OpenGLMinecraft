@@ -12,6 +12,13 @@ namespace global
 		{
 			namespace entityMakerTypes
 			{
+				struct CounterNode 
+				{
+					unsigned int modelMatrixCount = 0;
+					unsigned int meshCount = 0;
+					std::vector<CounterNode*> children;
+				};
+
 				struct Joint
 				{
 					/// <summary>
@@ -23,6 +30,11 @@ namespace global
 					/// the rotation vector of current joint
 					/// </summary>
 					glm::vec3 rotation;
+
+					/// <summary>
+					/// corresponding mesh id
+					/// </summary>
+					unsigned int meshID = -1;
 
 					/// <summary>
 					/// if current joint will be rendered to the screen
@@ -40,68 +52,93 @@ namespace global
 					std::vector<Joint*> children;
 
 				};
+
+				struct SharedInfo 
+				{
+					/// <summary>
+					/// indexing every model matrix
+					/// </summary>
+					std::unordered_map<std::string, long> modelMatrixIndexing;
+
+					/// <summary>
+					/// entity texture
+					/// </summary>
+					unsigned int textureID;
+
+					/// <summary>
+					/// model id
+					/// </summary>
+					unsigned int vaoID;
+
+					/// <summary>
+					/// default rotation and offset vector
+					/// </summary>
+					std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>* rotationOffsetVectors;
+
+					/// <summary>
+					/// path of the tree to every node
+					/// </summary>
+					std::vector<unsigned int> path;
+
+					/// <summary>
+					/// search range of path array
+					/// </summary>
+					int* pathRange;
+
+					/// <summary>
+					/// size of pathRange
+					/// </summary>
+					int pathRangeSize;
+				};
 			}
 
 			struct EntityRenderInfo
 			{
-				/// <summary>
-				/// entity texture
-				/// </summary>
-				unsigned int textureID;
+			public:
 
 				/// <summary>
-				/// model id
+				/// please do not create this object directly, use EntityRenderInfoMaker.makeEntityInfo()
 				/// </summary>
-				unsigned int vaoID;
-
+				/// <param name="i">shared info</param>
+				/// <param name="modelMatrixSize">model matrix size</param>
+				/// <param name="rProto">rotation info prototype</param>
+				/// <returns></returns>
+				EntityRenderInfo(entityMakerTypes::SharedInfo* i, unsigned int modelMatrixSize, std::unordered_map<std::string, float>& rProto) : info(i), rotationRadian(rProto)
+				{
+					modelMatrix = new glm::mat4x4[modelMatrixSize];
+				}
+				
 				/// <summary>
-				/// model matrix for every joint
+				/// please do not create this object directly, use EntityRenderInfoMaker.makeEntityInfo()
 				/// </summary>
-				std::unordered_map<std::string, glm::mat4x4> modelMatrix;
+				EntityRenderInfo() {}
+			
+			private:
+				/// <summary>
+				/// shared render info of all instances
+				/// </summary>
+				entityMakerTypes::SharedInfo* info = nullptr;
 
 				/// <summary>
 				/// rotation in radian
 				/// </summary>
 				std::unordered_map<std::string, float> rotationRadian;
 
-			private:
 				/// <summary>
-				/// default rotation and offset vector
+				/// model matrix for every joint
 				/// </summary>
-				std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>> rotationOffsetVectors;
-
-				/// <summary>
-				/// path of the tree to every node
-				/// </summary>
-				int* path;
-
-				/// <summary>
-				/// size of path array
-				/// </summary>
-				int pathSize;
-
-				/// <summary>
-				/// search range of path array
-				/// </summary>
-				int* pathRange;
-
-				/// <summary>
-				/// size of pathRange
-				/// </summary>
-				int pathRangeSize;
-
+				glm::mat4x4* modelMatrix = nullptr;
 
 			};
 
 			class EntityRenderInfoMaker
 			{
-			private:
-
-
+			
 			public:
 
 				enum class EntityType
 				{
+					CUBE,
 					HUMAN,
 
 
@@ -122,8 +159,35 @@ namespace global
 				/// </summary>
 				/// <param name="which">entity type</param>
 				/// <returns></returns>
-				EntityRenderInfo* makeEntityRenderableInfo(EntityType which);
+				static EntityRenderInfo* makeEntityInfo(EntityType which);
 
+			private:
+
+				static EntityRenderInfo protoTypeList[static_cast<unsigned int>(EntityType::LAST)];
+
+				/// <summary>
+				/// make entity prototype from Joints, 
+				/// </summary>
+				/// <param name="modelJoint">Joints</param>
+				/// <param name="dest">where the prototype to save at</param>
+				static void makeRenderInfo(entityMakerTypes::Joint* modelJoint, EntityRenderInfo& dest);
+
+				/// <summary>
+				/// make a counter tree that counts the size of children tree nodes
+				/// </summary>
+				/// <param name=""></param>
+				/// <returns></returns>
+				static entityMakerTypes::CounterNode* makeCounterTree(entityMakerTypes::Joint*);
+
+				/// <summary>
+				///  make entity prototype from Joints
+				/// </summary>
+				/// <param name="counterNode">counter tree</param>
+				/// <param name="modelJoint">joints</param>
+				/// <param name="dest">shared info</param>
+				/// <param name="rProto">rotation info</param>
+				/// <param name="step">path from root to node</param>
+				static void makeRenderInfo(entityMakerTypes::CounterNode* counterNode, entityMakerTypes::Joint* modelJoint, entityMakerTypes::SharedInfo* dest, std::unordered_map<std::string, float>& rProto, std::vector<unsigned int>& step, long currentOffset);
 			};
 
 			class Entity

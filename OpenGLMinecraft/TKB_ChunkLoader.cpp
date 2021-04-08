@@ -294,7 +294,7 @@ namespace tickerable
 			return std::make_tuple(mixHeight, coordinateHeights, similarity);
 		}
 
-		void ChunkLoader::verticalInfoGenerator(std::tuple<int, int, blocks::Block>* info, int& counter, long long chunkX, long long chunkY, int x, int z)
+		void ChunkLoader::verticalInfoGenerator(std::tuple<int, int, block::Block>* info, int& counter, long long chunkX, long long chunkY, int x, int z)
 		{
 
 			//generate region
@@ -330,19 +330,20 @@ namespace tickerable
 			if (mountainCandidateRegion > 0) 
 			{
 				//add terrain
-				info[counter++] = std::make_tuple(0, thisHeight, blocks::CobbleStoneBlock());
+				info[counter++] = std::make_tuple(0, thisHeight, block::StoneBlock());
 			}
 			else 
 			{
 				//add terrain
-				info[counter++] = std::make_tuple(0, thisHeight, blocks::GrassBlock());
+				info[counter++] = std::make_tuple(0, thisHeight, block::GrassBlock());
 			}
 
 
 			//check if terrain is above the sea level
 			if (thisHeight < 75) 
 			{
-				info[counter++] = std::make_tuple(thisHeight, 75, blocks::WaterBlock());
+				info[counter++] = std::make_tuple(thisHeight, 74, block::WaterBlock());
+				info[counter++] = std::make_tuple(74, 75, block::WaterTopBlock());
 			}
 		
 		}
@@ -350,7 +351,7 @@ namespace tickerable
 		void ChunkLoader::genChunkData(chunkLoaderTypes::Chunk* chunk) 
 		{
 
-			std::tuple<int, int, blocks::Block>* verticalInfo = new std::tuple<int, int, blocks::Block>[255];
+			std::tuple<int, int, block::Block>* verticalInfo = new std::tuple<int, int, block::Block>[255];
 			int infoCounter = 0;
 
 			for (int x = 0; x < 16; x++) 
@@ -362,7 +363,7 @@ namespace tickerable
 					
 					//add air as last layer
 					auto [h0, h1, blkType] = verticalInfo[infoCounter - 1];
-					verticalInfo[infoCounter++] = std::make_tuple(h1, 256, blocks::AirBlock());
+					verticalInfo[infoCounter++] = std::make_tuple(h1, 256, block::AirBlock());
 
 					//each each layer
 					for (int j = 0; j < infoCounter; j++) 
@@ -389,40 +390,38 @@ namespace tickerable
 			using namespace std::chrono;
 
 			//clear block counter
-			memset(chunk->blockCounter, 0, CFG_BLOCKMESH_ID_LAST * sizeof(unsigned short int));
+			memset(chunk->blockCounter, 0, static_cast<unsigned int>(block::BlockRenderInfoMaker::BlockType::LAST) * sizeof(unsigned short int));
 
 			//reset current state
 			chunk->edge = false;
 			
 			//hide inner blocks
-			for (int h = 0; h < 255; h++)
+			for (int h = 0; h < 256; h++)
 			{
 				for (int w = 0; w < 16; w++)
 				{
 					for (int l = 0; l < 16; l++)
 					{
+
 						auto invisibleFaces = hideBlock(chunk, x, y, w, h, l);
 						chunk->blockVisibleState[h][w][l] = invisibleFaces;
-						chunk->blockCounter[chunk->blocks[h][w][l].blockID] += (invisibleFaces != 0b111111);
-						//chunk->blockVisibleState[h][w][l] = invisibleFaces;
+						chunk->blockCounter[chunk->blocks[h][w][l].renderInfo->getTypeID()] += (invisibleFaces != 0b111111);
 					}
 				}
 			}
 
-			//std::cout << chunk->edge << std::endl;
-			//set active 
 			chunk->isActive = true;
 			chunk->updateTime = duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
 		}
 
 		unsigned char ChunkLoader::hideBlock(chunkLoaderTypes::Chunk* chunk, long long mX, long long mY, unsigned char w, unsigned char h, unsigned char l) 
 		{
-			using namespace global::resource::blocks;
+			using blkInfo = block::BlockRenderInfo;
 			//current block properties
-			auto blkThis = BlockRenderableInfoIDs::IDList[chunk->blocks[h][w][l].blockID]->properties;
+			auto blkThis = chunk->blocks[h][w][l].renderInfo->getProperties();
 
 			//if block is already invisble then skip
-			if (GET_BIT1(blkThis) == BlockRenderableProperties::ATTACHMENT_INVISIBLE)
+			if (GET_BIT1(blkThis) == blkInfo::ATTACHMENT_INVISIBLE)
 			{
 				return 0b111111;
 			}
@@ -434,19 +433,30 @@ namespace tickerable
 			}
 
 			//surrounding block properties
-			auto blkAbove = BlockRenderableInfoIDs::IDList[chunk->blocks[h + 1][w][l].blockID]->properties;
-			auto blkBelow = BlockRenderableInfoIDs::IDList[chunk->blocks[h - 1][w][l].blockID]->properties;;
+			auto blkAbove = blkThis;
+			auto blkBelow = blkThis;
 			auto blkRight = blkThis;
 			auto blkLeft = blkThis;
 			auto blkFront = blkThis;
 			auto blkBack = blkThis;
+			//get up block
+			if (h < 255) 
+			{
+				blkAbove = chunk->blocks[h + 1][w][l].renderInfo->getProperties();
+			}
+
+			//get down block
+			if (h > 0) 
+			{
+				blkBelow = chunk->blocks[h - 1][w][l].renderInfo->getProperties();
+			}
 
 			//get back block
 			if (l >= 15)
 			{
 				if (chunkLoadingMap->map[mX][mY + 1] != nullptr)
 				{
-					blkBack = BlockRenderableInfoIDs::IDList[chunkLoadingMap->map[mX][mY + 1]->blocks[h][w][0].blockID]->properties;
+					blkBack = chunkLoadingMap->map[mX][mY + 1]->blocks[h][w][0].renderInfo->getProperties();
 				}
 				else
 				{
@@ -456,7 +466,7 @@ namespace tickerable
 			}
 			else
 			{
-				blkBack = BlockRenderableInfoIDs::IDList[chunk->blocks[h][w][l + 1].blockID]->properties;
+				blkBack = chunk->blocks[h][w][l + 1].renderInfo->getProperties();
 			}
 
 			//get front block
@@ -464,7 +474,7 @@ namespace tickerable
 			{
 				if (chunkLoadingMap->map[mX][mY - 1] != nullptr)
 				{
-					blkFront = BlockRenderableInfoIDs::IDList[chunkLoadingMap->map[mX][mY - 1]->blocks[h][w][15].blockID]->properties;
+					blkFront = chunkLoadingMap->map[mX][mY - 1]->blocks[h][w][15].renderInfo->getProperties();
 				}
 				else
 				{
@@ -474,7 +484,7 @@ namespace tickerable
 			}
 			else
 			{
-				blkFront = BlockRenderableInfoIDs::IDList[chunk->blocks[h][w][l - 1].blockID]->properties;
+				blkFront = chunk->blocks[h][w][l - 1].renderInfo->getProperties();
 			}
 
 			//get right block
@@ -482,7 +492,7 @@ namespace tickerable
 			{
 				if (chunkLoadingMap->map[mX + 1][mY] != nullptr)
 				{
-					blkRight = BlockRenderableInfoIDs::IDList[chunkLoadingMap->map[mX + 1][mY]->blocks[h][0][l].blockID]->properties;
+					blkRight = chunkLoadingMap->map[mX + 1][mY]->blocks[h][0][l].renderInfo->getProperties();
 				}
 				else
 				{
@@ -492,7 +502,7 @@ namespace tickerable
 			}
 			else
 			{
-				blkRight = BlockRenderableInfoIDs::IDList[chunk->blocks[h][w + 1][l].blockID]->properties;
+				blkRight = chunk->blocks[h][w + 1][l].renderInfo->getProperties();
 			}
 
 			//get left block
@@ -500,7 +510,7 @@ namespace tickerable
 			{
 				if (chunkLoadingMap->map[mX - 1][mY] != nullptr)
 				{
-					blkLeft = BlockRenderableInfoIDs::IDList[chunkLoadingMap->map[mX - 1][mY]->blocks[h][15][l].blockID]->properties;
+					blkLeft = chunkLoadingMap->map[mX - 1][mY]->blocks[h][15][l].renderInfo->getProperties();
 				}
 				else
 				{
@@ -509,7 +519,7 @@ namespace tickerable
 			}
 			else
 			{
-				blkLeft = BlockRenderableInfoIDs::IDList[chunk->blocks[h][w - 1][l].blockID]->properties;
+				blkLeft = chunk->blocks[h][w - 1][l].renderInfo->getProperties();
 			}
 
 			bool invisibleAbove;
@@ -521,23 +531,24 @@ namespace tickerable
 			unsigned char invisibleFaces = 0;
 
 			//check block type
-			if ((blkThis & 0b1) == BlockRenderableProperties::TYPE_BLOCK)
+			if ((blkThis & 0b1) == blkInfo::TYPE_BLOCK)
 			{
-				invisibleAbove = ((GET_BIT1(blkAbove) == BlockRenderableProperties::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkAbove) == BlockRenderableProperties::TYPE_BLOCK));
-				invisibleBelow = ((GET_BIT1(blkBelow) == BlockRenderableProperties::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkBelow) == BlockRenderableProperties::TYPE_BLOCK));
-				invisibleRight = ((GET_BIT1(blkRight) == BlockRenderableProperties::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkRight) == BlockRenderableProperties::TYPE_BLOCK));
-				invisibleLeft = ((GET_BIT1(blkLeft) == BlockRenderableProperties::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkLeft) == BlockRenderableProperties::TYPE_BLOCK));
-				invisibleFront = ((GET_BIT1(blkFront) == BlockRenderableProperties::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkFront) == BlockRenderableProperties::TYPE_BLOCK));
-				invisibleBack = ((GET_BIT1(blkBack) == BlockRenderableProperties::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkBack) == BlockRenderableProperties::TYPE_BLOCK));
+				invisibleAbove = ((GET_BIT1(blkAbove) == blkInfo::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkAbove) == blkInfo::TYPE_BLOCK));
+				invisibleBelow = ((GET_BIT1(blkBelow) == blkInfo::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkBelow) == blkInfo::TYPE_BLOCK));
+				invisibleRight = ((GET_BIT1(blkRight) == blkInfo::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkRight) == blkInfo::TYPE_BLOCK));
+				invisibleLeft = ((GET_BIT1(blkLeft) == blkInfo::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkLeft) == blkInfo::TYPE_BLOCK));
+				invisibleFront = ((GET_BIT1(blkFront) == blkInfo::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkFront) == blkInfo::TYPE_BLOCK));
+				invisibleBack = ((GET_BIT1(blkBack) == blkInfo::ATTACHMENT_VISIBLE)) && ((GET_BIT0(blkBack) == blkInfo::TYPE_BLOCK));
 			}
 			else
 			{
-				invisibleAbove = (GET_BIT1(blkAbove) == BlockRenderableProperties::ATTACHMENT_VISIBLE);
-				invisibleBelow = (GET_BIT1(blkBelow) == BlockRenderableProperties::ATTACHMENT_VISIBLE);
-				invisibleRight = (GET_BIT1(blkRight) == BlockRenderableProperties::ATTACHMENT_VISIBLE);
-				invisibleLeft = (GET_BIT1(blkLeft) == BlockRenderableProperties::ATTACHMENT_VISIBLE);
-				invisibleFront = (GET_BIT1(blkFront) == BlockRenderableProperties::ATTACHMENT_VISIBLE);
-				invisibleBack = (GET_BIT1(blkBack) == BlockRenderableProperties::ATTACHMENT_VISIBLE);
+
+				invisibleAbove = (GET_BIT1(blkAbove) == blkInfo::ATTACHMENT_VISIBLE);
+				invisibleBelow = (GET_BIT1(blkBelow) == blkInfo::ATTACHMENT_VISIBLE);
+				invisibleRight = (GET_BIT1(blkRight) == blkInfo::ATTACHMENT_VISIBLE);
+				invisibleLeft = (GET_BIT1(blkLeft) == blkInfo::ATTACHMENT_VISIBLE);
+				invisibleFront = (GET_BIT1(blkFront) == blkInfo::ATTACHMENT_VISIBLE);
+				invisibleBack = (GET_BIT1(blkBack) == blkInfo::ATTACHMENT_VISIBLE);
 			}
 
 			//update visible state
@@ -562,7 +573,7 @@ namespace tickerable
 			unsigned char blockZ = z - (chunkOffsetY * 16);
 
 			auto chunk = chunkLoadingMap->map[MAX_RADIUS + chunkOffsetX][MAX_RADIUS + chunkOffsetY];
-			global::resource::blocks::Block* ret = nullptr;
+			block::Block* ret = nullptr;
 
 			if (chunk != nullptr) 
 			{
@@ -572,7 +583,7 @@ namespace tickerable
 			return std::make_tuple(nullptr, blockX, y, blockZ);
 		};
 
-		bool ChunkLoader::setBlock(long long x, long long y, long long z, global::resource::blocks::Block b)
+		bool ChunkLoader::setBlock(long long x, long long y, long long z, block::Block b)
 		{
 			using namespace std::chrono;
 
@@ -588,14 +599,7 @@ namespace tickerable
 			auto chunk = chunkLoadingMap->map[MAX_RADIUS + chunkOffsetX][MAX_RADIUS + chunkOffsetY];
 			if (chunk != nullptr)
 			{
-				chunk->blockCounter[chunk->blocks[y][blockX][blockZ].blockID]--;
 				chunk->blocks[y][blockX][blockZ] = b;
-
-				//visible state for current block
-				auto thisBlkState = hideBlock(chunk, MAX_RADIUS + chunkOffsetX, MAX_RADIUS + chunkOffsetY, blockX, y, blockZ);
-				chunk->blockVisibleState[y][blockX][blockZ] = thisBlkState;
-				chunk->blockCounter[chunk->blocks[y][blockX][blockZ].blockID] += (thisBlkState != 0b111111);				
-
 
 				//update time
 				chunk->updateTime = duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();

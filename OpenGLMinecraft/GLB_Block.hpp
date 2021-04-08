@@ -1,5 +1,8 @@
 #pragma once
 #include <atomic>
+#include <iostream>
+#include "GLB_Mesh.hpp"
+
 #define BLOCK_TYPE(type) BlockRenderInfoMaker::getBlockRenderInfo(type)
 namespace global
 {
@@ -7,6 +10,7 @@ namespace global
 	{
 		namespace block 
 		{
+
 			class BlockRenderInfo final
 			{
 			public:
@@ -26,6 +30,11 @@ namespace global
 
 			private:
 				/// <summary>
+				/// mesh id
+				/// </summary>
+				const VAOID* meshID;
+
+				/// <summary>
 				/// texture id
 				/// </summary>
 				unsigned int textureID;
@@ -43,7 +52,13 @@ namespace global
 				/// <summary>
 				/// additional properties to the block
 				/// </summary>
-				unsigned short int properties = TYPE_BLOCK | ATTACHMENT_VISIBLE;
+				unsigned short int properties;
+
+				/// <summary>
+				/// blocktype id
+				/// </summary>
+				unsigned int typeID;
+
 
 
 			public:
@@ -72,31 +87,33 @@ namespace global
 				/// <returns></returns>
 				const unsigned short int& getProperties();
 
+				/// <summary>
+				/// return block render info type id
+				/// </summary>
+				/// <returns></returns>
+				const unsigned int& getTypeID();
+
+				/// <summary>
+				/// return render mesh id
+				/// </summary>
+				/// <returns></returns>
+				const VAOID* getMeshID();
 
 				/// <summary>
 				/// constructor
 				/// </summary>
+				/// <param name="id">block render info type id</param>
+				///
 				/// <param name="tid">texture id</param>
 				/// <param name="nid">normal id</param>
 				/// <param name="osid">occlusion&specular id</param>
+				/// <param name="t">additional info</param>
 				/// <returns></returns>
-				BlockRenderInfo(unsigned int tid, unsigned int nid, unsigned short int osid) :textureID(tid), normalID(nid), OSID(osid)
+				BlockRenderInfo(unsigned int id ,unsigned int tid, unsigned int nid, unsigned short int osid, const VAOID* mid = mesh::MeshMaker::getMesh(mesh::MeshMaker::MeshType::CUBES), unsigned short int t = TYPE_BLOCK | ATTACHMENT_VISIBLE) :typeID(id), textureID(tid), normalID(nid), OSID(osid), properties(t), meshID(mid)
 				{
 
 				}
 
-				/// <summary>
-				/// constructor
-				/// </summary>
-				/// <param name="tid">texture id</param>
-				/// <param name="nid">normal id</param>
-				/// <param name="osid">occlusion&specular id</param>
-				/// <param name="t">if texture is transparent</param>
-				/// <returns></returns>
-				BlockRenderInfo(unsigned int tid, unsigned int nid, unsigned int osid, unsigned short int t) : properties(t), textureID(tid), normalID(nid), OSID(osid)
-				{
-
-				}
 			};
 		
 			/// <summary>
@@ -121,6 +138,8 @@ namespace global
 					SAND,
 					GRASS,
 					COBBLESTONE_MOSSY,
+
+					WATER_TOP,
 					WATER,
 
 					LAST
@@ -176,6 +195,11 @@ namespace global
 				bool passThrough;
 
 				Block(BlockRenderInfo* info, bool pt) : renderInfo(info), passThrough(pt)
+				{
+
+				}
+
+				Block() : renderInfo(BLOCK_TYPE(bid::AIR)), passThrough(true)
 				{
 
 				}
@@ -303,6 +327,15 @@ namespace global
 
 				}
 			};
+			
+			struct WaterTopBlock : public Block
+			{
+				WaterTopBlock() : Block(BLOCK_TYPE(bid::WATER_TOP), true)
+				{
+
+				}
+			};
+			
 
 		
 		}

@@ -8,16 +8,16 @@ namespace tickerable
 		inputGetter = new tasks::InputGetter();
 		addTask(inputGetter);
 
-		chunkLoader = new tasks::ChunkLoader(32, 12344321);
+		chunkLoader = new tasks::ChunkLoader(12, 12344321);
 		addTask(chunkLoader);
 
 		gameLogic = new tasks::GameLogic();
 		addTask(gameLogic);
 
-		physicsEngine = new tasks::PhysicsEngine(32, interval);
+		physicsEngine = new tasks::PhysicsEngine(12, interval);
 		addTask(physicsEngine);
 
-		outputGetter = new tasks::OutputGetter(32);
+		outputGetter = new tasks::OutputGetter(12);
 		addTask(outputGetter);
 	}
 

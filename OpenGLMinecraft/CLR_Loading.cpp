@@ -4,7 +4,6 @@
 #include "GLSL_Code.hpp"
 #include "Render_Vertices.hpp"
 #include <iostream>
-#include "GLB_Resources.hpp"
 #include "Renderer.hpp"
 #include "GLB_ControllerIDs.hpp"
 #include "BitMapProcess.hpp"
@@ -13,6 +12,7 @@
 
 #include "GLB_Texture.hpp"
 #include "GLB_Block.hpp"
+#include "GLB_Mesh.hpp"
 
 using namespace global::resource;
 
@@ -54,6 +54,8 @@ namespace renderer
 
 
 			texture::TextureMaker::init();
+			mesh::MeshMaker::init();
+
 			block::BlockRenderInfoMaker::init();
 
 		}
@@ -89,9 +91,7 @@ namespace renderer
 			//check if textureloader is completed
 			if (textureLoaderProgress < 1.0) return;
 
-			//load all vertices
-			VAOObjectList::load();
-
+			mesh::MeshMaker::load();
 			verticesLoaderProgress = 1.0;
 		}
 
