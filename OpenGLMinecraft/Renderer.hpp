@@ -6,7 +6,6 @@
 #include "Render_Types.hpp"
 #include <stdexcept>
 #include <iostream>
-#include "Render_Vertices.hpp"
 
 namespace renderer 
 {

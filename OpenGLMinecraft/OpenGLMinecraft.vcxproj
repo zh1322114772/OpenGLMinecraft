@@ -131,7 +131,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)3rdLibs\headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BitMapProcess.cpp" />
+    <ClCompile Include="MSH_CubeMeshMaker.cpp" />
     <ClCompile Include="GLB_Block.cpp" />
     <ClCompile Include="GLB_ControllerIDs.cpp" />
     <ClCompile Include="GLB_Entity.cpp" />
@@ -159,13 +160,13 @@
     <ClCompile Include="GLB_Texture.cpp" />
     <ClCompile Include="GLSL_Code.cpp" />
     <ClCompile Include="GLW_Types.cpp" />
+    <ClCompile Include="MSH_RectangleMeshMaker.cpp" />
     <ClCompile Include="Other.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLW_GLWrapper.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="GLW_GLShader.cpp" />
-    <ClCompile Include="Render_Vertices.cpp" />
     <ClCompile Include="GLW_Types.hpp" />
     <ClCompile Include="CLR_World3D.cpp" />
     <ClCompile Include="TickClock.cpp" />
@@ -187,16 +188,18 @@
     <ClInclude Include="GLB_Mesh.hpp" />
     <ClInclude Include="GLB_Texture.hpp" />
     <ClInclude Include="GLSL_Code.hpp" />
+    <ClInclude Include="GLW_GLBuffer.hpp" />
     <ClInclude Include="GLW_GLHeaders.hpp" />
     <ClInclude Include="CLR_Loading.hpp" />
     <ClInclude Include="GLW_GlmHeaders.hpp" />
     <ClInclude Include="Other.hpp" />
-    <ClInclude Include="Render_Vertices.hpp" />
+    <ClInclude Include="MSH_RectangleMeshMaker.hpp" />
     <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="GLW_GLWrapper.hpp" />
     <ClInclude Include="GLW_GLShader.hpp" />
     <ClInclude Include="Render_Types.hpp" />
     <ClInclude Include="CLR_World3D.hpp" />
+    <ClInclude Include="MSH_CubeMeshMaker.hpp" />
     <ClInclude Include="TickClock.hpp" />
     <ClInclude Include="TickClock_Types.hpp" />
     <ClInclude Include="TKB_ChunkLoader.hpp" />

@@ -76,6 +76,12 @@
     <Filter Include="Source Files\Game\Config\resource">
       <UniqueIdentifier>{919c1ed7-8381-4165-a564-13472da5d665}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\MeshMaker">
+      <UniqueIdentifier>{c959bba1-1a15-4c2a-a4d0-e078502ef9e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\MeshMaker">
+      <UniqueIdentifier>{7469dd05-c6bd-4d78-912d-db0d0021c242}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -94,9 +100,6 @@
       <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render_Vertices.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="CLR_World3D.cpp">
@@ -156,6 +159,12 @@
     <ClCompile Include="GLB_Mesh.cpp">
       <Filter>Source Files\Game\Config\resource</Filter>
     </ClCompile>
+    <ClCompile Include="MSH_CubeMeshMaker.cpp">
+      <Filter>Source Files\Render\MeshMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="MSH_RectangleMeshMaker.cpp">
+      <Filter>Source Files\Render\MeshMaker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLW_GLWrapper.hpp">
@@ -168,9 +177,6 @@
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Render_Types.hpp">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render_Vertices.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="GLSL_Code.hpp">
@@ -241,6 +247,15 @@
     </ClInclude>
     <ClInclude Include="GLB_Mesh.hpp">
       <Filter>Header Files\Game\Global\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="MSH_CubeMeshMaker.hpp">
+      <Filter>Header Files\Render\MeshMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="MSH_RectangleMeshMaker.hpp">
+      <Filter>Header Files\Render\MeshMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="GLW_GLBuffer.hpp">
+      <Filter>Header Files\Render\OpenGLWrapper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

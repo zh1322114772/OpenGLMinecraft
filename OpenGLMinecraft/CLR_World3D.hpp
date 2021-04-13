@@ -10,6 +10,7 @@
 #include "CLR_World3DTypes.hpp"
 
 #include "GLB_Block.hpp"
+#include "GLB_Entity.hpp"
 
 namespace renderer
 {
@@ -21,7 +22,8 @@ namespace renderer
 		{
 		private:
 			//shader programs
-			wrapperGL::ShaderProgram* shader;
+			wrapperGL::ShaderProgram* blockShader;
+			wrapperGL::ShaderProgram* entityShader;
 
 			double secondCounter = 0;
 			
@@ -37,14 +39,18 @@ namespace renderer
 			//event updater
 			tickerable::WorldTickClock* tickClock;
 
-			//test purpose
-			wrapperGL::VAOID blockVID;
-			wrapperGL::VAOList* blockV;
-
 			/// <summary>
 			/// draw chunks
 			/// </summary>
 			inline void terrainDrawer();
+
+			/// <summary>
+			/// draw entites
+			/// </summary>
+			inline void entityDrawer();
+
+			//test purpose
+			global::resource::entity::Human* testHuman;
 
 		public:
 			/// <summary>

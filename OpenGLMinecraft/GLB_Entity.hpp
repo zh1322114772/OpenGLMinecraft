@@ -3,6 +3,10 @@
 #include <unordered_map>
 #include <tuple>
 #include "GLW_GlmHeaders.hpp"
+#include "GLW_Types.hpp"
+#include <atomic>
+
+#include <iostream>
 
 namespace global
 {
@@ -19,6 +23,21 @@ namespace global
 					std::vector<CounterNode*> children;
 				};
 
+
+
+				struct RotationOffset 
+				{
+					glm::vec3 rotation;
+					glm::vec3 offset;
+
+					RotationOffset(glm::vec3 r, glm::vec3 o) : rotation(r), offset(o) 
+					{
+					
+					}
+				};
+
+
+
 				struct Joint
 				{
 					/// <summary>
@@ -34,12 +53,7 @@ namespace global
 					/// <summary>
 					/// corresponding mesh id
 					/// </summary>
-					unsigned int meshID = -1;
-
-					/// <summary>
-					/// if current joint will be rendered to the screen
-					/// </summary>
-					bool visible;
+					int meshID = -1;
 
 					/// <summary>
 					/// joint name
@@ -51,7 +65,22 @@ namespace global
 					/// </summary>
 					std::vector<Joint*> children;
 
+					/// <summary>
+					/// 
+					/// </summary>
+					/// <param name="ofst">joint offset at</param>
+					/// <param name="rot">joint rotation direction</param>
+					/// <param name="n">joint name</param>
+					/// <param name="mid">corresponding mesh id</param>
+					/// <returns></returns>
+					Joint(glm::vec3 ofst, glm::vec3 rot, std::string n, int mid = -1) :offset(ofst), rotation(rot), name(n), meshID(mid) 
+					{
+					
+					}
+
 				};
+
+
 
 				struct SharedInfo 
 				{
@@ -68,17 +97,17 @@ namespace global
 					/// <summary>
 					/// model id
 					/// </summary>
-					unsigned int vaoID;
+					const wrapperGL::VAOID* vaoID;
 
 					/// <summary>
 					/// default rotation and offset vector
 					/// </summary>
-					std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>* rotationOffsetVectors;
+					std::unordered_map<std::string, RotationOffset> rotationOffsetVectors;
 
 					/// <summary>
 					/// path of the tree to every node
 					/// </summary>
-					std::vector<unsigned int> path;
+					std::vector<int> path;
 
 					/// <summary>
 					/// search range of path array
@@ -89,8 +118,15 @@ namespace global
 					/// size of pathRange
 					/// </summary>
 					int pathRangeSize;
+
+					SharedInfo(const wrapperGL::VAOID* vid) :vaoID(vid)
+					{
+					
+					}
 				};
 			}
+
+
 
 			struct EntityRenderInfo
 			{
@@ -100,18 +136,48 @@ namespace global
 				/// please do not create this object directly, use EntityRenderInfoMaker.makeEntityInfo()
 				/// </summary>
 				/// <param name="i">shared info</param>
-				/// <param name="modelMatrixSize">model matrix size</param>
+				/// <param name="size">model matrix size</param>
 				/// <param name="rProto">rotation info prototype</param>
 				/// <returns></returns>
-				EntityRenderInfo(entityMakerTypes::SharedInfo* i, unsigned int modelMatrixSize, std::unordered_map<std::string, float>& rProto) : info(i), rotationRadian(rProto)
+				EntityRenderInfo(entityMakerTypes::SharedInfo* i, unsigned int size, std::unordered_map<std::string, float>& rProto) : info(i), rotationRadian(rProto), modelMatrixSize(size)
 				{
-					modelMatrix = new glm::mat4x4[modelMatrixSize];
+					modelMatrix = new glm::mat4x4[size];
 				}
 				
+				~EntityRenderInfo() 
+				{
+					delete[] modelMatrix;
+				}
+
 				/// <summary>
-				/// please do not create this object directly, use EntityRenderInfoMaker.makeEntityInfo()
+				/// set joint rotation
 				/// </summary>
-				EntityRenderInfo() {}
+				/// <param name="jointName">joint component name</param>
+				/// <param name="rad">rotation in radian</param>
+				void setRadian(std::string jointName, float rad);
+
+				/// <summary>
+				/// get particular joint rotation in radian
+				/// </summary>
+				/// <param name="jointName">joint component name</param>
+				/// <returns></returns>
+				float getRadian(std::string jointName);
+
+				const glm::mat4x4* getModelMatrixArr();
+
+				int getModelMatrixArrSize();
+
+				const int* getPathArr();
+
+				int getPathArrSize();
+
+				const int* getPathIndexingArr();
+
+				int getPathIndexingArrSize();
+
+				int getTextureID();
+
+				const wrapperGL::VAOID* getMeshID();
 			
 			private:
 				/// <summary>
@@ -129,7 +195,14 @@ namespace global
 				/// </summary>
 				glm::mat4x4* modelMatrix = nullptr;
 
+				/// <summary>
+				/// model matrix size
+				/// </summary>
+				int modelMatrixSize;
+
 			};
+
+
 
 			class EntityRenderInfoMaker
 			{
@@ -159,18 +232,40 @@ namespace global
 				/// </summary>
 				/// <param name="which">entity type</param>
 				/// <returns></returns>
-				static EntityRenderInfo* makeEntityInfo(EntityType which);
+				static EntityRenderInfo* getEntityInfo(EntityType which);
+
+				static void init();
+
+				/// <summary>
+				/// get loading progress
+				/// </summary>
+				/// <returns></returns>
+				static float getLoadingProgress();
 
 			private:
 
-				static EntityRenderInfo protoTypeList[static_cast<unsigned int>(EntityType::LAST)];
+				/// <summary>
+				/// current loading progress
+				/// </summary>
+				static std::atomic<unsigned int> currentProgress;
+
+				static EntityRenderInfo* protoTypeList[static_cast<unsigned int>(EntityType::LAST)];
+
+				/// <summary>
+				/// free memory
+				/// </summary>
+				/// <param name="modelJoint"></param>
+				/// <param name="counterNode"></param>
+				static void freeTree(entityMakerTypes::Joint* modelJoint, entityMakerTypes::CounterNode* counterNode);
 
 				/// <summary>
 				/// make entity prototype from Joints, 
 				/// </summary>
 				/// <param name="modelJoint">Joints</param>
 				/// <param name="dest">where the prototype to save at</param>
-				static void makeRenderInfo(entityMakerTypes::Joint* modelJoint, EntityRenderInfo& dest);
+				/// <param name="tid">texture id</param>
+				/// <param name="vid">vao id</param>
+				static EntityRenderInfo* makeRenderInfo(entityMakerTypes::Joint* modelJoint, wrapperGL::TextureID tid, const wrapperGL::VAOID* vid);
 
 				/// <summary>
 				/// make a counter tree that counts the size of children tree nodes
@@ -187,8 +282,10 @@ namespace global
 				/// <param name="dest">shared info</param>
 				/// <param name="rProto">rotation info</param>
 				/// <param name="step">path from root to node</param>
-				static void makeRenderInfo(entityMakerTypes::CounterNode* counterNode, entityMakerTypes::Joint* modelJoint, entityMakerTypes::SharedInfo* dest, std::unordered_map<std::string, float>& rProto, std::vector<unsigned int>& step, long currentOffset);
+				static void makeRenderInfo(entityMakerTypes::CounterNode* counterNode, entityMakerTypes::Joint* modelJoint, entityMakerTypes::SharedInfo* dest, std::unordered_map<std::string, float>& rProto, std::vector<int>& step, long currentOffset);
 			};
+
+
 
 			class Entity
 			{
@@ -196,18 +293,18 @@ namespace global
 				/// <summary>
 				/// render info for entity
 				/// </summary>
-				EntityRenderInfo renderableProperties;
+				EntityRenderInfo* renderableProperties;
 
 				/// <summary>
 				/// entity x y z position
 				/// </summary>
-				glm::vec3 EntityPosition;
+				glm::vec3 entityPosition;
 
 				/// <summary>
 				/// collision check
 				/// set bounding box from (0, 0, 0) - (+x, +y, +z) range
 				/// </summary>
-				glm::vec3 EntityBoundBox;
+				glm::vec3 entityBoundBox;
 
 				/// <summary>
 				/// entity mass
@@ -216,7 +313,58 @@ namespace global
 
 			public:
 
+				/// <summary>
+				/// init entity
+				/// </summary>
+				/// <param name="pos">entity postion</param>
+				/// <param name="boundBox">entity bounding box</param>
+				/// <param name="m">entity mass</param>
+				/// <param name="which">entity render info</param>
+				/// <returns></returns>
+				Entity(glm::vec3 pos, glm::vec3 boundBox, float m, EntityRenderInfoMaker::EntityType which);
 
+				~Entity() 
+				{
+					delete renderableProperties;
+				}
+
+				/// <summary>
+				/// get entity render info
+				/// </summary>
+				/// <returns></returns>
+				EntityRenderInfo& getRenderInfo();
+
+				/// <summary>
+				/// get entity current position
+				/// </summary>
+				/// <returns></returns>
+				glm::vec3& getPosition();
+
+				/// <summary>
+				/// get entity collision bounding box
+				/// </summary>
+				/// <returns></returns>
+				const glm::vec3& getBoundingBox();
+
+				/// <summary>
+				/// get entity mass
+				/// </summary>
+				/// <returns></returns>
+				const float& getMass();
+
+			};
+
+
+
+
+
+			class Human : public Entity 
+			{
+			public:
+				Human(glm::vec3 pos) : Entity(pos, glm::vec3(1.0), 60, EntityRenderInfoMaker::EntityType::HUMAN) 
+				{
+				
+				}
 			};
 
 		}

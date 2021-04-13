@@ -79,17 +79,17 @@ namespace wrapperGL
 		glUniform1f(paraLoc, val);
 	};
 
-	void ShaderProgram::setBool(const std::string& parameter, bool* val, const int size) const
+	void ShaderProgram::setBool(const std::string& parameter, const bool* val, const int size) const
 	{
 		glUniform1iv(paraLoc, size, (const GLint*)val);
 	};
 
-	void ShaderProgram::setInt(const std::string& parameter, int* val, const int size) const
+	void ShaderProgram::setInt(const std::string& parameter, const int* val, const int size) const
 	{
 		glUniform1iv(paraLoc, size, (const GLint*)val);
 	};
 
-	void ShaderProgram::setFloat(const std::string& parameter, float* val, const int size) const
+	void ShaderProgram::setFloat(const std::string& parameter, const float* val, const int size) const
 	{
 		glUniform1fv(paraLoc, size, (const GLfloat*)val);
 	};
@@ -99,24 +99,29 @@ namespace wrapperGL
 		glUniform1ui(paraLoc, val);
 	}
 
-	void ShaderProgram::setUInt(const std::string& parameter, unsigned int* valArr, const int size) const 
+	void ShaderProgram::setUInt(const std::string& parameter, const unsigned int* valArr, const int size) const
 	{
 		glUniform1uiv(paraLoc, size, (const GLuint*)valArr);
 	}
 
-	void ShaderProgram::setVec3(const std::string& parameter, glm::vec3& val) const 
+	void ShaderProgram::setVec3(const std::string& parameter, const glm::vec3& val) const 
 	{
 		glUniform3fv(paraLoc, 1, glm::value_ptr(val));
 	};
 
-	void ShaderProgram::setVec4(const std::string& parameter, glm::vec4& val) const 
+	void ShaderProgram::setVec4(const std::string& parameter, const glm::vec4& val) const 
 	{
 		glUniform4fv(paraLoc, 1, glm::value_ptr(val));
 	};
 
-	void ShaderProgram::setMat4(const std::string& parameter, glm::mat4& val) const 
+	void ShaderProgram::setMat4(const std::string& parameter, const glm::mat4& val, const int size) const 
 	{
-		glUniformMatrix4fv(paraLoc, 1, GL_FALSE, glm::value_ptr(val));
+		glUniformMatrix4fv(paraLoc, size, GL_FALSE, glm::value_ptr(val));
+	}
+
+	void ShaderProgram::setMat4(const std::string& parameter, const glm::mat4& val) const 
+	{
+		ShaderProgram::setMat4(parameter, val, 1);
 	};
 
 	ShaderProgram::~ShaderProgram() 

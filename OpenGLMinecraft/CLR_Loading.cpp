@@ -2,17 +2,18 @@
 #include "CLR_Loading.hpp"
 #include "GLW_GLWrapper.hpp"
 #include "GLSL_Code.hpp"
-#include "Render_Vertices.hpp"
 #include <iostream>
 #include "Renderer.hpp"
 #include "GLB_ControllerIDs.hpp"
 #include "BitMapProcess.hpp"
+#include "MSH_RectangleMeshMaker.hpp"
 #include <string>
 #include <thread>
 
 #include "GLB_Texture.hpp"
 #include "GLB_Block.hpp"
 #include "GLB_Mesh.hpp"
+#include "GLB_Entity.hpp"
 
 using namespace global::resource;
 
@@ -32,7 +33,7 @@ namespace renderer
 			shader = new wrapperGL::ShaderProgram(GLSL::LoadingShaderCode, GLSL::LoadingFragmentCode);
 
 			//set vertices
-			backgroundV = renderer::Vertices::rectangleGenerator(glm::vec2(0.0, 0.0), glm::vec2(2.0, 2.0), glm::vec2(1.0, 1.0));
+			backgroundV = renderer::mesh::RectangleMeshMaker::makeRectangle(glm::vec2(0.0, 0.0));
 
 			//set image
 			backgroundImg = wrapperGL::GLWrapper::loadImage("data\\textures\\Loading.png");
@@ -54,9 +55,9 @@ namespace renderer
 
 
 			texture::TextureMaker::init();
-			mesh::MeshMaker::init();
-
+			global::resource::mesh::MeshMaker::init();
 			block::BlockRenderInfoMaker::init();
+			entity::EntityRenderInfoMaker::init();
 
 		}
 
@@ -91,13 +92,17 @@ namespace renderer
 			//check if textureloader is completed
 			if (textureLoaderProgress < 1.0) return;
 
-			mesh::MeshMaker::load();
+			global::resource::mesh::MeshMaker::load();
 			verticesLoaderProgress = 1.0;
 		}
 
 		void Loading::blockLoader() 
 		{
 			block::BlockRenderInfoMaker::load();
+
+			//test
+			entity::EntityRenderInfoMaker::load();
+
 			meshBlockLoaderProgress = 1.0;
 		}
 

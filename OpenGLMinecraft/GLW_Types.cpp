@@ -1,6 +1,6 @@
 #include "GLW_Types.hpp"
 #include "GLW_GLWrapper.hpp"
-#include <iostream>
+
 namespace wrapperGL
 {
 	VAOList::VAOList(int vboLen, int eboLen)

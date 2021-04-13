@@ -1,6 +1,7 @@
 #pragma once
 #include "GLW_GlmHeaders.hpp"
 #include "GLW_GLHeaders.hpp"
+
 namespace wrapperGL
 {
 	/**
@@ -16,7 +17,7 @@ namespace wrapperGL
 
 		//texture coordinates
 		glm::vec2 tex;
-		
+
 		//face
 		float face;
 

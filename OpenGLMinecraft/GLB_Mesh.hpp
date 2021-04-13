@@ -18,6 +18,7 @@ namespace global
 					CUBE,
 					CUBES,
 					WATER_TOP_CUBES,
+					HUMAN,
 
 					LAST,
 				};

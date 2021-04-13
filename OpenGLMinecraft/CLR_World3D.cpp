@@ -21,12 +21,16 @@ namespace renderer
 
 		void World3D::onStart()
 		{
-			shader = new wrapperGL::ShaderProgram(GLSL::World3DBlockVertexShaderCode, GLSL::World3DBlockFragmentCode);
+			blockShader = new wrapperGL::ShaderProgram(GLSL::World3DBlockVertexShaderCode, GLSL::World3DBlockFragmentCode);
 			for (int i = 0; i < 3; i++)
 			{
-				shader->use();
-				shader->setInt("fTexture[" + std::to_string(i) + "]", i);
+				blockShader->use();
+				blockShader->setInt("fTexture[" + std::to_string(i) + "]", i);
 			}
+
+			entityShader = new wrapperGL::ShaderProgram(GLSL::World3DEntityVertexShaderCode, GLSL::World3DEntityFragmentCode);
+			entityShader->use();
+			entityShader->setInt("fTexture", 0);
 
 			//set camera and projection matrix
 			projectionMatrix = glm::perspective(glm::radians(45.0f), (float)renderer::Easy3D::getRenderAreaWidth() / renderer::Easy3D::getRenderAreaHeight(), 0.7f, 1000.f);
@@ -37,14 +41,10 @@ namespace renderer
 			mousePos.x = -1.57;
 			mousePos.y = 0.0;
 
-			//load block
-			blockV = Vertices::cubeGenerator(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 0.0, 0.0));
-
-			blockVID = wrapperGL::GLWrapper::loadVAOS(blockV);
-
 			//init clock clock
 			tickClock->start();
 			tickClock->pause();
+
 		}
 
 
@@ -68,6 +68,10 @@ namespace renderer
 		{
 			//enable depth test
 			glEnable(GL_DEPTH_TEST);
+
+
+			testHuman = new global::resource::entity::Human(glm::vec3(0.0, 150.0, 0.0));
+
 
 			tickClock->resume();
 		}
@@ -99,7 +103,7 @@ namespace renderer
 				if (size > MAX_BLOCK_DRAWN)
 				{
 					s->setInt("blockCount", MAX_BLOCK_DRAWN);
-					shader->setUInt("blockPosition", infoArr, MAX_BLOCK_DRAWN);
+					blockShader->setUInt("blockPosition", infoArr, MAX_BLOCK_DRAWN);
 				}
 				else 
 				{
@@ -112,6 +116,52 @@ namespace renderer
 				size -= MAX_BLOCK_DRAWN;
 			}
 
+		}
+
+		void World3D::entityDrawer() 
+		{
+			//test global light
+			glm::vec3 lightDirection(0.5, -0.2, 0.5);
+			lightDirection = glm::normalize(lightDirection);
+			glm::vec3 sunColor(0.7, 0.7, 0.55);
+			glm::vec3 sunShadeColor(0.35, 0.35, 0.22);
+			glm::vec3 sunSpecular(1.5, 1.5, 1.2);
+
+			//test point light
+			glm::vec3 pColor(0, 0.5, 1.0);
+			glm::vec3 pSColor(0, 0.7, 1.4);
+
+			//set view and projection matrices to vertex shader
+			glm::mat4 lookAtMatrix = glm::lookAt(camera.Pos, camera.Pos + camera.lookAt, camera.up);
+
+			//set lighting
+			entityShader->setVec3("globalLight.lightDirection", lightDirection);
+			entityShader->setVec3("globalLight.lightColorA", sunShadeColor);
+			entityShader->setVec3("globalLight.lightColorD", sunColor);
+			entityShader->setVec3("globalLight.lightColorS", sunSpecular);
+			entityShader->setVec3("pointLight.lightPosition", camera.Pos);
+			entityShader->setVec3("pointLight.lightColorD", pColor);
+			entityShader->setVec3("pointLight.lightColorS", pSColor);
+
+			//set texture
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, testHuman->getRenderInfo().getTextureID());
+
+			//set location
+			entityShader->setVec3("cameraPosition", camera.Pos);
+			entityShader->setMat4("viewMat", lookAtMatrix);
+			entityShader->setMat4("projectionMat", projectionMatrix);
+
+			entityShader->setMat4("modelMat", *(testHuman->getRenderInfo().getModelMatrixArr()), testHuman->getRenderInfo().getModelMatrixArrSize());
+			entityShader->setInt("pathArray", testHuman->getRenderInfo().getPathArr(), testHuman->getRenderInfo().getPathArrSize());
+			entityShader->setInt("pathRange", testHuman->getRenderInfo().getPathIndexingArr(), testHuman->getRenderInfo().getPathIndexingArrSize());
+
+			glm::mat4x4 asd = glm::mat4x4(1.0);
+
+
+			entityShader->setVec3("location", testHuman->getPosition());
+
+			wrapperGL::GLWrapper::draw(*(testHuman->getRenderInfo().getMeshID()));
 		}
 
 		void World3D::terrainDrawer() 
@@ -182,46 +232,62 @@ namespace renderer
 
 			}
 
-			shader->use();
-			shader->setFloat("secondCounter", secondCounter);
-			shader->setVec3("globalLight.lightDirection", lightDirection);
-			shader->setVec3("globalLight.lightColorA", sunShadeColor);
-			shader->setVec3("globalLight.lightColorD", sunColor);
-			shader->setVec3("globalLight.lightColorS", sunSpecular);
-			shader->setVec3("cameraPosition", camera.Pos);
-			shader->setVec3("pointLight.lightPosition", camera.Pos);
-			shader->setVec3("pointLight.lightColorD", pColor);
-			shader->setVec3("pointLight.lightColorS", pSColor);
-			shader->setMat4("viewMat", lookAtMatrix);
-			shader->setMat4("projectionMat", projectionMatrix);
+			blockShader->setFloat("secondCounter", secondCounter);
+			blockShader->setVec3("globalLight.lightDirection", lightDirection);
+			blockShader->setVec3("globalLight.lightColorA", sunShadeColor);
+			blockShader->setVec3("globalLight.lightColorD", sunColor);
+			blockShader->setVec3("globalLight.lightColorS", sunSpecular);
+			blockShader->setVec3("cameraPosition", camera.Pos);
+			blockShader->setVec3("pointLight.lightPosition", camera.Pos);
+			blockShader->setVec3("pointLight.lightColorD", pColor);
+			blockShader->setVec3("pointLight.lightColorS", pSColor);
+			blockShader->setMat4("viewMat", lookAtMatrix);
+			blockShader->setMat4("projectionMat", projectionMatrix);
 
-			shader->setFloat("blockTransparent", 1.0);
+			blockShader->setFloat("blockTransparent", 1.0);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//render blocks
 			for (int j = 0; j < normalBlockList.size(); j++)
 			{
 				auto [arr, i, m, chunkX, chunkY] = normalBlockList[j];
-				shader->setFloat("chunkXPosition", chunkX);
-				shader->setFloat("chunkYPosition", chunkY);
+				blockShader->setFloat("chunkXPosition", chunkX);
+				blockShader->setFloat("chunkYPosition", chunkY);
 
-				blockDrawer(arr, i, m, shader);
+				blockDrawer(arr, i, m, blockShader);
 			}
 
 			//render liquid
-			shader->setFloat("blockTransparent", 0.7);
+			blockShader->setFloat("blockTransparent", 0.7);
 			for (int j = 0; j < liquidBlockList.size(); j++) 
 			{
 				auto [arr, i, m, chunkX, chunkY] = liquidBlockList[j];
-				shader->setFloat("chunkXPosition", chunkX);
-				shader->setFloat("chunkYPosition", chunkY);
-				blockDrawer(arr, i, m, shader);
+				blockShader->setFloat("chunkXPosition", chunkX);
+				blockShader->setFloat("chunkYPosition", chunkY);
+				blockDrawer(arr, i, m, blockShader);
 			}
 			glDisable(GL_BLEND);
 		}
 		
 		void World3D::onDraw(const double& delta_t)
 		{
+			static double deltaSum = 0;
+			deltaSum += delta_t;
+
+			testHuman->getRenderInfo().setRadian("body", sinf(deltaSum * 10));
+			testHuman->getRenderInfo().setRadian("leftArmXY", cosf(deltaSum* 15));
+			testHuman->getRenderInfo().setRadian("leftArmZY", sinf(deltaSum* 15));
+			testHuman->getRenderInfo().setRadian("rightArmXY", -cosf(deltaSum * 15));
+			testHuman->getRenderInfo().setRadian("rightArmZY", -sinf(deltaSum * 15));
+			testHuman->getRenderInfo().setRadian("headXY", sinf(deltaSum * 15));
+			testHuman->getRenderInfo().setRadian("headZY", 0.0);
+			testHuman->getRenderInfo().setRadian("leftLegXY", cosf(deltaSum * 15));
+			testHuman->getRenderInfo().setRadian("leftLegZY", -cosf(deltaSum * 15));
+			testHuman->getRenderInfo().setRadian("rightLegXY", sinf(deltaSum * 15));
+			testHuman->getRenderInfo().setRadian("rightLegZY", -sinf(deltaSum * 15));
+
+			
+			
 			secondCounter += delta_t;
 			secondCounter = fmod(secondCounter, 1.0);
 
@@ -231,7 +297,12 @@ namespace renderer
 
 			
 			//draw terrain
+			blockShader->use();
 			terrainDrawer();
+
+			//draw entity
+			entityShader->use();
+			entityDrawer();
 
 
 		}
